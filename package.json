@@ -20,6 +20,10 @@
   "devDependencies": {
     "@rushstack/eslint-config": "^3.6.10",
     "eslint": "^8",
-    "typescript": "latest"
+    "typescript": "latest",
+    "vitest": "^4.1.8"
+  },
+  "scripts": {
+    "test": "vitest run"
   }
 }
