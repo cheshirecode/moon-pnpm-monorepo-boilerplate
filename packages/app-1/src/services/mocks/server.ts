@@ -3,7 +3,7 @@ import { createServer } from 'miragejs';
 import type Schema from 'miragejs/orm/schema';
 import type { Server, ServerConfig } from 'miragejs/server';
 
-export function seeds(server: Server) {}
+export function seeds(_server: Server) {}
 
 export function makeServer(config: ServerConfig<{}, {}> = {}): Server {
   const { environment = 'test', ...conf } = config;

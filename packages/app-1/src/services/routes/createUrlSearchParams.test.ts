@@ -6,7 +6,7 @@ import createUrlSearchParams from './createUrlSearchParams';
 const jsdom = new JSDOM(``, {
   url: `${location.href}foo?bar=1`
 });
-const fn = (url) =>
+const _reconfigure = (url: string) =>
   jsdom.reconfigure({
     url
   });

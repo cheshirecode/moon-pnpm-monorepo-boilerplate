@@ -2,26 +2,24 @@
   "name": "rush-monorepo-boilerplate",
   "private": true,
   "engines": {
-    "node": ">= 18"
+    "node": ">=22.13.0"
   },
   "resolutions": {
-    "uuid": "^7",
-    "@babel/core": ">=7.11.0",
-    "react": ">=18",
-    "chokidar": "^3",
-    "eslint": "^8",
-    "esbuild": "*",
-    "lodash-es": "*",
-    "@typescript-eslint/eslint-plugin": "^5",
-    "@typescript-eslint/parser": "^5",
-    "typescript": "latest",
-    "eslint-plugin-unused-imports": "^3"
+    "@typescript-eslint/eslint-plugin": "^8.61.1",
+    "@typescript-eslint/parser": "^8.61.1",
+    "chokidar": "^5.0.0",
+    "esbuild": "^0.28.1",
+    "eslint": "^10.5.0",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "lodash-es": "^4.18.1",
+    "react": "^19.2.7",
+    "typescript": "^6.0.3",
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
-    "@rushstack/eslint-config": "^3.6.10",
-    "eslint": "^8",
-    "typescript": "latest",
-    "vitest": "^4.1.8"
+    "eslint": "^10.5.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
   },
   "scripts": {
     "test": "vitest run"

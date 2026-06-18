@@ -20,7 +20,7 @@
   },
   "engines": {
     "npm": ">= 7",
-    "node": ">= 14"
+    "node": ">=22.13.0"
   },
   "files": [
     "!**/*.test.js",
@@ -28,13 +28,13 @@
   ],
   "bin": "index.js",
   "scripts": {
-    "test": "vitest",
+    "test": "vitest run",
     "coverage": "vitest run --coverage"
   },
   "prepublishOnly": "yarn test",
   "devDependencies": {
-    "vite": "latest",
-    "vitest": "latest",
-    "@vitest/coverage-v8": "latest"
+    "@vitest/coverage-v8": "^4.1.9",
+    "vite": "^8.0.16",
+    "vitest": "^4.1.9"
   }
 }

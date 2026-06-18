@@ -1,4 +1,3 @@
-/* eslint-disable import/no-named-as-default */
 /**
  * @vitest-environment jsdom
  */

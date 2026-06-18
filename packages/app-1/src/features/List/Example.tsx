@@ -19,7 +19,7 @@ const Example = <T,>(props: ListProps<T>) => {
     },
     pagination: {
       pageSize: pagination.pageSize,
-      onChange: () => setCounter((v) => ++v)
+      onChange: () => setCounter((v) => v + 1)
     }
   });
 

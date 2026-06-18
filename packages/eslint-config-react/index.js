@@ -1,78 +1,86 @@
-module.exports = {
-  root: true,
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    ecmaVersion: 'latest',
-    ecmaFeatures: {
-      jsx: true
-    },
-    tsconfigRootDir: __dirname
+/* eslint-disable @typescript-eslint/no-require-imports */
+const js = require('@eslint/js');
+const globals = require('globals');
+const reactHooks = require('eslint-plugin-react-hooks');
+const tseslint = require('typescript-eslint');
+
+module.exports = tseslint.config(
+  {
+    ignores: [
+      '**/coverage/**',
+      '**/dist/**',
+      '**/fails/**',
+      '**/lib/**',
+      '**/node_modules/**',
+      '**/storybook-static/**',
+      'common/temp/**',
+      'temp/**'
+    ]
   },
-  env: {
-    browser: true,
-    node: true,
-    'shared-node-browser': true
-  },
-  plugins: ['prettier', '@typescript-eslint', 'react', 'react-hooks', 'jsx-a11y', 'unused-imports'],
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
-    'plugin:react/recommended',
-    'plugin:react-hooks/recommended',
-    'plugin:jsx-a11y/recommended',
-    'plugin:import/recommended',
-    'plugin:import/typescript'
-  ],
-  rules: {
-    'prettier/prettier': 'error',
-    'no-unreachable': 'error',
-    'no-console': 'error',
-    '@typescript-eslint/ban-ts-comment': 'off',
-    'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': [
-      'warn',
-      { vars: 'all', varsIgnorePattern: '^_', args: 'after-used', argsIgnorePattern: '^_' }
-    ],
-    'sort-imports': [
-      'error',
-      {
-        ignoreCase: true,
-        ignoreDeclarationSort: true, // use eslint-plugin-import instead
-        ignoreMemberSort: false,
-        memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
-        allowSeparatedGroups: true
-      }
-    ],
-    'import/order': [
-      'error',
-      {
-        groups: ['builtin', 'external', 'internal', ['sibling', 'parent'], 'index', 'unknown'],
-        'newlines-between': 'always',
-        alphabetize: {
-          order: 'asc',
-          caseInsensitive: true
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+  {
+    files: ['**/*.{js,jsx,ts,tsx,mjs,cjs}'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true
         }
+      },
+      globals: {
+        ...globals.browser,
+        ...globals.node
       }
-    ],
-    'react-hooks/rules-of-hooks': 'error', // Checks rules of Hooks
-    'react-hooks/exhaustive-deps': 'warn', // Checks effect dependencies
-    'react/display-name': 'off',
-    'react/prop-types': 'off',
-    // suppress errors for missing 'import React' in files
-    'react/react-in-jsx-scope': 'off'
-    // // allow jsx syntax in js files (for next.js project)
-    // 'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx', '.ts', 'tsx'] }] //should add ".ts" if typescript project
+    },
+    plugins: {
+      'react-hooks': reactHooks
+    },
+    rules: {
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+      '@typescript-eslint/ban-ts-comment': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
+      '@typescript-eslint/no-unused-expressions': [
+        'error',
+        {
+          allowShortCircuit: true,
+          allowTaggedTemplates: true,
+          allowTernary: true
+        }
+      ],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          args: 'after-used',
+          argsIgnorePattern: '^_',
+          vars: 'all',
+          varsIgnorePattern: '^_'
+        }
+      ],
+      'no-console': 'error',
+      'no-unused-vars': 'off',
+      'no-unreachable': 'error',
+      'sort-imports': [
+        'error',
+        {
+          allowSeparatedGroups: true,
+          ignoreCase: true,
+          ignoreDeclarationSort: true,
+          ignoreMemberSort: false,
+          memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single']
+        }
+      ]
+    }
   },
-  settings: {
-    react: {
-      version: 'detect'
+  {
+    files: ['index.js', '**/*.{cjs,config.js,config.cjs}'],
+    languageOptions: {
+      sourceType: 'commonjs'
     },
-    'import/parsers': {
-      '@typescript-eslint/parser': ['.ts', '.tsx']
-    },
-    'import/resolver': {
-      typescript: {}
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off'
     }
   }
-};
+);

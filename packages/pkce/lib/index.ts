@@ -1,5 +1,4 @@
 import WordArray from "crypto-js/lib-typedarrays";
-import "isomorphic-unfetch";
 import Cookies from "js-cookie";
 
 import { AuthResponse, PKCEConfig, TokenResponse } from "./typings";

@@ -1,11 +1,14 @@
 import stringify from 'fast-json-stable-stringify';
-import fetch from 'isomorphic-unfetch';
 import { isPlainObject, merge } from 'lodash-es';
 import type { Key, SWRConfiguration, SWRHook, SWRResponse } from 'swr';
 import useSWR from 'swr';
 import useSWRMutation from 'swr/mutation';
 
-export type Fetcher = <T>(url: string, options?: RequestInit) => Promise<T>;
+type RequestOptions = RequestInit & {
+  debug?: boolean;
+};
+
+export type Fetcher = <T>(url: string, options?: RequestOptions) => Promise<T>;
 export type SWRMiddleware<T> = (
   useSWRNext: SWRHook
 ) => (key: Key, fetcher: Fetcher, config?: SWRConfiguration) => SWRResponse<T, ErrorHttp>;
@@ -57,7 +60,7 @@ export const getRequest: Fetcher = async (url, options = {}) => {
   return error;
 };
 
-export const getRequests: <T>(urls: string[], options?: RequestInit) => Promise<T>[] = async (
+export const getRequests: <T>(urls: string[], options?: RequestOptions) => Promise<T>[] = async (
   urls,
   options
 ) => {
@@ -84,7 +87,7 @@ export const getBlob: Fetcher = async (url, options = {}) => {
   return error;
 };
 
-export const postRequest = <T>(url: string, options: RequestInit = {}) =>
+export const postRequest = <T>(url: string, options: RequestOptions = {}) =>
   getRequest<T>(
     url,
     merge(
@@ -96,7 +99,7 @@ export const postRequest = <T>(url: string, options: RequestInit = {}) =>
     )
   );
 
-export const putRequest = <T>(url: string, options: RequestInit = {}) =>
+export const putRequest = <T>(url: string, options: RequestOptions = {}) =>
   getRequest<T>(
     url,
     merge(
@@ -108,7 +111,7 @@ export const putRequest = <T>(url: string, options: RequestInit = {}) =>
     )
   );
 
-export const deleteRequest = <T>(url: string, options: RequestInit = {}) =>
+export const deleteRequest = <T>(url: string, options: RequestOptions = {}) =>
   getRequest<T>(
     url,
     merge(
@@ -132,7 +135,7 @@ export const useGets = <T>(key: Key[], config: SWRConfiguration = {}) =>
     ...config
   });
 
-export const useMutation = <T, T1>(key: Key, options: RequestInit, config?: SWRConfiguration) => {
+export const useMutation = <T, T1>(key: Key, options: RequestOptions, config?: SWRConfiguration) => {
   return useSWRMutation<T, ErrorHttp, Key, T1>(
     key,
     (u: Key, { arg } = {}, o: RequestInit) => {

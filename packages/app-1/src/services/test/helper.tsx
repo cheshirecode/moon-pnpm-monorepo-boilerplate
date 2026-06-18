@@ -1,5 +1,4 @@
 // @ts-nocheck
-/* eslint-disable import/export */
 import { act, cleanup, render, waitFor } from '@testing-library/react';
 import { Fragment } from 'react';
 import { SWRConfig } from 'swr';

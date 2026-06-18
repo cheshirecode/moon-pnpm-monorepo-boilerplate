@@ -20,7 +20,6 @@ export const newPerson = (): Person => {
 
 export function makeData(...lens: number[]) {
   const makeDataLevel = (depth = 0): Person[] => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const len = lens[depth]!;
     return Array(len)
       .fill(0)

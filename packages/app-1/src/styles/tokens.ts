@@ -1,5 +1,4 @@
 // @ts-ignore
-// eslint-disable-next-line import/no-unresolved
 import { splitAlphanumeric } from '../utils';
 import { colors as baseUnoCssColors } from './colors';
 

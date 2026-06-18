@@ -22,7 +22,6 @@ export default function createUrlSearchParams(
 
   Object.assign(q, {
     setBulk: function (params: Record<string, string>, isAppend = false) {
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
       const t = this as CURLSearchParams;
       Object.keys(isPlainObject(params) ? params : {}).forEach((k) =>
         t[isAppend ? 'append' : 'set'](k, params[k])
@@ -42,7 +41,6 @@ export default function createUrlSearchParams(
       return Object.fromEntries([...(this as CURLSearchParams).entries()]);
     },
     toUnderscoredKeys: function () {
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
       const t = this as CURLSearchParams;
       const keysToDelete: string[] = [];
       const keys: Record<string, number> = {};
@@ -61,7 +59,6 @@ export default function createUrlSearchParams(
       return this;
     },
     toHyphenatedKeys: function () {
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
       const t = this as CURLSearchParams;
       const keysToDelete: string[] = [];
       const keys: Record<string, number> = {};

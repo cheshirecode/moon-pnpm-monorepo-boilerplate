@@ -1,0 +1,37 @@
+{
+  "name": "@fieryeagle/browser-clipboard",
+  "version": "0.0.0",
+  "description": "Browser clipboard helpers with textarea fallback",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "lint": "eslint . --fix"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@fieryeagle/eslint-config-react": "file:../eslint-config-react/",
+    "@vitest/coverage-v8": "^4.1.9",
+    "eslint": "^10.5.0",
+    "jsdom": "^29.1.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "license": "UNLICENSE"
+}

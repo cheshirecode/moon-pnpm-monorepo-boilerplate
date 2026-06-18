@@ -65,6 +65,11 @@ typings/
 # Output of 'npm pack'
 *.tgz
 
+# Root package manager lockfiles are intentionally not used; Rush owns
+# common/config/rush/pnpm-lock.yaml.
+/package-lock.json
+/pnpm-lock.yaml
+
 # Yarn Integrity file
 .yarn-integrity
 

@@ -24,6 +24,13 @@ jobs:
       package-name: eslint-config-react
       namespace: '@fieryeagle'
       lcov: true
+  browser-clipboard:
+    needs: [base]
+    uses: ./.github/workflows/base.yml
+    with:
+      package-name: browser-clipboard
+      namespace: '@fieryeagle'
+      lcov: true
   measure-hook:
     needs: [base]
     uses: ./.github/workflows/base.yml
@@ -39,16 +46,15 @@ jobs:
       namespace: '@fieryeagle'
       lcov: true
   finish:
-    needs: [app-1,eslint-config-react,measure-hook,pkce]
+    needs: [app-1,eslint-config-react,browser-clipboard,measure-hook,pkce]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [22.x]
     steps:
     - name: Coveralls Finished
       uses: coverallsapp/github-action@v2
-      with:
-        parallel-finished: true
-        carryforward: "app-1,eslint-config-react,measure-hook,pkce"
-    continue-on-error: true
+        with:
+          parallel-finished: true
+          carryforward: "app-1,eslint-config-react,browser-clipboard,measure-hook,pkce"

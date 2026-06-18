@@ -1,6 +1,6 @@
 import cx from "classnames";
 
-import createOnClickCopyToClipboard from "@/services/browser/createOnClickCopyToClipboard";
+import createOnClickCopyToClipboard from "@fieryeagle/browser-clipboard";
 
 import type { DetailsProps } from "./typings";
 
@@ -57,8 +57,9 @@ const Details = (props: DetailsProps) => {
                   "px-1",
                   "border border-transparent",
                   "color-primary truncate min-w-0",
-                  isFieldCopyPossible &&
-                    "cursor-copy border border-solid @hover:border-black ",
+                  isFieldCopyPossible
+                    ? "cursor-copy border border-solid @hover:border-black "
+                    : undefined,
                   fieldClassName,
                 )}
                 {...(isFieldCopyPossible

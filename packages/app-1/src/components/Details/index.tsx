@@ -4,7 +4,7 @@ import { isEmpty, isFunction, isPlainObject, isString, mergeWith } from 'lodash-
 import { Fragment, useState } from 'react';
 
 import Card from '@/components/Card';
-import createOnClickCopyToClipboard from '@/services/browser/createOnClickCopyToClipboard';
+import createOnClickCopyToClipboard from '@fieryeagle/browser-clipboard';
 import { isEmptyObject } from '@/utils';
 
 import type { DetailsMetadata, DetailsProps } from './typings';

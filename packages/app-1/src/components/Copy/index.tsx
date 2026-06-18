@@ -2,7 +2,7 @@ import cx from 'classnames';
 import stringify from 'fast-json-stable-stringify';
 import { isString } from 'lodash-es';
 
-import createOnClickCopyToClipboard from '@/services/browser/createOnClickCopyToClipboard';
+import createOnClickCopyToClipboard from '@fieryeagle/browser-clipboard';
 
 const Copy = ({ data, className, children, ...rest }: BaseProps & { data: unknown }) => (
   <button

@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "composite": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "noEmit": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "downlevelIteration": true,

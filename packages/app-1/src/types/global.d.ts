@@ -22,5 +22,3 @@ declare global {
 
   export type FetchResponse<R, E> = [R | undefined, Promise<E> | undefined];
 }
-
-declare module '@fieryeagle/eslint-config-react';

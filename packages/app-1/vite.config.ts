@@ -1,7 +1,6 @@
 /// <reference types="vitest" />
 import Unocss from '@unocss/vite';
 import react from '@vitejs/plugin-react';
-import browserslistToEsbuild from 'browserslist-to-esbuild';
 import { defineConfig } from 'vite';
 import vitePluginImportus from 'vite-plugin-importus';
 import { configDefaults } from 'vitest/config';
@@ -84,7 +83,7 @@ export default defineConfig((config) => ({
     },
     // speed up build during pipelines
     reportCompressedSize: !isCI,
-    target: browserslistToEsbuild()
+    target: 'es2022'
   },
   optimizeDeps: {
     // disabled: false,

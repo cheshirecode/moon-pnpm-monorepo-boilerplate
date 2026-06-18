@@ -173,8 +173,7 @@
       "description": "Iterates through each package in the monorepo and runs the 'build' script",
       "enableParallelism": true,
       "ignoreMissingScript": true,
-      "ignoreDependencyOrder": true,
-      "allowWarningsInSuccessfulBuild": true
+      "ignoreDependencyOrder": false
     },
     {
       "name": "test",
@@ -183,8 +182,7 @@
       "description": "Iterates through each package in the monorepo and runs the 'test' script",
       "enableParallelism": true,
       "ignoreMissingScript": true,
-      "ignoreDependencyOrder": true,
-      "allowWarningsInSuccessfulBuild": true
+      "ignoreDependencyOrder": true
     },
     {
       "name": "lint",
@@ -193,8 +191,7 @@
       "description": "Iterates through each package in the monorepo and runs the 'lint' script",
       "enableParallelism": true,
       "ignoreMissingScript": true,
-      "ignoreDependencyOrder": true,
-      "allowWarningsInSuccessfulBuild": true
+      "ignoreDependencyOrder": true
     },
     {
       "name": "format",
@@ -203,8 +200,7 @@
       "description": "Iterates through each package in the monorepo and runs the 'format' script",
       "enableParallelism": true,
       "ignoreMissingScript": true,
-      "ignoreDependencyOrder": true,
-      "allowWarningsInSuccessfulBuild": true
+      "ignoreDependencyOrder": true
     }
   ],
 

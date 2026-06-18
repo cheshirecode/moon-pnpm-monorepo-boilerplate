@@ -1,4 +1,3 @@
-/* eslint-disable import/no-named-as-default-member */
 import cx from "classnames";
 
 import loginImg from "@/assets/login.svg"; // https://undraw.co/illustrations

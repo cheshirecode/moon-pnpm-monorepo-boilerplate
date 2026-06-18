@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/rush/v5/pnpm-config.schema.json",
+  "useWorkspaces": true,
+  "globalAllowBuilds": {
+    "@parcel/watcher": false,
+    "@swc/core": true,
+    "core-js": true,
+    "core-js-pure": true,
+    "esbuild": true,
+    "fsevents": false
+  }
+}
