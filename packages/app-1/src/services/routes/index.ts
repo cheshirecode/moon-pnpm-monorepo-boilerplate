@@ -1,8 +1,9 @@
 import { parse as parsePattern } from 'regexparam';
 import { matchRoute, useLocation } from 'wouter';
-import type { LocationHook } from 'wouter';
 
 import createUrlSearchParams from './createUrlSearchParams';
+
+type LocationSetter = ReturnType<typeof useLocation>[1];
 
 // fn just in case of later dynamism
 export const getBaseUrl = (endpoint = '') =>
@@ -14,12 +15,9 @@ export const getBaseUrl = (endpoint = '') =>
  * @param options base wouter options for routing
  * @returns
  */
-export const useQueryString = (
-  options: Parameters<LocationHook>[0],
-  locationHref = location.href
-) => {
+export const useQueryString = (_options?: unknown, locationHref = location.href) => {
   const { pathname, search } = new URL(locationHref);
-  const [_location, setLocation] = useLocation(options);
+  const [_location, setLocation] = useLocation();
   return [pathname + search, setLocation];
 };
 
@@ -29,10 +27,7 @@ export const useQueryString = (
  * @param options base wouter options for routing
  * @returns
  */
-export const useTitleUpdate = (
-  options: Parameters<LocationHook>[0],
-  locationHref = location.href
-) => {
+export const useTitleUpdate = (_options?: unknown, locationHref = location.href) => {
   const { pathname } = new URL(locationHref);
   if (document) {
     document.title = pathname
@@ -41,7 +36,7 @@ export const useTitleUpdate = (
       .map((x) => x.slice(0, 1).toLocaleUpperCase() + x.slice(1))
       .join(' ');
   }
-  return useQueryString(options);
+  return useQueryString(_options, locationHref);
 };
 
 export const multipathMatcher = (patterns: string | string[], path: string) => {
@@ -84,7 +79,7 @@ const matchLegacyWildcardRoute = (pattern: string, path: string) => {
   return [true, Object.fromEntries(names.map((name, i) => [name, match[i + 1]]))] as const;
 };
 
-const useLocationSetter = (locationHref: string, setter?: ReturnType<LocationHook>[1]) => {
+const useLocationSetter = (locationHref: string, setter?: LocationSetter) => {
   // stuck with 2.9.0 until https://github.com/molefrog/wouter/issues/286 is resolved
   const [location, setLocation] = useLocation();
   const finalLocationHref = locationHref ?? location;
@@ -108,7 +103,7 @@ export const queryString = {
     return url;
   },
 
-  useSetQsParam(locationHref = location.href, setter: ReturnType<LocationHook>[1]) {
+  useSetQsParam(locationHref = location.href, setter?: LocationSetter) {
     const { setter: finalSetter, url } = useLocationSetter(locationHref, setter);
     const { search } = url;
     return (k: string, v: string | number) => {
@@ -118,7 +113,7 @@ export const queryString = {
     };
   },
 
-  useSetQsParams(locationHref = location.href, setter: ReturnType<LocationHook>[1]) {
+  useSetQsParams(locationHref = location.href, setter?: LocationSetter) {
     const { setter: finalSetter, url } = useLocationSetter(locationHref, setter);
     const { search } = url;
     return (params: Record<string, string | number>) => {
@@ -128,7 +123,7 @@ export const queryString = {
     };
   },
 
-  useSetQs(locationHref = location.href, setter?: ReturnType<LocationHook>[1]) {
+  useSetQs(locationHref = location.href, setter?: LocationSetter) {
     const { setter: finalSetter, url } = useLocationSetter(locationHref, setter);
     const { search } = url;
 

@@ -2,19 +2,24 @@
 import styled from '@emotion/styled';
 import cx from 'classnames';
 import { isFunction, isUndefined, noop, throttle } from 'lodash-es';
-import type { ChangeEvent, MouseEvent, RefObject } from 'react';
+import type { ChangeEvent, ComponentType, KeyboardEvent, MouseEvent, RefObject } from 'react';
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Props } from 'react-select';
 
 import Spinner from '@/components/Spinner';
-import { isDev } from '@/services/env';
 import useClickOutside from '@/services/hooks/useClickOutside';
 
-const LazySelect = lazy(() => import('react-select'));
+type SearchOption = {
+  name: string;
+  value: string;
+  disabled?: boolean;
+};
 
-const isDevMode = isDev();
+const LazySelect = lazy(() => import('react-select')) as ComponentType<Props<SearchOption, false>>;
 
-const Select = (props: Props) => (
+const isDevMode = import.meta.env.DEV;
+
+const Select = (props: Props<SearchOption, false>) => (
   <Suspense fallback={<Spinner />}>
     <LazySelect {...props} />
   </Suspense>
@@ -41,14 +46,11 @@ export type SearchBarProps = BaseProps & {
   }[];
   onAutoCompleteItemClicked?: (v: string) => void;
   selectedOptionValue?: string;
-  options?: {
-    name: string;
-    value: string;
-  }[];
+  options?: SearchOption[];
   onOptionChange?: (v: string) => void;
   containerClassName?: string;
   focus?: boolean;
-  inputRef?: RefObject<HTMLInputElement>;
+  inputRef?: RefObject<HTMLInputElement | null>;
   /**
    * if true, use react-select instead of native <select>
    */
@@ -77,8 +79,8 @@ const SearchBar = ({
   focus = false,
   inputRef,
   selectedOptionValue,
-  options,
-  onOptionChange,
+  options = [],
+  onOptionChange = noop,
   customSelect = false,
   compact = false,
   ...props
@@ -106,13 +108,16 @@ const SearchBar = ({
     setAutoComplete(false);
   });
 
-  const onAutoCompleteItemClicked = useMemo<(e: MouseEvent<HTMLElement>) => void>(
+  const onAutoCompleteItemClicked = useMemo<
+    (e: KeyboardEvent<HTMLElement> | MouseEvent<HTMLElement>) => void
+  >(
     () => (e) => {
       const tmp = e.currentTarget?.dataset?.value;
-      if ((!e?.key || e?.key === 'Enter') && tmp) {
+      const key = 'key' in e ? e.key : undefined;
+      if ((!key || key === 'Enter') && tmp) {
         _onAutoCompleteItemClicked(tmp);
       }
-      if (!e?.key || e?.key === 'Escape') {
+      if (!key || key === 'Escape') {
         setAutoComplete(false);
       }
     },
@@ -122,24 +127,37 @@ const SearchBar = ({
   const [autoComplete, setAutoComplete] = useState(false);
   const showAutoComplete = useCallback(() => setAutoComplete(true), []);
   const isShowingAutoComplete = useMemo(
-    () => autoComplete && autoCompleteItems?.length > 0,
-    [autoCompleteItems?.length, autoComplete]
+    () => autoComplete && autoCompleteItems.length > 0,
+    [autoCompleteItems.length, autoComplete]
   );
 
-  const onClick = (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const submitSearch = () => {
     if (isFunction(submit)) {
       submit(value);
     }
   };
+
+  const onClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    submitSearch();
+  };
+
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const v = e.currentTarget?.value;
-    if (e?.key === 'Escape') {
+    if (!isUndefined(v)) {
+      setAutoComplete(true);
+      updateValue(v);
+    }
+  };
+
+  const onKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Escape') {
       setAutoComplete(false);
     }
-    if (e?.key === 'Enter') {
-      onClick(e);
+    if (e.key === 'Enter') {
+      submitSearch();
     }
+    const v = e.currentTarget?.value;
     if (!isUndefined(v)) {
       setAutoComplete(true);
       updateValue(v);
@@ -147,7 +165,7 @@ const SearchBar = ({
   };
 
   const selectedOption = useMemo(() => {
-    const o = options?.find((x) => x.value === selectedOptionValue);
+    const o = options.find((x) => x.value === selectedOptionValue);
     return o
       ? {
           ...o,
@@ -173,8 +191,8 @@ const SearchBar = ({
         {...props}
       >
         {searchIcon && (
-          <span            
-            name="search"
+          <span
+            aria-hidden="true"
             className={cx(
               'h-full absolute z-3',
               compact ? 'left-2' : 'left-4',
@@ -183,7 +201,7 @@ const SearchBar = ({
             )}
           >🔎</span>
         )}
-        {options?.length > 0 && customSelect && (
+        {options.length > 0 && customSelect && (
           <AbsoluteSelect
             className={cx(
               'left-12 z-3 h-full w-32',
@@ -203,18 +221,21 @@ const SearchBar = ({
               option: () => 'uno-layer-o:(py-2 border-0 card-primary)'
             }}
             options={options.map(({ name, value, ...rest }) => ({
+              name,
               value,
               label: name,
               ...rest
             }))}
             value={selectedOption}
             onChange={(v) => {
-              onOptionChange(v?.value);
+              if (v) {
+                onOptionChange(v.value);
+              }
             }}
-            isOptionDisabled={(option) => option.disabled}
+            isOptionDisabled={(option) => !!option.disabled}
           />
         )}
-        {options?.length > 0 && !customSelect && (
+        {options.length > 0 && !customSelect && (
           <select
             className={cx(
               'absolute left-12 z-3',
@@ -249,15 +270,15 @@ const SearchBar = ({
             'z-2',
             'focus-visible:outline-none',
             searchIcon && 'pl-12',
-            !searchIcon && options?.length > 0 && (customSelect ? 'pl-34' : 'pl-26'),
-            searchIcon && options?.length > 0 && (customSelect ? 'pl-46' : 'pl-38'),
+            !searchIcon && options.length > 0 && (customSelect ? 'pl-34' : 'pl-26'),
+            searchIcon && options.length > 0 && (customSelect ? 'pl-46' : 'pl-38'),
             inputClassName
           )}
           placeholder={placeholder}
           aria-label="Search"
           aria-describedby="--poc-button-search"
           onChange={onChange}
-          onKeyUp={onChange}
+          onKeyUp={onKeyUp}
           value={value}
           onFocus={showAutoComplete}
           ref={inputRef}

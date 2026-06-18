@@ -57,10 +57,13 @@ const useList = <T>(
       arr.slice(0),
       arr[0]
         ? _sorting
-            ?.filter(({ id }) => arr[0] && arr[0][id] !== undefined)
+            ?.filter(({ id }) => {
+              const firstItem = arr[0] as Record<string, unknown>;
+              return firstItem[id] !== undefined;
+            })
             .map((f) => ({
               ...f,
-              _isNumber: isNumber(arr[0][f.id])
+              _isNumber: isNumber((arr[0] as Record<string, unknown>)[f.id])
             }))
         : _sorting
     ],
@@ -92,27 +95,34 @@ const useList = <T>(
       ?.reverse()
       ?.map(({ id, desc, _isNumber }) => {
         unsorted.sort((a, b) => {
+          const aRecord = a as Record<string, unknown>;
+          const bRecord = b as Record<string, unknown>;
           if (_isNumber) {
-            return desc ? b[id] - a[id] : a[id] - b[id];
+            return desc
+              ? Number(bRecord[id]) - Number(aRecord[id])
+              : Number(aRecord[id]) - Number(bRecord[id]);
           }
-          return String(desc ? b[id] : a[id]).localeCompare(desc ? a[id] : b[id]);
+          return String(desc ? bRecord[id] : aRecord[id]).localeCompare(
+            String(desc ? aRecord[id] : bRecord[id])
+          );
         });
       });
 
     return fn(unsorted, filterStr);
   }, [unsorted, sorting, filterStr, fn]);
 
+  const paginationOptions = paginationParams === false ? undefined : paginationParams;
   const pagination = usePagination({
-    ...(paginationParams ?? {}),
-    page: paginationParams?.page ?? 1,
-    pageSize: paginationParams === false ? filtered?.length ?? 0 : paginationParams?.pageSize,
+    ...(paginationOptions ?? {}),
+    page: paginationOptions?.page ?? 1,
+    pageSize: paginationParams === false ? filtered?.length ?? 0 : paginationOptions?.pageSize ?? false,
     count: filtered?.length ?? 0
   });
 
   const paginated = useMemo(
     () =>
       postProcess(
-        pagination.last + 1 - pagination.last === filtered.length
+        pagination.last + 1 - pagination.first === filtered.length
           ? filtered
           : filtered.slice(pagination.first, pagination.last + 1)
       ),

@@ -5,7 +5,7 @@ import useInitialEffect from '@/services/hooks/useInitialEffect';
 import useLocationHash from '@/services/hooks/useLocationHash';
 import { queryString } from '@/services/routes';
 
-import { SectionHookParams } from './typings';
+import type { SectionHookParams } from './typings';
 
 const useSections = ({
   items = [],
@@ -20,9 +20,10 @@ const useSections = ({
   // const [contentOffsetStyle, setContentOffsetStyle] = useState({});
   const ref = useRef<HTMLElement>(null);
   //scroll
-  const preRef = useRef<HTMLElement>(null);
-  const contentRef = useRef<HTMLElement>(null);
-  const bottomPaddingRef = useRef<HTMLElement>(null);
+  const preRef = useRef<HTMLDivElement>(null);
+  const preRefWide = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const bottomPaddingRef = useRef<HTMLDivElement>(null);
   const checkOnScroll = useMemo(
     () =>
       throttle(
@@ -42,7 +43,7 @@ const useSections = ({
               }
               classList[isScrollingPastPre ? 'add' : 'remove']('hidden');
               if (!alreadyHidden && isScrollingPastPre) {
-                ref.current.scrollTo({
+                ref.current?.scrollTo({
                   // very slightly below the fold to still maintain the offset logic (if hiding heading e.g.)
                   top: 1,
                   behavior: 'smooth'
@@ -56,12 +57,11 @@ const useSections = ({
           }
 
           if (bottomPaddingRef?.current?.style) {
+            const contentHeight = contentRef?.current?.clientHeight ?? 0;
+            const preHeight = preRef?.current?.clientHeight ?? 0;
             bottomPaddingRef.current.style.height =
-              contentRef?.current?.clientHeight + preRef?.current?.clientHeight <=
-              window?.innerHeight
-                ? `max(${window?.innerHeight - contentRef?.current?.clientHeight - 120}px, ${
-                    preRef?.current?.clientHeight
-                  }px)`
+              contentHeight + preHeight <= window.innerHeight
+                ? `max(${window.innerHeight - contentHeight - 120}px, ${preHeight}px)`
                 : `0px`;
           }
         },
@@ -113,6 +113,7 @@ const useSections = ({
   return {
     ref,
     preRef,
+    preRefWide,
     contentRef,
     bottomPaddingRef,
     checkOnScroll,

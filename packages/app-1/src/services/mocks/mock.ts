@@ -11,10 +11,10 @@ let i = 0;
 export const newPerson = (): Person => {
   return {
     id: ++i,
-    firstName: faker.name.firstName(),
-    lastName: faker.name.lastName(),
-    age: faker.datatype.number(60),
-    createdAt: faker.datatype.datetime({ max: new Date().getTime() })
+    firstName: faker.person.firstName(),
+    lastName: faker.person.lastName(),
+    age: faker.number.int({ max: 60 }),
+    createdAt: faker.date.past()
   };
 };
 

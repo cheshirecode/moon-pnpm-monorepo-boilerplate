@@ -1,9 +1,15 @@
 import type { Row } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import type { RefObject } from 'react';
 
-const useVirtualTable = <T>({ ref, rows }: { ref: RefObject<HTMLElement>; rows: Row<T>[] }) => {
+const useVirtualTable = <T>({
+  ref,
+  rows
+}: {
+  ref: RefObject<HTMLElement | null>;
+  rows: Row<T>[];
+}) => {
   const virtualizer = useVirtualizer({
-    parentRef: ref,
     getScrollElement: () => ref.current,
     count: rows.length,
     overscan: 10,

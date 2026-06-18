@@ -5,10 +5,11 @@ import { useMemo } from 'react';
 import Details from '@/components/Details';
 import Field from '@/components/Field';
 
+import type { DetailsData } from '@/components/Details/typings';
 import type { QueryStringFormProps } from './typings';
 import useQueryStringForm from './useQueryStringForm';
 
-const QueryStringForm = <T,>(props: QueryStringFormProps<T>) => {
+const QueryStringForm = <T extends DetailsData>(props: QueryStringFormProps<T>) => {
   const {
     className,
     onQsChange,
@@ -21,7 +22,8 @@ const QueryStringForm = <T,>(props: QueryStringFormProps<T>) => {
   const { createSetter } = useQueryStringForm(props);
 
   const finalMetadata = useMemo(() => {
-    const fieldRenderer = (v, { k }) => {
+    const fieldRenderer = (v: unknown, { k }: { k: string }) => {
+      const value = typeof v === 'number' || typeof v === 'string' ? v : String(v ?? '');
       const finalFieldProps = {
         saveOnBlur: true,
         noConfirmation: true,
@@ -29,9 +31,9 @@ const QueryStringForm = <T,>(props: QueryStringFormProps<T>) => {
         ...(onQsChange ? {} : { readOnly: true }),
         ...(isFunction(fieldPropsByKey) ? fieldPropsByKey(k) : {})
       };
-      return <Field idPrefix="-poc-qs-field-" name={k} value={v} {...finalFieldProps} />;
+      return <Field idPrefix="-poc-qs-field-" name={k} value={value} {...finalFieldProps} />;
     };
-    const baseMetadata: QueryStringFormProps<T>['metadata'] = {
+    const baseMetadata = {
       '*': {
         label: {
           className: 'uppercase h-9',
@@ -42,7 +44,7 @@ const QueryStringForm = <T,>(props: QueryStringFormProps<T>) => {
           render: fieldRenderer
         }
       }
-    };
+    } as QueryStringFormProps<T>['metadata'];
     return mergeWith(baseMetadata, metadata, (objValue, srcValue, key) => {
       if (key === 'className') {
         return cx(objValue, srcValue);

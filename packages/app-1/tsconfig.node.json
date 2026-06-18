@@ -5,7 +5,7 @@
     "noEmit": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "downlevelIteration": true,
+    "skipLibCheck": true,
     "types": [
       "vite/client",
       "node"

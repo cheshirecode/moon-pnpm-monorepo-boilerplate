@@ -1,9 +1,10 @@
-import type { KeyboardEvent, MouseEvent, RefObject } from 'react';
+import type { ChangeEvent, FocusEvent, KeyboardEvent, MouseEvent, RefObject } from 'react';
 
+export type FieldValue = string | number;
 export type FieldHookParams = {
-  value: string | number;
-  onChange?: (v: FieldProps['value']) => void | FieldProps['value'];
-  set?: (v: FieldProps['value']) => void | FieldProps['value'];
+  value: FieldValue;
+  onChange?: (v: FieldValue) => void | FieldValue;
+  set?: (v: FieldValue) => void | FieldValue;
   title?: string;
   readOnly?: boolean;
   saveOnBlur?: boolean;
@@ -18,12 +19,12 @@ export type FieldHookParams = {
   filterByValue?: boolean;
   edit?: boolean;
   idPrefix?: string;
-  onBlur: (v?: unknown) => void;
+  onBlur?: (v?: unknown) => void;
 };
 
 export type FieldHookResults = {
-  fieldRef: RefObject<HTMLDivElement>;
-  getFieldInput: () => HTMLElement | null | undefined;
+  fieldRef: RefObject<HTMLDivElement | null>;
+  getFieldInput: () => HTMLInputElement | null | undefined;
   v: FieldHookParams['value'];
   /**
    * intermediate (not yet final) value before confirmation (if saveOnBlue=false), will always trigger onChange
@@ -43,9 +44,9 @@ export type FieldHookResults = {
    */
   onAutoCompleteItemClicked: (e: MouseEvent<HTMLElement>) => void;
   isEditing: boolean;
-  onKeyUp: (e: KeyboardEvent<HTMLInputElement>) => void;
-  onFocus: (e: FocusEvent) => void;
-  onBlur: (e: FocusEvent) => void;
+  onKeyUp: (e: KeyboardEvent<HTMLElement>) => void;
+  onFocus: (e: FocusEvent<HTMLElement>) => void;
+  onBlur: (e: FocusEvent<HTMLElement>) => void;
 
   readOnlyProps: {
     onClick?: () => void;

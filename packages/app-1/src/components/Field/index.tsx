@@ -55,6 +55,7 @@ const Field = (props: FieldProps) => {
     'card-secondary',
     autoCompleteClassName
   );
+  const filteredItems = filteredAutoCompleteItems ?? [];
 
   return (
     <div
@@ -105,7 +106,7 @@ const Field = (props: FieldProps) => {
       )}
       {isEditing && (
         <Fragment>
-          {filteredAutoCompleteItems?.length > 0 && (
+          {filteredItems.length > 0 && (
             <section
               className={cx(
                 fullAutoCompleteClassName,
@@ -113,8 +114,8 @@ const Field = (props: FieldProps) => {
                 'animate-duration-200 animate-fade-in'
               )}
             >
-              {filteredAutoCompleteItems.map(({ name, value }) => {
-                const splits = name.split(new RegExp(`(${escapeRegExp(v)})`, 'gi'));
+              {filteredItems.map(({ name, value }) => {
+                const splits = name.split(new RegExp(`(${escapeRegExp(String(v))})`, 'gi'));
                 return (
                   <button
                     key={name}
@@ -143,7 +144,7 @@ const Field = (props: FieldProps) => {
               })}
             </section>
           )}
-          {filteredAutoCompleteItems?.length === 0 && (
+          {filteredItems.length === 0 && (
             <section className={cx(fullAutoCompleteClassName, 'px-2')}>No items...</section>
           )}
         </Fragment>

@@ -24,7 +24,7 @@ export const CSS_CLASS = {
 const TimedContent = ({ className, timings, children }: TimeContentProps) => {
   const [c, setC] = useState(children);
   useEffect(() => {
-    const timers = [];
+    const timers: ReturnType<typeof setTimeout>[] = [];
     timings?.forEach(async ({ time, content, cb }) => {
       const comp = isNil(content) ? children : isFunction(content) ? content() : content;
       const t = await timeout(time, () => {

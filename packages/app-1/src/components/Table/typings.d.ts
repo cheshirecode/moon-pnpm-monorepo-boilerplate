@@ -11,9 +11,10 @@ import type {
   Table,
   TableOptions
 } from '@tanstack/react-table';
-import type { DispatchWithoutAction, ReactNode } from 'react';
+import type { CSSProperties, DispatchWithoutAction, ReactNode } from 'react';
 
 export type InternalTableProps<T> = Partial<TableOptions<T>> & Pick<TableOptions<T>, 'data'>;
+export type TableHookParams<T> = InternalTableProps<T>;
 
 export type ExtraInternalTableProps<T> = {
   headerRenderer?: (
@@ -55,6 +56,7 @@ export type TableProps<T> = BaseProps &
       cell?: (props: Cell<T, unknown>) => string;
     };
     tableClassName?: string;
+    style?: CSSProperties;
     defaultStyling?: boolean;
     setSorting?: OnChangeFn<SortingState>;
     /**

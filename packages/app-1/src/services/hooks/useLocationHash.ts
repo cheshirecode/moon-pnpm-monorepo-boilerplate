@@ -7,7 +7,7 @@ export default function useLocationHash() {
 
 const getSnapshot = () => window?.location?.hash;
 
-const subscribe = (callback) => {
+const subscribe = (callback: () => void) => {
   window?.addEventListener('hashchange', callback);
   return () => {
     window.removeEventListener('hashchange', callback);

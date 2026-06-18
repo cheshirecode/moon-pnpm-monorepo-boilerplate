@@ -100,7 +100,7 @@ const config: UserConfig = defineConfig({
             selector: (s) => `html ${s}`
           }
   ],
-  rules: [...gridRules],
+  rules: [...(gridRules ?? [])],
   shortcuts: [
     ...(gridShortcutArr as []),
     {
