@@ -4,3 +4,8 @@ stack: "frontend"
 tags:
   - "isomorphic"
   - "browser"
+
+tasks:
+  build:
+    outputs:
+      - "dist/**/*"

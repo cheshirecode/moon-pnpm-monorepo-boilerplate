@@ -5,3 +5,8 @@ tags:
   - "react"
   - "vite"
   - "isomorphic"
+
+tasks:
+  build:
+    outputs:
+      - "dist/**/*"
