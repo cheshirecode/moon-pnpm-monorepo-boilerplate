@@ -40,6 +40,8 @@ pnpm run publish-packages
 ```
 
 The matching `pnpm run ...` commands are thin aliases for the repo scripts.
+Dogfood commands write a machine-readable summary to
+`.artifacts/dogfood/report.json`.
 
 ## Development Flow
 
