@@ -46,7 +46,7 @@ export default defineConfig((config) => ({
     coverage: {
       exclude: [...coverageConfigDefaults.exclude, "site/**/*"],
       reporter: [
-        ["lcov", { projectRoot: "./src" }],
+        ["lcov"],
         ["json", { file: "coverage.json" }],
         ["text"],
         ["html", { subdir: "./html" }],

@@ -65,7 +65,7 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup
       - name: Coverage for ${{ matrix.package }}
-        run: pnpm --filter "./packages/${{ matrix.package }}" run coverage
+        run: pnpm moon run ${{ matrix.package }}:coverage
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2
         with:

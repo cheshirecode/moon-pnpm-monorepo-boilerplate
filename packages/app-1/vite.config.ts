@@ -109,7 +109,7 @@ export default defineConfig((config) => ({
     exclude: [...configDefaults.exclude, 'src/test/**/*'],
     coverage: {
       reporter: [
-        ['lcov', { projectRoot: './src' }],
+        ['lcov'],
         ['json', { file: 'coverage.json' }],
         ['text'],
         ['html', { subdir: './html' }]
