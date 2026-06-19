@@ -21,6 +21,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
+          fetch-depth: 0
           persist-credentials: false
       - name: Lint GitHub Actions workflows
         uses: suzuki-shunsuke/actionlint-action@v0.1.4
@@ -60,6 +61,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
+          fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/setup
       - name: Coverage for ${{ matrix.package }}
