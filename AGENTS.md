@@ -32,7 +32,21 @@ scripts/check.sh build
 scripts/check.sh test
 scripts/check.sh full
 scripts/check.sh pack
+scripts/check.sh dogfood packages
 ```
+
+End-to-end development flow:
+
+1. Make package-local edits and keep shared root tooling framework-neutral.
+2. Run the narrow package target while iterating, for example
+   `pnpm moon run pkce:test`.
+3. Before handoff, run `scripts/check.sh ci`.
+4. For package-facing changes, run `scripts/check.sh dogfood packages` so
+   packed tarballs are installed into a temporary external consumer.
+5. For release or publishing changes, run `scripts/check.sh dogfood all` so
+   package consumption and `npm publish --dry-run` both pass.
+6. For toolchain, Dockerfile, install, or workflow changes, finish with
+   `scripts/check.sh docker`.
 
 Agent quick verification path:
 
@@ -52,10 +66,17 @@ scripts/check.sh ci
 
 ```sh
 scripts/check.sh pack
+scripts/check.sh dogfood packages
+```
+
+4. Publishing workflow changes:
+
+```sh
+scripts/check.sh dogfood all
 ```
 
 GitHub adds workflow lint, `git diff --exit-code` after lint, the package
-coverage matrix, and Coveralls contexts.
+coverage matrix, package dogfood, and Coveralls contexts.
 
 Optional sandbox convenience:
 
@@ -106,7 +127,10 @@ pnpm moon ci :lint :typecheck :build :test
 
 - For package-facing changes, add a changeset with `pnpm changeset`.
 - `app-1` is private and ignored by Changesets.
-- `pnpm run pack` must succeed before release handoff.
+- `scripts/check.sh pack` and `scripts/check.sh dogfood packages` must succeed
+  before package-facing handoff.
+- For publishing workflow changes, `scripts/check.sh dogfood all` must succeed;
+  it runs `npm publish --dry-run` and must not publish real packages.
 - The GitHub `publish` workflow creates/updates the Changesets release PR and publishes only from `main`.
 
 ## Editing Rules

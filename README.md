@@ -31,6 +31,8 @@ scripts/check.sh build           # moon graph build across packages
 scripts/check.sh test            # moon graph tests + root smoke tests
 scripts/check.sh full            # full non-affected verification path
 scripts/check.sh coverage        # package coverage tasks
+scripts/check.sh dogfood packages # install packed tarballs in an external consumer
+scripts/check.sh dogfood all      # package dogfood + npm publish dry-run
 scripts/check.sh pack            # pack publishable packages into .artifacts/release
 pnpm changeset           # record a release change
 pnpm run version-packages
@@ -38,6 +40,27 @@ pnpm run publish-packages
 ```
 
 The matching `pnpm run ...` commands are thin aliases for the repo scripts.
+
+## Development Flow
+
+Use moon targets for tight loops, then move outward:
+
+```sh
+pnpm moon run pkce:test
+scripts/check.sh ci
+scripts/check.sh dogfood packages
+scripts/check.sh docker
+```
+
+For publishing workflow changes, use the release dogfood path before handoff:
+
+```sh
+scripts/check.sh dogfood all
+```
+
+CI runs workflow lint, the normal check path, external package dogfood,
+coverage, and Coveralls. The publish workflow runs package-consumption dogfood
+plus `npm publish --dry-run` before Changesets is allowed to publish.
 
 To verify the repo in a clean container, use the repo Dockerfile directly:
 
@@ -98,6 +121,7 @@ Read `AGENTS.md` first. The short version:
 - Use Node.js `>=24.11.0`; Node 24 is what CI and Docker verify.
 - Keep package-specific framework choices local to each package.
 - Validate ordinary changes with `pnpm run ci` before handoff.
-- For package-facing or release changes, also run `pnpm run pack`.
-- GitHub adds workflow lint, dirty-diff detection after lint, and package
-  coverage/Coveralls gates.
+- For package-facing changes, also run `scripts/check.sh dogfood packages`.
+- For publishing workflow changes, run `scripts/check.sh dogfood all`.
+- GitHub adds workflow lint, dirty-diff detection after lint, package dogfood,
+  and package coverage/Coveralls gates.

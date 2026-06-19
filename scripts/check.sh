@@ -15,7 +15,8 @@ Commands:
   build                 Run package builds through moon.
   test                  Run package tests through moon and root smoke tests.
   ci                    Run the local CI parity path.
-  full                  Run the full non-affected package verification path.
+  full                  Run the full non-affected package and dogfood path.
+  dogfood [MODE]        Dogfood packed packages in an external consumer.
   coverage              Run all package coverage targets through moon.
   coverage-package NAME Build workspace packages, then run coverage for one package.
   pack                  Pack publishable packages into .artifacts/release.
@@ -75,7 +76,10 @@ case "$command" in
     run pnpm -r --if-present build
     run pnpm -r --if-present test
     run pnpm exec vitest run
-    "$repo_root/scripts/check.sh" pack
+    "$repo_root/scripts/check.sh" dogfood packages
+    ;;
+  dogfood)
+    run node scripts/dogfood.mjs "${1:-packages}"
     ;;
   coverage)
     run pnpm exec moon run :coverage

@@ -31,8 +31,8 @@ jobs:
           registry-url: https://registry.npmjs.org
       - name: Validate workspace
         run: scripts/check.sh ci
-      - name: Pack publishable packages
-        run: scripts/check.sh pack
+      - name: Dogfood package publishability
+        run: scripts/check.sh dogfood all
       - name: Create or update release PR
         if: inputs.publish_to_npm && github.ref == 'refs/heads/main'
         uses: changesets/action@v1
