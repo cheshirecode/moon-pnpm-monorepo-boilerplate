@@ -1,0 +1,52 @@
+name: publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_to_npm:
+        description: "Publish packages to npm after validation"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: ${{ inputs.publish_to_npm }}
+      - uses: ./.github/actions/setup
+        with:
+          registry-url: https://registry.npmjs.org
+      - name: Validate workspace
+        run: |
+          pnpm run lint:fast
+          pnpm moon run :lint :typecheck :build :test
+          pnpm exec vitest run
+      - name: Pack publishable packages
+        run: pnpm run pack
+      - name: Create or update release PR
+        if: inputs.publish_to_npm && github.ref == 'refs/heads/main'
+        uses: changesets/action@v1
+        with:
+          version: pnpm run version-packages
+          publish: pnpm run publish-packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Explain skipped publish
+        if: inputs.publish_to_npm && github.ref != 'refs/heads/main'
+        run: |
+          echo "Publishing is only enabled from refs/heads/main."
+          exit 1

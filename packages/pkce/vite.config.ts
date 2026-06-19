@@ -34,13 +34,19 @@ export default defineConfig((config) => ({
   },
   test: {
     globals: true,
+    environment: "happy-dom",
+    environmentOptions: {
+      happyDOM: {
+        url: "https://localhost/",
+      },
+    },
     setupFiles: ["src/services/test/setup.ts"],
     include: ["**/*(*.)?{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
     exclude: [...configDefaults.exclude, "site/**/*"],
     coverage: {
       exclude: [...coverageConfigDefaults.exclude, "site/**/*"],
       reporter: [
-        ["lcov", { projectRoot: "./src" }],
+        ["lcov"],
         ["json", { file: "coverage.json" }],
         ["text"],
         ["html", { subdir: "./html" }],

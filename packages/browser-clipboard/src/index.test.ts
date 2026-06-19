@@ -21,6 +21,8 @@ const setDocumentMethod = <T extends (...args: never[]) => unknown>(
   return fn;
 };
 
+const clipboardlessNavigator = {} as Navigator;
+
 afterEach(() => {
   vi.restoreAllMocks();
   delete (navigator as Navigator & { clipboard?: Clipboard }).clipboard;
@@ -76,7 +78,9 @@ describe('copyToClipboard', () => {
       vi.fn().mockReturnValue(true)
     );
 
-    await expect(copyToClipboard('fallback copy')).resolves.toBe(true);
+    await expect(
+      copyToClipboard('fallback copy', { navigator: clipboardlessNavigator })
+    ).resolves.toBe(true);
 
     expect(queryCommandSupported).toHaveBeenCalledWith('copy');
     expect(execCommand).toHaveBeenCalledWith('copy');
@@ -86,7 +90,9 @@ describe('copyToClipboard', () => {
   it('returns false when neither clipboard path is supported', async () => {
     setDocumentMethod('queryCommandSupported', vi.fn().mockReturnValue(false));
 
-    await expect(copyToClipboard('copy me')).resolves.toBe(false);
+    await expect(
+      copyToClipboard('copy me', { navigator: clipboardlessNavigator })
+    ).resolves.toBe(false);
   });
 
   it('returns false and cleans up when textarea copy fails', async () => {
@@ -100,7 +106,9 @@ describe('copyToClipboard', () => {
       })
     );
 
-    await expect(copyToClipboard('copy me', { logError })).resolves.toBe(false);
+    await expect(
+      copyToClipboard('copy me', { logError, navigator: clipboardlessNavigator })
+    ).resolves.toBe(false);
 
     expect(logError).toHaveBeenCalledOnce();
     expect(document.querySelector('textarea')).toBeNull();

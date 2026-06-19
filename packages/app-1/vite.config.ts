@@ -103,13 +103,13 @@ export default defineConfig((config) => ({
   },
   test: {
     globals: true,
-    environment: 'jsdom',
+    environment: 'happy-dom',
     setupFiles: ['./src/services/test/setup.js'],
     include: ['**/*(*.)?{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: [...configDefaults.exclude, 'src/test/**/*'],
     coverage: {
       reporter: [
-        ['lcov', { projectRoot: './src' }],
+        ['lcov'],
         ['json', { file: 'coverage.json' }],
         ['text'],
         ['html', { subdir: './html' }]

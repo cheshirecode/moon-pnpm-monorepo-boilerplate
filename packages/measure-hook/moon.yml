@@ -1,0 +1,6 @@
+language: "javascript"
+layer: "library"
+stack: "frontend"
+tags:
+  - "isomorphic"
+  - "timing"

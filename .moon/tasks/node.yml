@@ -1,0 +1,85 @@
+implicitInputs:
+  - "package.json"
+
+fileGroups:
+  sources:
+    - "src/**/*"
+    - "lib/**/*"
+    - "index.{js,ts,mjs,cjs}"
+    - "*.{js,ts,mjs,cjs}"
+  tests:
+    - "**/*.test.{js,ts,jsx,tsx,mjs}"
+    - "**/*.stories.{js,ts,jsx,tsx,mjs}"
+    - "passes/**/*"
+    - "fails/**/*"
+  configs:
+    - "*.config.{js,cjs,mjs,ts}"
+    - "tsconfig*.json"
+    - "package.json"
+
+tasks:
+  lint:
+    command: "pnpm run --if-present lint"
+    inputs:
+      - "@group(sources)"
+      - "@group(tests)"
+      - "@group(configs)"
+    options:
+      cache: true
+      runInCI: "affected"
+
+  build:
+    command: "pnpm run --if-present build"
+    deps:
+      - target: "^:build"
+        optional: true
+        cacheStrategy: "outputs"
+    inputs:
+      - "@group(sources)"
+      - "@group(configs)"
+    options:
+      cache: true
+      runInCI: "affected"
+
+  test:
+    command: "pnpm run --if-present test"
+    deps:
+      - target: "^:build"
+        optional: true
+        cacheStrategy: "outputs"
+    inputs:
+      - "@group(sources)"
+      - "@group(tests)"
+      - "@group(configs)"
+    options:
+      cache: true
+      runInCI: "affected"
+
+  coverage:
+    command: "pnpm run --if-present coverage"
+    deps:
+      - target: "^:build"
+        optional: true
+        cacheStrategy: "outputs"
+    inputs:
+      - "@group(sources)"
+      - "@group(tests)"
+      - "@group(configs)"
+    outputs:
+      - "coverage/**/*"
+    options:
+      cache: false
+      runInCI: true
+
+  typecheck:
+    command: "pnpm run --if-present typecheck"
+    deps:
+      - target: "^:build"
+        optional: true
+        cacheStrategy: "outputs"
+    inputs:
+      - "@group(sources)"
+      - "@group(configs)"
+    options:
+      cache: true
+      runInCI: "affected"

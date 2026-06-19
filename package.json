@@ -1,27 +1,34 @@
 {
-  "name": "rush-monorepo-boilerplate",
+  "name": "moon-pnpm-monorepo-boilerplate",
   "private": true,
   "engines": {
-    "node": ">=22.13.0"
-  },
-  "resolutions": {
-    "@typescript-eslint/eslint-plugin": "^8.61.1",
-    "@typescript-eslint/parser": "^8.61.1",
-    "chokidar": "^5.0.0",
-    "esbuild": "^0.28.1",
-    "eslint": "^10.5.0",
-    "eslint-plugin-unused-imports": "^4.4.1",
-    "lodash-es": "^4.18.1",
-    "react": "^19.2.7",
-    "typescript": "^6.0.3",
-    "uuid": "^14.0.0"
+    "node": ">=24.11.0"
   },
   "devDependencies": {
     "eslint": "^10.5.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.9",
+    "@changesets/cli": "^2.31.0",
+    "@moonrepo/cli": "^2.3.4",
+    "oxlint": "^1.70.0"
   },
   "scripts": {
-    "test": "vitest run"
-  }
+    "setup": "pnpm install --frozen-lockfile",
+    "moon": "moon",
+    "lint:fast": "oxlint packages tests --ignore-path .gitignore --ignore-pattern '**/node_modules/**' --ignore-pattern 'packages/eslint-config-react/fails/**' --quiet",
+    "lint": "moon run :lint",
+    "typecheck": "moon run :typecheck",
+    "build": "moon run :build",
+    "test": "moon run :test && vitest run",
+    "coverage": "moon run :coverage",
+    "ci": "pnpm run lint:fast && moon ci :lint :typecheck :build :test && vitest run",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "pack": "node scripts/pack-publishable.mjs",
+    "publish-packages": "changeset publish"
+  },
+  "packageManager": "pnpm@11.8.0",
+  "workspaces": [
+    "packages/*"
+  ]
 }

@@ -1,5 +1,5 @@
 /**
- * @vitest-environment jsdom
+ * @vitest-environment happy-dom
  */
 
 import { renderHook, waitFor } from "@testing-library/react";
@@ -15,15 +15,16 @@ describe("useOnLoad", () => {
     });
   });
   it("can select subset of location", async () => {
+    history.pushState(null, "", "https://localhost/");
     const { result } = renderHook(() =>
       useOnLoad((l) => [(l as Location).href, (l as Location).search]),
     );
     await waitFor(() => {
-      expect(result.current).toEqual(["http://localhost/", ""]);
+      expect(result.current).toEqual(["https://localhost/", ""]);
     });
   });
   it("useAuthParams", async () => {
-    location.href = "https://localhost?state=1&code=2";
+    history.pushState(null, "", "https://localhost/?state=1&code=2");
     const { result } = renderHook(() => useAuthParams());
     await waitFor(() => {
       expect(result.current).toEqual(["1", "2"]);

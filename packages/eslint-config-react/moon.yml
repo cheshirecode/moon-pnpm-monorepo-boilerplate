@@ -1,0 +1,6 @@
+language: "javascript"
+layer: "configuration"
+stack: "frontend"
+tags:
+  - "eslint"
+  - "react"

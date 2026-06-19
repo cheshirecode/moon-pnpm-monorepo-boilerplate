@@ -65,10 +65,8 @@ typings/
 # Output of 'npm pack'
 *.tgz
 
-# Root package manager lockfiles are intentionally not used; Rush owns
-# common/config/rush/pnpm-lock.yaml.
+# npm lockfiles are not used; pnpm owns pnpm-lock.yaml.
 /package-lock.json
-/pnpm-lock.yaml
 
 # Yarn Integrity file
 .yarn-integrity
@@ -109,11 +107,10 @@ dist
 .tern-port
 docs/design
 
-# Rush temporary files
-common/deploy/
-common/temp/
-common/autoinstallers/*/.npmrc
-**/.rush/temp/
+# moon and release artifacts
+.moon/cache/
+.moon/docker/
+.artifacts/
 
 # Common toolchain intermediate files
 # lib

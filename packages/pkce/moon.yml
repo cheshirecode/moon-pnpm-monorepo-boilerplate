@@ -1,0 +1,12 @@
+language: "typescript"
+layer: "library"
+stack: "frontend"
+tags:
+  - "react"
+  - "vite"
+  - "isomorphic"
+
+tasks:
+  build:
+    outputs:
+      - "dist/**/*"

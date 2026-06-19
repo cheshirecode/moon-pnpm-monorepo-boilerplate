@@ -1,0 +1,27 @@
+packages:
+  - "packages/*"
+
+overrides:
+  "@typescript-eslint/eslint-plugin": "^8.61.1"
+  "@typescript-eslint/parser": "^8.61.1"
+  chokidar: "^5.0.0"
+  esbuild: "^0.28.1"
+  eslint: "^10.5.0"
+  eslint-plugin-unused-imports: "^4.4.1"
+  lodash-es: "^4.18.1"
+  react: "^19.2.7"
+  typescript: "^6.0.3"
+  uuid: "^14.0.0"
+
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+minimumReleaseAgeExclude:
+  - '@moonrepo/cli@2.3.4'
+  - '@moonrepo/core-linux-arm64-gnu@2.3.4'
+  - '@moonrepo/core-linux-arm64-musl@2.3.4'
+  - '@moonrepo/core-linux-x64-gnu@2.3.4'
+  - '@moonrepo/core-linux-x64-musl@2.3.4'
+  - '@moonrepo/core-macos-arm64@2.3.4'
+  - '@moonrepo/core-macos-x64@2.3.4'
+  - '@moonrepo/core-windows-x64-msvc@2.3.4'

@@ -1,12 +1,10 @@
 /**
- * @vitest-environment jsdom
+ * @vitest-environment happy-dom
  */
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import createFetchMock from "vitest-fetch-mock";
-
-import { getConfig as getAuthzConfig } from "@/services/authz";
 
 import App from "./App";
 
@@ -14,7 +12,7 @@ const fetchMocker = createFetchMock(vi);
 fetchMocker.enableMocks();
 
 beforeEach(() => {
-  location.href = "https://localhost";
+  history.pushState(null, "", "https://localhost");
   fetchMocker.resetMocks();
 });
 describe("main App", () => {
@@ -24,12 +22,16 @@ describe("main App", () => {
     const loginBtn = renderedApp.getByTestId("btn-login");
     expect(loginBtn).toBeTruthy();
     await user.click(loginBtn);
-    expect(location.href).toContain(getAuthzConfig().authz_uri);
+    const state = localStorage.getItem("pkce_state");
+    expect(state).toBeTruthy();
+    expect(document.cookie).toContain(`app.txs.${state}`);
   });
 
   it("on redirected URL with state and code", async () => {
     const code = "ygo9jssbmmvgokjwuqx5";
-    location.href = `https://localhost/?state=${localStorage.getItem("pkce_state")}&code=${code}`;
+    const state = "redirect-state";
+    localStorage.setItem("pkce_state", state);
+    history.pushState(null, "", `https://localhost/?state=${state}&code=${code}`);
     const renderedApp = render(<App />);
     const user = userEvent.setup();
 
