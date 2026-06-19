@@ -16,7 +16,7 @@ import { isEmptyObject } from '@/utils';
 
 import { TableCoreProps, TableProps } from './typings';
 
-const useBaseCell = (v: string | Date) =>
+const useBaseCell = (v: unknown) =>
   useMemo(() => {
     if ((v as Date)?.toLocaleString) {
       return (v as Date)?.toLocaleString();
@@ -94,11 +94,11 @@ const useTableCore = <T,>({
         // accessorKey: x,
         // header: x,
         header: function Header(props) {
-          return headerRenderer ? headerRenderer?.(props, x) : x;
+          return headerRenderer ? headerRenderer?.(props, x, x) : x;
         },
         cell: function Cell(props) {
           const v = props.getValue();
-          const cachedV = useBaseCell(v) ?? v;
+          const cachedV = useBaseCell(v);
           return cellRenderer ? cellRenderer?.(props, cachedV) : cachedV;
         }
       });

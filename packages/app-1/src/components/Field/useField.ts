@@ -1,4 +1,5 @@
 import { isFunction, isNil } from 'lodash-es';
+import type { FocusEvent } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import useClickOutside from '@/services/hooks/useClickOutside';
@@ -24,7 +25,7 @@ const useField = ({
   const fieldRef = useRef<HTMLDivElement>(null);
 
   const isValid = useCallback(
-    (v) =>
+    (v: FieldHookParams['value'] | undefined): v is FieldHookParams['value'] =>
       Array.isArray(autoCompleteItems)
         ? autoCompleteItems.findIndex((x) => x.value === v) >= 0
         : !isNil(v),
@@ -104,19 +105,20 @@ const useField = ({
           setInnerValue(value);
         }
         disableEditMode();
-      } else {
-        onChange(e);
+      } else if (e.currentTarget instanceof HTMLInputElement) {
+        setInnerValue(e.currentTarget.value);
       }
     };
     const saveOnBlur = _saveOnBlur;
-    const noConfirmation = _noConfirmation || autoCompleteItems?.length > 0;
+    const noConfirmation = _noConfirmation || (autoCompleteItems?.length ?? 0) > 0;
     return {
       setInnerValue,
       onChange,
       onAutoCompleteItemClicked,
       setValue,
       onKeyUp,
-      onBlur: (e: FocusEvent) => {
+      onFocus: enableEditMode,
+      onBlur: (e: FocusEvent<HTMLElement>) => {
         if (readOnly) {
           return;
         }

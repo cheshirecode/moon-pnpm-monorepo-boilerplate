@@ -1,4 +1,4 @@
-import type { DetailsProps } from '@/components/Details/typings';
+import type { DetailsData, DetailsProps } from '@/components/Details/typings';
 import type { FieldProps } from '@/components/Field/typings';
 
 export type QueryStringHookParams = {
@@ -9,9 +9,9 @@ export type QueryStringHookParams = {
   persistState?: boolean;
 };
 
-export type QueryStringFormProps<T> = BaseProps &
+export type QueryStringFormProps<T extends DetailsData = DetailsData> = BaseProps &
   DetailsProps<T> &
   QueryStringHookParams & {
-    fieldPropsByKey?: (k: string) => FieldProps;
+    fieldPropsByKey?: (k: string) => Partial<FieldProps>;
     bigText?: boolean;
   };

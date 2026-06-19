@@ -7,9 +7,9 @@ import {
 } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 
-import { ExtraInternalTableProps, TableHookParams } from './typings';
+import type { ExtraInternalTableProps, TableHookParams } from './typings';
 
-const useTable = <T>(params: TableHookParams, extra?: ExtraInternalTableProps<T>) => {
+const useTable = <T>(params: TableHookParams<T>, extra?: ExtraInternalTableProps<T>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const columnHelper = createColumnHelper<T>();
@@ -18,11 +18,12 @@ const useTable = <T>(params: TableHookParams, extra?: ExtraInternalTableProps<T>
   const { cellRenderer, createColumnDefs, skipNonPrimitiveColumns = true } = extra ?? {};
   const columns = useMemo<ColumnDef<T>[]>(() => {
     // for now, drop those non-primitive columns and rely on createColumnDefs
-    const keys = Object.keys(data[0] ?? {}).filter(
+    const firstRow = (data[0] ?? {}) as Record<string, unknown>;
+    const keys = Object.keys(firstRow).filter(
       (x) =>
         skipNonPrimitiveColumns &&
-        typeof data[0][x] !== 'function' &&
-        typeof data[0][x] !== 'object'
+        typeof firstRow[x] !== 'function' &&
+        typeof firstRow[x] !== 'object'
     );
     const baseColumns = keys.map((x) => {
       // @ts-expect-error

@@ -191,7 +191,6 @@ export const PlainTable = <T,>(props: TableProps<T> & TableCoreProps<T>) => {
                       )}
                     >
                       {header.isPlaceholder ? null : (
-                        // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                         <div
                           className={cx(
                             header.column.getCanSort() && 'cursor-pointer select-none',
@@ -214,11 +213,7 @@ export const PlainTable = <T,>(props: TableProps<T> & TableCoreProps<T>) => {
                               className="btn btn-compact btn-icon cursor-pointer"
                               title={header.column.getIsGrouped() ? 'Ungroup' : 'Group'}
                             >
-                              {header.column.getIsGrouped() ? (
-                                ˂˃
-                              ) : (
-                                ˃˂
-                              )}
+                              {header.column.getIsGrouped() ? '<>' : '><'}
                             </button>
                           ) : null}
                           {flexRender(header.column.columnDef.header, header.getContext())}
@@ -229,7 +224,6 @@ export const PlainTable = <T,>(props: TableProps<T> & TableCoreProps<T>) => {
                         </div>
                       )}
                       {enableColumnResizing && header.column.getCanResize() && (
-                        // eslint-disable-next-line jsx-a11y/no-static-element-interactions
                         <div
                           onMouseDown={header.getResizeHandler()}
                           onTouchStart={header.getResizeHandler()}

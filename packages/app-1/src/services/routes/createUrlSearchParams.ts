@@ -14,18 +14,18 @@ export interface CURLSearchParams extends URLSearchParams {
 }
 export default function createUrlSearchParams(
   search = '',
-  params: Record<string, string | number> = {}
+  params: unknown = {}
 ) {
   // coerce search to string or fall back to ''
   // @ts-ignore
   const q: CURLSearchParams = new URLSearchParams(search?.toString() ?? (search || ''));
 
   Object.assign(q, {
-    setBulk: function (params: Record<string, string>, isAppend = false) {
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
+    setBulk: function (params: unknown, isAppend = false) {
       const t = this as CURLSearchParams;
-      Object.keys(isPlainObject(params) ? params : {}).forEach((k) =>
-        t[isAppend ? 'append' : 'set'](k, params[k])
+      const paramsRecord = (isPlainObject(params) ? params : {}) as Record<string, unknown>;
+      Object.keys(paramsRecord).forEach((k) =>
+        t[isAppend ? 'append' : 'set'](k, String(paramsRecord[k] ?? ''))
       );
       return t;
     },
@@ -42,7 +42,6 @@ export default function createUrlSearchParams(
       return Object.fromEntries([...(this as CURLSearchParams).entries()]);
     },
     toUnderscoredKeys: function () {
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
       const t = this as CURLSearchParams;
       const keysToDelete: string[] = [];
       const keys: Record<string, number> = {};
@@ -61,7 +60,6 @@ export default function createUrlSearchParams(
       return this;
     },
     toHyphenatedKeys: function () {
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
       const t = this as CURLSearchParams;
       const keysToDelete: string[] = [];
       const keys: Record<string, number> = {};

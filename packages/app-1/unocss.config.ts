@@ -100,7 +100,7 @@ const config: UserConfig = defineConfig({
             selector: (s) => `html ${s}`
           }
   ],
-  rules: [...gridRules],
+  rules: [...(gridRules ?? [])],
   shortcuts: [
     ...(gridShortcutArr as []),
     {
@@ -179,12 +179,22 @@ const config: UserConfig = defineConfig({
       // border
       'border-cta': 'border-gray-200 dark:(border-gray-800)',
       'border-cta-blend': 'border-blue-600 dark:(border-blue-500)',
+      'border-cta-hover': 'border-blue-800 dark:(border-blue-300)',
       'border-primary': 'border-gray-200 dark:(border-gray-800)',
+      'border-primary-hover': 'border-gray-300 dark:(border-gray-700)',
       'border-secondary': 'border-gray-200 dark:(border-gray-800)',
+      'border-secondary-hover': 'border-gray-300 dark:(border-gray-700)',
       'border-tertiary': 'border-gray-300 dark:(border-gray-700)',
+      'border-tertiary-hover': 'border-gray-400 dark:(border-gray-600)',
       'border-warningAlt': 'border-orange-50 dark:(border-yellow-300)',
       'border-warning': 'border-yellow-300 dark:(border-yellow-300)',
-      'border-warning-hover': 'border-[#e7b816] dark:(border-[#f6ce3c])'
+      'border-warning-hover': 'border-[#e7b816] dark:(border-[#f6ce3c])',
+      'border-error': 'border-red-600 dark:(border-red-500)',
+      'border-error-hover': 'border-[#c51d10] dark:(border-[#fa6759])',
+      'border-information': 'border-blue-500 dark:(border-blue-600)',
+      'border-information-hover': 'border-[#5399f5] dark:(border-[#1660c9])',
+      'border-success': 'border-green-600 dark:(border-green-500)',
+      'border-success-hover': 'border-[#07714e] dark:(border-[#2cac70])'
     },
     [
       // @ts-ignore

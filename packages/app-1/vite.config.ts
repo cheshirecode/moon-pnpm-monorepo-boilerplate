@@ -1,7 +1,6 @@
 /// <reference types="vitest" />
 import Unocss from '@unocss/vite';
 import react from '@vitejs/plugin-react';
-import browserslistToEsbuild from 'browserslist-to-esbuild';
 import { defineConfig } from 'vite';
 import vitePluginImportus from 'vite-plugin-importus';
 import { configDefaults } from 'vitest/config';
@@ -12,27 +11,20 @@ import unocssConfig from './unocss.config';
 
 const isCI = !!process.env.CI;
 
-const vendorModules = ['react', 'faker', 'react-table', 'react-virtual', 'lodash'];
+const vendorModules = [
+  'react',
+  '@faker-js/faker',
+  '@tanstack/react-table',
+  '@tanstack/react-virtual',
+  'lodash'
+];
 
 // https://vitejs.dev/config/
 export default defineConfig((config) => ({
   plugins: [
     Unocss({}, unocssConfig),
     react({
-      jsxImportSource: '@emotion/react',
-      babel: {
-        plugins: []
-        // presets are not working right now, try again and install @babel/preset-env core-js@3.25.3
-        // presets: [
-        //   [
-        //     '@babel/preset-env',
-        //     {
-        //       useBuiltIns: 'usage',
-        //       corejs: { version: '3.25', proposals: true }
-        //     }
-        //   ]
-        // ]
-      }
+      jsxImportSource: '@emotion/react'
       // https://github.com/vitejs/awesome-vite#plugins
     }),
     ...(config.command === 'build'
@@ -65,14 +57,18 @@ export default defineConfig((config) => ({
       output: {
         manualChunks: (id, { getModuleInfo }) => {
           if (id.includes('node_modules')) {
-            const dependents = [];
+            const dependents: string[] = [];
             const m = vendorModules.find((x) => id.includes(`/${x}`)) ?? '';
-            const uniqueName = `vendor${m ? `-${m}` : ''}`;
+            const uniqueName = `vendor${m ? `-${m.replace(/[@/]/g, '-')}` : ''}`;
             // we use a Set here so we handle each module at most once. This
             // prevents infinite loops in case of circular dependencies
-            const idsToHandle = new Set(getModuleInfo(id).dynamicImporters);
+            const idsToHandle = new Set(getModuleInfo(id)?.dynamicImporters ?? []);
             for (const moduleId of idsToHandle) {
-              const { isEntry, dynamicImporters, importers } = getModuleInfo(moduleId);
+              const moduleInfo = getModuleInfo(moduleId);
+              if (!moduleInfo) {
+                continue;
+              }
+              const { isEntry, dynamicImporters, importers } = moduleInfo;
               if (isEntry || dynamicImporters.length > 0) dependents.push(moduleId);
               for (const importerId of importers) idsToHandle.add(importerId);
             }
@@ -84,7 +80,7 @@ export default defineConfig((config) => ({
     },
     // speed up build during pipelines
     reportCompressedSize: !isCI,
-    target: browserslistToEsbuild()
+    target: 'es2022'
   },
   optimizeDeps: {
     // disabled: false,

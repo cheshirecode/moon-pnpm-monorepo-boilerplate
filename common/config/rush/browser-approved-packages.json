@@ -23,8 +23,16 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "@eslint/js",
+      "allowedCategories": [ "tools" ]
+    },
+    {
       "name": "@faker-js/faker",
       "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "@fieryeagle/browser-clipboard",
+      "allowedCategories": [ "production", "tools" ]
     },
     {
       "name": "@fieryeagle/eslint-config-react",
@@ -83,6 +91,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "@storybook/react-vite",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@storybook/testing-library",
       "allowedCategories": [ "production" ]
     },
@@ -93,6 +105,10 @@
     {
       "name": "@tanstack/react-virtual",
       "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "@testing-library/dom",
+      "allowedCategories": [ "production", "tools" ]
     },
     {
       "name": "@testing-library/jest-dom",
@@ -144,7 +160,7 @@
     },
     {
       "name": "@vitejs/plugin-react",
-      "allowedCategories": [ "production" ]
+      "allowedCategories": [ "production", "tools" ]
     },
     {
       "name": "@vitejs/plugin-react-swc",
@@ -251,6 +267,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "globals",
+      "allowedCategories": [ "tools" ]
+    },
+    {
       "name": "isomorphic-unfetch",
       "allowedCategories": [ "production", "tools" ]
     },
@@ -295,7 +315,15 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "regexparam",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "sass",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "storybook",
       "allowedCategories": [ "production" ]
     },
     {
@@ -320,6 +348,10 @@
     },
     {
       "name": "typescript",
+      "allowedCategories": [ "production", "tools" ]
+    },
+    {
+      "name": "typescript-eslint",
       "allowedCategories": [ "tools" ]
     },
     {

@@ -36,10 +36,13 @@ const createNewParams: (
    * */
   const resolvedPageSize = ~~pageSize;
   const maxSize = Math.max(count, resolvedPageSize, DEFAULT_PAGINATION_THRESHOLD);
+  const intervalValues = [resolvedPageSize, Number(_pageSize), DEFAULT_PAGINATION_THRESHOLD].filter(
+    (x) => Number.isFinite(x) && x > 0
+  );
   const pageSizes = [
     ...new Set(
       getIntervals(
-        getIntervals([], maxSize).concat(resolvedPageSize, _pageSize, DEFAULT_PAGINATION_THRESHOLD),
+        getIntervals([], maxSize).concat(intervalValues),
         [DEFAULT_PAGINATION_THRESHOLD, maxSize],
         pageSizeCount
       )
@@ -87,19 +90,19 @@ const usePagination: (p: PaginationHookParams) => PaginationHookResults = (props
       page: initialPage,
       count,
       pageSize,
-      _pageSize: ~~pageSize,
+      _pageSize: Number(pageSize),
       pageSizeCount
     })
   );
   const prevPageSize = usePrevious(innerParams?.pageSize);
   const setParams = useCallback<PaginationHookResults['setParams']>(
-    (params: typeof innerParams) => {
+    (params) => {
       // need to re-create new params based on inputs thus onChange needs to be called inside
       setInnerParams((p) => {
         const newParams = createNewParams({
           ...p,
           ...params,
-          _pageSize: ~~prevPageSize,
+          _pageSize: Number(prevPageSize),
           pageSizeCount
         });
         // skip updates if no new chanages
@@ -131,7 +134,7 @@ const usePagination: (p: PaginationHookParams) => PaginationHookResults = (props
       onPageNumberClick: (e) => setParams({ page: Number(e.currentTarget.dataset.id) }),
       goTo,
       goToAttempt: (v: unknown) => {
-        const newV = pageNumbers.find((x) => x === ~~v) ?? pageNumbers[0];
+        const newV = pageNumbers.find((x) => x === Number(v)) ?? pageNumbers[0];
         goTo(newV);
         return newV;
       },

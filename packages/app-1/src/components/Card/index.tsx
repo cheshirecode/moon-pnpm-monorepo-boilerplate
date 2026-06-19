@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import cx from 'classnames';
-import type { FC } from 'react';
+import type { FC, ReactNode } from 'react';
 
 import { cardHoverClassnames, cardPalette } from '@/styles/palette';
 

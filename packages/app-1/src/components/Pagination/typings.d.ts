@@ -12,7 +12,7 @@ export type PaginationHookParams = {
   /**
    * provide number of items per page based on other params or can be passed in to override
    */
-  pageSize: number | boolean;
+  pageSize: number | false;
   /**
    * how many items in page size list
    */
@@ -20,12 +20,12 @@ export type PaginationHookParams = {
   /**
    * original page size
    */
-  _pageSize?: number | boolean;
+  _pageSize?: number | false;
   /**
    *
    * change callback(PAGINATION_PARAMS) whenever pagination happens
    */
-  onChange?: (params: Partial<PaginationHookParams>) => void;
+  onChange?: (params: PaginationParams) => void;
   /**
    * default - true. clicking next/prev will go over the range.
    */

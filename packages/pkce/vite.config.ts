@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
 import { resolve } from "path";
 
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 import UnoCSS from "unocss/vite";
 import { defineConfig } from "vite";
 import { configDefaults, coverageConfigDefaults } from "vitest/config";

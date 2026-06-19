@@ -6,7 +6,7 @@ on:
       namespace:
         required: false
         type: string
-        default: '@rush-monorepo-boilerplate'
+        default: ''
       package-name:
         required: false
         type: string
@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [22.x]
     steps:
       # Get code from repo
       - name: Checkout code
@@ -41,21 +41,32 @@ jobs:
       - uses: ./.github/actions/setup
       # Run rush install
       - name: Install dependencies
-        continue-on-error: true
         run: |
           node common/scripts/install-run-rush.js change -v
           node common/scripts/install-run-rush.js install
+      - name: Resolve Rush project
+        if: inputs.package-name != ''
+        id: rush-project
+        shell: bash
+        run: |
+          project="${{ inputs.package-name }}"
+          if [ -n "${{ inputs.namespace }}" ]; then
+            project="${{ inputs.namespace }}/${project}"
+          fi
+          echo "name=${project}" >> "$GITHUB_OUTPUT"
       # Run lint for this package
       - name: lint ${{ inputs.package-name }}
         if: inputs.package-name != ''
-        run: node common/scripts/install-run-rush.js lint --to ${{ inputs.namespace }}/${{ inputs.package-name }}
-        continue-on-error: true
+        run: node common/scripts/install-run-rush.js lint --to "${{ steps.rush-project.outputs.name }}"
       # Run unit tests for this package
+      - name: build dependency chain for ${{ inputs.package-name }}
+        if: inputs.package-name != '' && inputs.build
+        run: node common/scripts/install-run-rush.js build --to "${{ steps.rush-project.outputs.name }}"
       - name: test ${{ inputs.package-name }}
-        if: inputs.package-name != '' && inputs.lcov == ''
-        run: node common/scripts/install-run-rush.js test --to ${{ inputs.namespace }}/${{ inputs.package-name }}
+        if: inputs.package-name != '' && !inputs.lcov
+        run: node common/scripts/install-run-rush.js test --to "${{ steps.rush-project.outputs.name }}"
       - name: test:lcov ${{ inputs.package-name }}
-        if: inputs.lcov != ''
+        if: inputs.package-name != '' && inputs.lcov
         working-directory: ${{ inputs.package-path }}/${{ inputs.package-name }}
         run: |
           pwd
@@ -70,9 +81,8 @@ jobs:
           flag-name: ${{ inputs.package-name }}
           parallel: true
       - name: build ${{ inputs.package-name }}
-        if: ${{ inputs.build }}
+        if: inputs.package-name != '' && inputs.build
         working-directory: ${{ inputs.package-path }}/${{ inputs.package-name }}
         run: |
           pwd
           node $GITHUB_WORKSPACE/common/scripts/install-run-rushx.js build
-    continue-on-error: true

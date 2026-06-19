@@ -16,7 +16,6 @@ const Icon = (props: IconProps) => {
       setOutput(<img src={src.default} alt={name} {...rest} />);
     };
     fn();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props]);
   return output;
 };

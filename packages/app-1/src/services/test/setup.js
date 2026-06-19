@@ -20,6 +20,5 @@ if (typeof window !== 'undefined') {
 }
 
 global.FormData = function () {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   this.append = function () {};
 };

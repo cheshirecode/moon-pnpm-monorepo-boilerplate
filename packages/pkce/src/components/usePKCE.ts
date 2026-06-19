@@ -1,4 +1,3 @@
-/* eslint-disable import/no-named-as-default-member */
 import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
 import timezone from "dayjs/plugin/timezone";
@@ -188,7 +187,7 @@ const usePKCE = (baseParams = {} as PKCEParams) => {
   }, [isExchangeFlow, refreshAccessToken]);
   // 'auto-refresh token' mode - perform automagic refresh
   useEffect(() => {
-    let _t: NodeJS.Timeout;
+    let _t: ReturnType<typeof setInterval>;
     if (isExperimental && params.refreshToken) {
       const expiresAtDayjs = dayjs(params.expiresAt);
       // do a check every second to see if the expiry time is 10s away (or already passed)

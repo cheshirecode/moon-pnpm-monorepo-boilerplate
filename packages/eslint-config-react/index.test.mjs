@@ -1,25 +1,34 @@
 import { ESLint } from 'eslint';
-import tap from 'tap';
+import { describe, expect, it } from 'vitest';
 
 import config from './index.js';
 
+const fixtureConfig = config.map((entry) =>
+  entry.ignores
+    ? {
+        ...entry,
+        ignores: entry.ignores.filter((pattern) => pattern !== '**/fails/**')
+      }
+    : entry
+);
+
 const eslint = new ESLint({
-  baseConfig: config,
-  useEslintrc: false
+  overrideConfig: fixtureConfig,
+  overrideConfigFile: true
 });
 
-tap.test('eslint should pass', async (t) => {
-  const results = await eslint.lintFiles(['passes/**/*.ts*']);
-  results
-    .map((r) => [r.filePath, r.messages])
-    .forEach((x) => t.same(x[1], [], `${x[0]} without warnings/errors`));
-  t.end();
-});
+describe('@fieryeagle/eslint-config-react', () => {
+  it('accepts passing fixtures', async () => {
+    const results = await eslint.lintFiles(['passes/**/*.ts*']);
 
-tap.test('eslint should fail', async (t) => {
-  const results = await eslint.lintFiles(['fails/**/*.ts*']);
-  results
-    .map((r) => [r.filePath, r.messages])
-    .forEach((x) => t.not(x[1], [], `${x[0]} with some warnings/errors`));
-  t.end();
+    expect(
+      results.map((result) => [result.filePath, result.messages])
+    ).toEqual(results.map((result) => [result.filePath, []]));
+  });
+
+  it('reports failing fixtures', async () => {
+    const results = await eslint.lintFiles(['fails/**/*.ts*']);
+
+    expect(results.every((result) => result.messages.length > 0)).toBe(true);
+  });
 });

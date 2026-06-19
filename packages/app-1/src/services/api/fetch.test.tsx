@@ -19,14 +19,14 @@ let server: Server;
 const createMockedConsoleLog = () => {
   // eslint-disable-next-line no-console
   const x = console.log;
-  const loggerArgs: unknown[] = [];
+  const loggerArgs: unknown[][] = [];
   const mocked = vi.spyOn(global.console, 'log').mockImplementation((...args: unknown[]) => {
     loggerArgs.push(args);
     if (!(args[0] as string).includes(logger.stdoutMessagePrefix)) {
       x(...args);
     }
   });
-  return [mocked, loggerArgs];
+  return [mocked, loggerArgs] as const;
 };
 
 beforeAll(async () => {
@@ -205,9 +205,9 @@ describe('services/api/fetch', () => {
   // });
 
   it('validateResponse()', () => {
-    const c = (x) => Array.isArray(x);
+    const c = (x: unknown) => Array.isArray(x);
     let errorMessages = validateResponse([], null, c);
-    expect(errorMessages).toStrictEqual<Array>([]);
+    expect(errorMessages).toStrictEqual<unknown[]>([]);
 
     errorMessages = validateResponse<[]>({}, null, c, []);
     expect(errorMessages).toEqual(

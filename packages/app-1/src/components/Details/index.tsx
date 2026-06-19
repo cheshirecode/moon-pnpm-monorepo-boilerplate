@@ -4,21 +4,21 @@ import { isEmpty, isFunction, isPlainObject, isString, mergeWith } from 'lodash-
 import { Fragment, useState } from 'react';
 
 import Card from '@/components/Card';
-import createOnClickCopyToClipboard from '@/services/browser/createOnClickCopyToClipboard';
+import createOnClickCopyToClipboard from '@fieryeagle/browser-clipboard';
 import { isEmptyObject } from '@/utils';
 
-import type { DetailsMetadata, DetailsProps } from './typings';
+import type { DetailsData, DetailsMetadata, DetailsProps } from './typings';
 
 const StyledArticle = styled.article``;
-const Details = <T,>(props: DetailsProps<T>) => {
+const Details = <T extends DetailsData>(props: DetailsProps<T>) => {
   const {
     className,
     contentClassName,
     labelClassName,
     fieldClassName,
     fieldCopy,
-    data = {},
-    metadata = {},
+    data = {} as T,
+    metadata = {} as NonNullable<DetailsProps<T>['metadata']>,
     responsiveGrid = true,
     containerQueryGrid = false,
     oneFieldPerLine,
@@ -33,11 +33,13 @@ const Details = <T,>(props: DetailsProps<T>) => {
     ...rest
   } = props;
   const [opened, setOpened] = useState(_opened);
+  const hasHeading = Boolean(heading);
   if (!children && isEmptyObject(data)) {
     return null;
   }
   return (
     <Card
+      type="primary"
       className={cx(
         border && [
           'border',
@@ -49,7 +51,7 @@ const Details = <T,>(props: DetailsProps<T>) => {
         className
       )}
     >
-      {heading && (
+      {hasHeading && (
         <Card
           type="information"
           flex={false}
@@ -58,22 +60,27 @@ const Details = <T,>(props: DetailsProps<T>) => {
         >
           <span className="h-fit my-auto flex-1 flex items-center">{heading}</span>
           <span
-            name={opened ? 'arrow-drop-up' : 'arrow-drop-down'}
-            children={opened ? '^' : '⌄'}
+            aria-label={opened ? 'Collapse details' : 'Expand details'}
             className="my-auto ml-auto btn btn-compact btn-primary"
             onClick={() => setOpened((v) => !v)}
-            onKeyUp={(e) => e.key === 'Enter' && setOpened((v) => !v)}
+            onKeyUp={(e) => {
+              if (e.key === 'Enter') {
+                setOpened((v) => !v);
+              }
+            }}
             role="button"
             tabIndex={0}
-            size="sm"
-          />
+          >
+            {opened ? '^' : '⌄'}
+          </span>
         </Card>
       )}
       <StyledArticle
         className={cx(
-          heading && !opened && 'hidden',
-          (!heading || opened) && (responsiveGrid === true ? 'responsive-grid-kv' : responsiveGrid),
-          (!heading || opened) && containerQueryGrid && '@grid-kv',
+          hasHeading && !opened && 'hidden',
+          (!hasHeading || opened) &&
+            (responsiveGrid === true ? 'responsive-grid-kv' : responsiveGrid),
+          (!hasHeading || opened) && containerQueryGrid && '@grid-kv',
           padding && 'p-1',
           padding && responsiveGrid && 'gap-1',
           contentClassName
@@ -81,7 +88,7 @@ const Details = <T,>(props: DetailsProps<T>) => {
         {...rest}
       >
         {children ??
-          Object.keys(data).map((k) => {
+          (Object.keys(data) as (keyof T & string)[]).map((k) => {
             // resolution order - key > * > null
             const { label, field } = mergeWith(
               oneFieldPerLine
@@ -165,7 +172,7 @@ const Details = <T,>(props: DetailsProps<T>) => {
                   {...(displayValue ? { title: displayValue } : {})}
                   {...(isFieldCopyPossible
                     ? {
-                        onClick: createOnClickCopyToClipboard(displayValue, {
+                        onClick: createOnClickCopyToClipboard(displayValue ?? '', {
                           preventDefault: true
                         })
                       }

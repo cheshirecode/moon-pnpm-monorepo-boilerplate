@@ -58,14 +58,5 @@
     // "typescript": [
     //   "~2.4.0"
     // ]
-    "react": [
-      "latest"
-    ],
-    "@types/react": [
-      "latest"
-    ],
-    "isomorphic-unfetch": [
-      "^3"
-    ]
   }
 }
