@@ -32,7 +32,7 @@ jobs:
       - name: Validate workspace
         run: |
           pnpm run lint:fast
-          moon run :lint :typecheck :build :test
+          pnpm moon run :lint :typecheck :build :test
           pnpm exec vitest run
       - name: Pack publishable packages
         run: pnpm run pack

@@ -38,7 +38,7 @@ jobs:
       - name: Fast Rust lint
         run: pnpm run lint:fast
       - name: moon affected lint/typecheck/build/test
-        run: moon ci :lint :typecheck :build :test
+        run: pnpm moon ci :lint :typecheck :build :test
       - name: Root smoke tests
         run: pnpm exec vitest run
       - name: Verify lint did not rewrite files
@@ -63,7 +63,7 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup
       - name: Coverage for ${{ matrix.package }}
-        run: moon run "${{ matrix.package }}:coverage"
+        run: pnpm moon run "${{ matrix.package }}:coverage"
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2
         with:
