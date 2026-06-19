@@ -1,18 +1,11 @@
-import { JSDOM } from 'jsdom';
 import { describe, expect, it } from 'vitest';
 
 import createUrlSearchParams from './createUrlSearchParams';
 
-const jsdom = new JSDOM(``, {
-  url: `${location.href}foo?bar=1`
-});
-const _reconfigure = (url: string) =>
-  jsdom.reconfigure({
-    url
-  });
-
 describe('services/routes/createUrlSearchParams', () => {
   it('createUrlSearchParams', () => {
+    history.pushState(null, '', `${location.origin}/foo?bar=1`);
+
     expect(createUrlSearchParams()).toBeInstanceOf(URLSearchParams);
     expect(createUrlSearchParams('').toString()).toBe('');
     expect(createUrlSearchParams('', 'string').toString()).toBe('');

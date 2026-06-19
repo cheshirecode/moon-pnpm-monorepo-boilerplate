@@ -1,19 +1,11 @@
 import { renderHook, waitFor } from '@testing-library/react';
-// @ts-ignore
-import { JSDOM } from 'jsdom';
 import { describe, expect, it } from 'vitest';
 
 import { NoCacheWrapper } from '@/services/test/helper';
 
 import { multipathMatcher, queryString } from './';
 
-const jsdom = new JSDOM(``, {
-  url: `${location.href}foo?bar=1`
-});
-const fn = (url: string) =>
-  jsdom.reconfigure({
-    url
-  });
+const fn = (url: string) => history.pushState(null, '', url);
 
 describe('services/routes', () => {
   it('multipathMatcher', () => {
@@ -40,53 +32,55 @@ describe('services/routes', () => {
   });
 
   it('queryString', async () => {
-    expect(queryString.get('bar', jsdom.window.location.href), '?bar=1').toEqual('1');
+    history.pushState(null, '', `${location.origin}/foo?bar=1`);
+
+    expect(queryString.get('bar', location.href), '?bar=1').toEqual('1');
     expect(
-      queryString.createAppendedUrl('k=0', jsdom.window.location.href).searchParams.get('k'),
+      queryString.createAppendedUrl('k=0', location.href).searchParams.get('k'),
       '?bar=1&k=0'
     ).toEqual('0');
 
     const { result: setQsParam } = renderHook(
-      () => queryString.useSetQsParam(jsdom.window.location.href, fn),
+      () => queryString.useSetQsParam(location.href, fn),
       {
         wrapper: NoCacheWrapper
       }
     );
     setQsParam.current('bar', 2);
     await waitFor(() => {
-      expect(queryString.get('bar', jsdom.window.location.href), '?bar=2').toEqual('2');
+      expect(queryString.get('bar', location.href), '?bar=2').toEqual('2');
     });
 
     setQsParam.current('newVar', 1);
     await waitFor(() => {
-      expect(queryString.get('newVar', jsdom.window.location.href), '?newVar=1').toEqual('1');
+      expect(queryString.get('newVar', location.href), '?newVar=1').toEqual('1');
     });
 
     setQsParam.current('newVar', '');
     await waitFor(() => {
-      expect(queryString.get('newVar', jsdom.window.location.href), '?newVar=').toEqual('');
+      expect(queryString.get('newVar', location.href), '?newVar=').toEqual('');
     });
 
     const { result: setQsParams } = renderHook(
-      () => queryString.useSetQsParams(jsdom.window.location.href, fn),
+      () => queryString.useSetQsParams(location.href, fn),
       {
         wrapper: NoCacheWrapper
       }
     );
     setQsParams.current({ k: 0 });
     await waitFor(() => {
-      expect(queryString.get('k', jsdom.window.location.href), 'k=0').toEqual('0');
+      expect(queryString.get('k', location.href), 'k=0').toEqual('0');
     });
 
     const { result: useSetQs } = renderHook(
-      () => queryString.useSetQs(jsdom.window.location.href, fn),
+      () => queryString.useSetQs(location.href, fn),
       {
         wrapper: NoCacheWrapper
       }
     );
     useSetQs.current('?l=0');
     await waitFor(() => {
-      expect(queryString.get('l', jsdom.window.location.href), 'l=0').toEqual('0');
+      expect(queryString.get('l', location.href), 'l=0').toEqual('0');
     });
   });
 });

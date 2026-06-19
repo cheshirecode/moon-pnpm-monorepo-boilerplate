@@ -44,13 +44,18 @@ ensureStorage("sessionStorage");
 expect.extend(matchers);
 beforeEach(() => {
   vi.restoreAllMocks();
+  if (typeof window !== "undefined") {
+    (window as Window & { happyDOM?: { setURL(url: string): void } }).happyDOM?.setURL(
+      "https://localhost/",
+    );
+  }
   localStorage.clear();
   sessionStorage.clear();
 });
 afterEach(() => {
   cleanup();
 });
-// https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
+// Test DOM environments do not consistently provide this browser API.
 if (typeof window !== "undefined") {
   Object.defineProperty(window, "matchMedia", {
     writable: true,

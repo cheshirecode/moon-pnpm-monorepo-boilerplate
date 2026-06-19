@@ -34,9 +34,9 @@ export default defineConfig((config) => ({
   },
   test: {
     globals: true,
-    environment: "jsdom",
+    environment: "happy-dom",
     environmentOptions: {
-      jsdom: {
+      happyDOM: {
         url: "https://localhost/",
       },
     },

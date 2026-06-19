@@ -37,7 +37,7 @@ const ensureStorage = (target, name) => {
   });
 };
 
-// https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
+// Test DOM environments do not consistently provide these browser APIs.
 if (typeof window !== 'undefined') {
   ensureStorage(globalThis, 'localStorage');
   ensureStorage(globalThis, 'sessionStorage');

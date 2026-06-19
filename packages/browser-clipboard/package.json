@@ -26,7 +26,7 @@
     "@fieryeagle/eslint-config-react": "workspace:^",
     "@vitest/coverage-v8": "^4.1.9",
     "eslint": "^10.5.0",
-    "jsdom": "^29.1.1",
+    "happy-dom": "^20.10.6",
     "typescript": "^6.0.3",
     "vitest": "^4.1.9"
   },
