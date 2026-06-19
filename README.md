@@ -95,7 +95,9 @@ pnpm moon ci :lint :typecheck :build :test
 packages/
   app-1/                  React + Vite application
   browser-clipboard/      Browser/isomorphic clipboard helper
+  create-moon-pnpm-monorepo/ Clean monorepo generator for this tooling stack
   eslint-config-react/    Shared ESLint flat config package
+  flatten-workspace/      Workspace package-manifest flattening utility
   measure-hook/           Small timing helper package
   pkce/                   PKCE library + Vite demo
 ```

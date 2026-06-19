@@ -31,13 +31,13 @@ const QueryStringForm = <T extends DetailsData>(props: QueryStringFormProps<T>) 
         ...(onQsChange ? {} : { readOnly: true }),
         ...(isFunction(fieldPropsByKey) ? fieldPropsByKey(k) : {})
       };
-      return <Field idPrefix="-poc-qs-field-" name={k} value={value} {...finalFieldProps} />;
+      return <Field idPrefix="query-string-field-" name={k} value={value} {...finalFieldProps} />;
     };
     const baseMetadata = {
       '*': {
         label: {
           className: 'uppercase h-9',
-          renderAsLabel: '-poc-qs-field-'
+          renderAsLabel: 'query-string-field-'
         },
         field: {
           className: 'h-9',

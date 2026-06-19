@@ -1,0 +1,11 @@
+language: "typescript"
+layer: "library"
+stack: "frontend"
+tags:
+  - "isomorphic"
+  - "workspace"
+
+tasks:
+  build:
+    outputs:
+      - "dist/**/*"

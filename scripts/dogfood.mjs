@@ -154,12 +154,26 @@ function workspaceYaml(dependencies) {
 
 async function dogfoodRelease(packages) {
   for (const pkg of packages) {
+    if (await isAlreadyPublished(pkg)) {
+      console.log(`Skipping npm publish dry-run for ${pkg.name}@${pkg.version}; version already exists.`);
+      continue;
+    }
+
     const accessArgs = pkg.name.startsWith('@') ? ['--access', 'public'] : [];
     await run(
       'npm',
       ['publish', '--dry-run', '--ignore-scripts', ...accessArgs, pkg.tarball],
       root
     );
+  }
+}
+
+async function isAlreadyPublished(pkg) {
+  try {
+    await runQuiet('npm', ['view', `${pkg.name}@${pkg.version}`, 'version', '--json'], root);
+    return true;
+  } catch {
+    return false;
   }
 }
 
@@ -171,9 +185,16 @@ async function writeReport(report) {
 
 function consumerScript() {
   return `import assert from 'node:assert/strict';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
+import { mkdtemp } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 
 const require = createRequire(import.meta.url);
+const execFileAsync = promisify(execFile);
 
 const clipboard = await import('@fieryeagle/browser-clipboard');
 assert.equal(typeof clipboard.copyToClipboard, 'function');
@@ -212,6 +233,64 @@ assert.equal(typeof finish(), 'number');
 const eslintConfig = require('@fieryeagle/eslint-config-react');
 assert.equal(Array.isArray(eslintConfig), true);
 assert.ok(eslintConfig.length > 0);
+
+const flattenWorkspacePackage = await import('@cheshirecode/flatten-workspace');
+assert.equal(typeof flattenWorkspacePackage.flattenWorkspace, 'function');
+const workspaceDir = await mkdtemp(join(tmpdir(), 'flatten-workspace-dogfood-'));
+await mkdir(join(workspaceDir, 'packages', 'core'), { recursive: true });
+await mkdir(join(workspaceDir, 'packages', 'tools'), { recursive: true });
+await writeFile(join(workspaceDir, 'package.json'), JSON.stringify({
+  private: true,
+  workspaces: ['packages/*'],
+  keep: { value: true }
+}));
+await writeFile(join(workspaceDir, 'packages', 'core', 'package.json'), JSON.stringify({
+  dependencies: { vite: '^8.0.16' },
+  devDependencies: { vitest: '^4.1.9' }
+}));
+await writeFile(join(workspaceDir, 'packages', 'tools', 'package.json'), JSON.stringify({
+  dependencies: { oxlint: '^1.70.0', vite: '^8.0.15' }
+}));
+const flattened = await flattenWorkspacePackage.flattenWorkspace({
+  root: workspaceDir,
+  location: 'packages',
+  blacklist: ['oxlint'],
+  outFile: 'package.flattened.json'
+});
+assert.deepEqual(flattened, {
+  private: true,
+  keep: { value: true },
+  dependencies: { vite: '^8.0.15' },
+  devDependencies: { vitest: '^4.1.9' }
+});
+assert.deepEqual(JSON.parse(await readFile(join(workspaceDir, 'package.flattened.json'), 'utf8')), flattened);
+const { stdout } = await execFileAsync('pnpm', [
+  'exec',
+  'flatten-workspace',
+  '--root',
+  workspaceDir,
+  '--location',
+  'packages',
+  '--blacklist',
+  'oxlint'
+]);
+assert.deepEqual(JSON.parse(stdout), flattened);
+
+const bootstrapPackage = await import('@cheshirecode/create-moon-pnpm-monorepo');
+assert.equal(typeof bootstrapPackage.createMonorepo, 'function');
+const bootstrapParent = await mkdtemp(join(tmpdir(), 'moon-pnpm-bootstrap-dogfood-'));
+const bootstrapDir = join(bootstrapParent, 'generated-monorepo');
+const bootstrapResult = await bootstrapPackage.createMonorepo({
+  name: 'generated-monorepo',
+  directory: bootstrapDir
+});
+assert.equal(bootstrapResult.name, 'generated-monorepo');
+assert.ok(bootstrapResult.files.includes('packages/example-lib/src/index.ts'));
+await execFileAsync('corepack', ['enable'], { cwd: bootstrapDir });
+await execFileAsync('corepack', ['prepare', 'pnpm@11.8.0', '--activate'], { cwd: bootstrapDir });
+await execFileAsync('pnpm', ['install'], { cwd: bootstrapDir });
+await execFileAsync('scripts/check.sh', ['ci'], { cwd: bootstrapDir });
+await execFileAsync('scripts/check.sh', ['dogfood', 'all'], { cwd: bootstrapDir });
 
 console.log('External package consumption dogfood passed.');
 `;
@@ -258,6 +337,29 @@ function runCapture(command, args, cwd) {
     child.on('exit', (code) => {
       if (code === 0) {
         resolveRun(output);
+      } else {
+        reject(new Error(`${command} ${args.join(' ')} exited with ${code}`));
+      }
+    });
+  });
+}
+
+function runQuiet(command, args, cwd) {
+  return new Promise((resolveRun, reject) => {
+    const child = spawn(command, args, {
+      cwd,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      shell: false,
+      env: {
+        ...process.env,
+        COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
+      }
+    });
+
+    child.on('error', reject);
+    child.on('exit', (code) => {
+      if (code === 0) {
+        resolveRun();
       } else {
         reject(new Error(`${command} ${args.join(' ')} exited with ${code}`));
       }

@@ -276,7 +276,7 @@ const SearchBar = ({
           )}
           placeholder={placeholder}
           aria-label="Search"
-          aria-describedby="--poc-button-search"
+          aria-describedby="search-button-description"
           onChange={onChange}
           onKeyUp={onKeyUp}
           value={value}
@@ -293,7 +293,7 @@ const SearchBar = ({
               !roundedBorders && 'uno-layer-o:(rounded-none)',
               searchButtonClassName
             )}
-            id="--poc-button-search"
+            id="search-button-description"
             onClick={onClick}
           >
             {searchButtonText}
