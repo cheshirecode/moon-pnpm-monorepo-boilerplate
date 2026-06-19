@@ -44,7 +44,7 @@ const Field = (props: FieldProps) => {
     autoCompleteClassName,
     filterByValue: _f,
     noConfirmation: _n,
-    idPrefix = '--poc-field-',
+    idPrefix = 'field-',
     ...rest
   } = props;
 

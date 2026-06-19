@@ -54,7 +54,9 @@ jobs:
         package:
           - app-1
           - browser-clipboard
+          - create-moon-pnpm-monorepo
           - eslint-config-react
+          - flatten-workspace
           - measure-hook
           - pkce
     steps:
@@ -99,4 +101,4 @@ jobs:
         with:
           github-token: ${{ github.token }}
           parallel-finished: true
-          carryforward: "app-1,browser-clipboard,eslint-config-react,measure-hook,pkce"
+          carryforward: "app-1,browser-clipboard,create-moon-pnpm-monorepo,eslint-config-react,flatten-workspace,measure-hook,pkce"
