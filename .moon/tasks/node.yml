@@ -69,7 +69,7 @@ tasks:
       - "coverage/**/*"
     options:
       cache: false
-      runInCI: false
+      runInCI: true
 
   typecheck:
     command: "pnpm run --if-present typecheck"
