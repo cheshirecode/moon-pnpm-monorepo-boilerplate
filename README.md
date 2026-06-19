@@ -24,22 +24,25 @@ Node 24.
 ## Common Commands
 
 ```sh
-pnpm run lint:fast       # oxlint over packages and root tests
-pnpm run lint            # moon graph lint across packages
-pnpm run typecheck       # moon graph TypeScript checks
-pnpm run build           # moon graph build across packages
-pnpm run test            # moon graph tests + root smoke tests
-pnpm run coverage        # package coverage tasks
-pnpm run pack            # pack publishable packages into .artifacts/release
+scripts/check.sh lint-fast       # oxlint over packages and root tests
+scripts/check.sh lint            # moon graph lint across packages
+scripts/check.sh typecheck       # moon graph TypeScript checks
+scripts/check.sh build           # moon graph build across packages
+scripts/check.sh test            # moon graph tests + root smoke tests
+scripts/check.sh full            # full non-affected verification path
+scripts/check.sh coverage        # package coverage tasks
+scripts/check.sh pack            # pack publishable packages into .artifacts/release
 pnpm changeset           # record a release change
 pnpm run version-packages
 pnpm run publish-packages
 ```
 
+The matching `pnpm run ...` commands are thin aliases for the repo scripts.
+
 To verify the repo in a clean container, use the repo Dockerfile directly:
 
 ```sh
-docker build --progress=plain -t moon-pnpm-monorepo-boilerplate:verify .
+scripts/check.sh docker
 ```
 
 The `scripts/sandbox-verify.sh` wrapper is a nicer optional path for machines
@@ -89,7 +92,9 @@ The publish workflow validates install, lint, build, test, and tarball packaging
 Read `AGENTS.md` first. The short version:
 
 - Do not use Rush; it was intentionally removed.
-- Use `pnpm` and `moon` for all normal work.
+- Use `scripts/check.sh` for routine checks and operations; package scripts,
+  skills, and workflows are thin orchestrators for those scripts.
+- Use `pnpm` and `moon` underneath the scripts for normal package work.
 - Use Node.js `>=24.11.0`; Node 24 is what CI and Docker verify.
 - Keep package-specific framework choices local to each package.
 - Validate ordinary changes with `pnpm run ci` before handoff.

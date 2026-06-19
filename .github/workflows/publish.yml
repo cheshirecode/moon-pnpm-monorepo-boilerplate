@@ -30,12 +30,9 @@ jobs:
         with:
           registry-url: https://registry.npmjs.org
       - name: Validate workspace
-        run: |
-          pnpm run lint:fast
-          pnpm moon run :lint :typecheck :build :test
-          pnpm exec vitest run
+        run: scripts/check.sh ci
       - name: Pack publishable packages
-        run: pnpm run pack
+        run: scripts/check.sh pack
       - name: Create or update release PR
         if: inputs.publish_to_npm && github.ref == 'refs/heads/main'
         uses: changesets/action@v1
