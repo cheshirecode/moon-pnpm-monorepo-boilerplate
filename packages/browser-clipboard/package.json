@@ -19,11 +19,11 @@
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "lint": "eslint . --fix"
+    "lint": "oxlint src --ignore-path ../../.gitignore --quiet"
   },
   "dependencies": {},
   "devDependencies": {
-    "@fieryeagle/eslint-config-react": "file:../eslint-config-react/",
+    "@fieryeagle/eslint-config-react": "workspace:^",
     "@vitest/coverage-v8": "^4.1.9",
     "eslint": "^10.5.0",
     "jsdom": "^29.1.1",
@@ -31,7 +31,7 @@
     "vitest": "^4.1.9"
   },
   "engines": {
-    "node": ">=22.13.0"
+    "node": ">=24.11.0"
   },
   "license": "UNLICENSE"
 }

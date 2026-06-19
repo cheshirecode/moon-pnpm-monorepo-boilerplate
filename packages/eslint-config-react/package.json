@@ -8,16 +8,15 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cheshirecode/rush-monorepo-boilerplate.git/packages/eslint-config-react"
+    "url": "git+https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate.git/packages/eslint-config-react"
   },
   "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
   "license": "MIT",
   "scripts": {
-    "build": "",
     "test": "vitest run --config vitest.config.mjs",
     "coverage": "vitest run --coverage --config vitest.config.mjs",
     "format": "prettier --write index.js",
-    "lint": "eslint . --fix"
+    "lint": "oxlint . --ignore-path ../../.gitignore --ignore-pattern 'fails/**' --quiet"
   },
   "dependencies": {
     "@eslint/js": "^10.0.1",
@@ -35,8 +34,8 @@
     "vitest": "^4.1.9"
   },
   "bugs": {
-    "url": "https://github.com/cheshirecode/rush-monorepo-boilerplate/issues"
+    "url": "https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate/issues"
   },
-  "homepage": "https://github.com/cheshirecode/rush-monorepo-boilerplate/packages/eslint-config-react#readme",
+  "homepage": "https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate/packages/eslint-config-react#readme",
   "description": "common eslint + prettier config for React with workaround for its own dependencies"
 }

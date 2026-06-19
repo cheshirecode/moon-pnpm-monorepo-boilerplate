@@ -9,7 +9,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cheshirecode/rush-monorepo-boilerplate.git/packages/measure-hook"
+    "url": "git+https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate.git/packages/measure-hook"
   },
   "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
   "license": "UNLICENSE",
@@ -19,8 +19,8 @@
     "email": "dac4158+github@gmail.com"
   },
   "engines": {
-    "npm": ">= 7",
-    "node": ">=22.13.0"
+    "npm": ">=7",
+    "node": ">=24.11.0"
   },
   "files": [
     "!**/*.test.js",
@@ -29,9 +29,10 @@
   "bin": "index.js",
   "scripts": {
     "test": "vitest run",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "lint": "oxlint . --ignore-path ../../.gitignore --quiet"
   },
-  "prepublishOnly": "yarn test",
+  "prepublishOnly": "pnpm test",
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.9",
     "vite": "^8.0.16",

@@ -1,0 +1,9 @@
+projects:
+  - "packages/*"
+
+pipeline:
+  installDependencies: false
+
+vcs:
+  defaultBranch: "main"
+  provider: "github"

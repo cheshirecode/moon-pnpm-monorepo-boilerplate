@@ -23,63 +23,58 @@ jobs:
         with:
           persist-credentials: false
       - name: Lint GitHub Actions workflows
-        uses: rhysd/actionlint@v1
+        uses: suzuki-shunsuke/actionlint-action@v0.1.4
 
-  fast-lint:
+  checks:
+    needs: [workflow-lint]
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Fast Rust lint
+        run: pnpm run lint:fast
+      - name: moon affected lint/typecheck/build/test
+        run: moon ci :lint :typecheck :build :test
+      - name: Root smoke tests
+        run: pnpm exec vitest run
+      - name: Verify lint did not rewrite files
+        run: git diff --exit-code
+
+  coverage:
+    needs: [checks]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - app-1
+          - browser-clipboard
+          - eslint-config-react
+          - measure-hook
+          - pkce
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - name: Run Rust-based JavaScript lint
-        run: npm run lint:fast
+      - name: Coverage for ${{ matrix.package }}
+        run: moon run "${{ matrix.package }}:coverage"
+      - name: Coveralls GitHub Action
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ github.token }}
+          file: ${{ github.workspace }}/packages/${{ matrix.package }}/coverage/lcov.info
+          format: lcov
+          flag-name: ${{ matrix.package }}
+          parallel: true
 
-  base:
-    needs: [workflow-lint, fast-lint]
-    uses: ./.github/workflows/base.yml
-    with:
-      build: false
-      lcov: false
-      storybook: false
-  app-1:
-    needs: [base]
-    uses: ./.github/workflows/base.yml
-    with:
-      package-name: app-1
-      storybook: true
-      lcov: true
-  eslint-config-react:
-    needs: [base]
-    uses: ./.github/workflows/base.yml
-    with:
-      package-name: eslint-config-react
-      namespace: '@fieryeagle'
-      lcov: true
-  browser-clipboard:
-    needs: [base]
-    uses: ./.github/workflows/base.yml
-    with:
-      package-name: browser-clipboard
-      namespace: '@fieryeagle'
-      lcov: true
-  measure-hook:
-    needs: [base]
-    uses: ./.github/workflows/base.yml
-    with:
-      package-name: measure-hook
-      lcov: true
-      build: false
-  pkce:
-    needs: [base]
-    uses: ./.github/workflows/base.yml
-    with:
-      package-name: pkce
-      namespace: '@fieryeagle'
-      lcov: true
   finish:
-    needs: [app-1,eslint-config-react,browser-clipboard,measure-hook,pkce]
+    needs: [coverage]
     if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     steps:
@@ -88,4 +83,4 @@ jobs:
         with:
           github-token: ${{ github.token }}
           parallel-finished: true
-          carryforward: "app-1,eslint-config-react,browser-clipboard,measure-hook,pkce"
+          carryforward: "app-1,browser-clipboard,eslint-config-react,measure-hook,pkce"

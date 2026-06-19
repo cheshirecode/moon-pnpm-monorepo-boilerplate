@@ -4,7 +4,7 @@ import Spinner from '@/components/Spinner';
 const App: BaseFC = () => (
   <ErrorBoundary>
     <Spinner />
-    <h1>@rush-monorepo-boilerplate/app-1</h1>
+    <h1>@moon-pnpm-monorepo-boilerplate/app-1</h1>
   </ErrorBoundary>
 );
 

@@ -1,60 +1,36 @@
 name: setup
-description: 'Install Node.js and warm Rush-related caches'
+description: "Install Node.js, pnpm, dependencies, and warm moon caches"
 inputs:
   node-version:
     required: false
-    description: 'Node.js version to install'
-    default: '22.x'
+    description: "Node.js version to install"
+    default: "24.x"
   registry-url:
     required: false
-    description: 'npm registry URL for setup-node'
-    default: 'https://registry.npmjs.org'
-  skip-rush:
-    required: false
-    description: 'flag to specify rush usage'
-    default: 'false'
-  skip-pnpm:
-    required: false
-    description: 'flag to specify pnpm usage'
-    default: 'false'
+    description: "npm registry URL for setup-node"
+    default: "https://registry.npmjs.org"
 runs:
   using: "composite"
   steps:
-    # Install NodeJS
     - name: Use Node.js ${{ inputs.node-version }}
       uses: actions/setup-node@v6.4.0
       with:
         node-version: ${{ inputs.node-version }}
         registry-url: ${{ inputs.registry-url }}
-    - name: Get npm cache directory
+        cache: pnpm
+        cache-dependency-path: pnpm-lock.yaml
+    - name: Enable pnpm
       shell: bash
-      id: npm-cache-dir
       run: |
-        echo "dir=$(npm config get cache)" >> "$GITHUB_OUTPUT"
-    - name: Cache npm
+        corepack enable
+        corepack prepare pnpm@11.8.0 --activate
+    - name: Cache moon
       uses: actions/cache@v5.0.5
-      id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
       with:
-        path: ${{ steps.npm-cache-dir.outputs.dir }}
-        key: ${{ runner.os }}-${{ inputs.node-version }}-npm-${{ hashFiles('rush.json') }}
+        path: .moon/cache
+        key: ${{ runner.os }}-${{ inputs.node-version }}-moon-${{ github.sha }}
         restore-keys: |
-          ${{ runner.os }}-${{ inputs.node-version }}-npm-
-    - name: Cache Rush
-      uses: actions/cache@v5.0.5
-      if: inputs.skip-rush != 'true'
-      with:
-        path: |
-          common/temp/install-run
-          ~/.rush
-        key: ${{ runner.os }}-${{ inputs.node-version }}-rush-${{ hashFiles('rush.json') }}
-        restore-keys: |
-          ${{ runner.os }}-${{ inputs.node-version }}-rush-
-    - name: Cache pnpm
-      uses: actions/cache@v5.0.5
-      if: inputs.skip-pnpm != 'true'
-      with:
-        path: |
-          common/temp/pnpm-store
-        key: ${{ runner.os }}-${{ inputs.node-version }}-pnpm-${{ hashFiles('common/config/rush/pnpm-lock.yaml') }}
-        restore-keys: |
-          ${{ runner.os }}-${{ inputs.node-version }}-pnpm-
+          ${{ runner.os }}-${{ inputs.node-version }}-moon-
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile

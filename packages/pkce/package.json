@@ -6,7 +6,7 @@
     "dist"
   ],
   "engines": {
-    "node": ">=22.13.0"
+    "node": ">=24.11.0"
   },
   "main": "./dist/lib.umd.cjs",
   "module": "./dist/lib.js",
@@ -23,11 +23,11 @@
     "build:site": "SITE=1 vite build",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "lint": "node ../../common/scripts/install-run.js oxlint@1.70.0 oxlint src lib --ignore-path ../../.gitignore --quiet",
+    "lint": "oxlint src lib --ignore-path ../../.gitignore --quiet",
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@fieryeagle/eslint-config-react": "file:../eslint-config-react/",
+    "@fieryeagle/eslint-config-react": "workspace:^",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -48,12 +48,10 @@
     "unocss": "^66.7.2",
     "vite": "^8.0.16",
     "vitest": "^4.1.9",
-    "vitest-fetch-mock": "^0.4.5",
-    "vitest-localstorage-mock": "^0.1.2",
-    "vitest-location-mock": "^1.0.4"
+    "vitest-fetch-mock": "^0.4.5"
   },
   "dependencies": {
-    "@fieryeagle/browser-clipboard": "workspace:*",
+    "@fieryeagle/browser-clipboard": "workspace:^",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.11",
     "js-cookie": "^3.0.5"
