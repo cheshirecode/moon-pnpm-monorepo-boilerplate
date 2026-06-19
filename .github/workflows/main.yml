@@ -72,6 +72,7 @@ jobs:
           github-token: ${{ github.token }}
           file: ${{ github.workspace }}/packages/${{ matrix.package }}/coverage/lcov.info
           format: lcov
+          base-path: ${{ github.workspace }}/packages/${{ matrix.package }}
           flag-name: ${{ matrix.package }}
           parallel: true
 
