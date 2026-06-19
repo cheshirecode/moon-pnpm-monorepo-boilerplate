@@ -29,10 +29,4 @@ RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
 
 # Keep Docker focused on clean dependency/runtime isolation. Host and GitHub
 # Actions validate moon's task graph against the real checkout history.
-RUN pnpm run lint:fast \
-    && pnpm -r --if-present lint \
-    && pnpm -r --if-present typecheck \
-    && pnpm -r --if-present build \
-    && pnpm -r --if-present test \
-    && pnpm exec vitest run \
-    && pnpm run pack
+RUN scripts/check.sh full
