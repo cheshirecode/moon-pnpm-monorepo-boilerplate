@@ -1,10 +1,43 @@
-name: build snapshot
+name: ci
 
 on:
-  push:
   pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  workflow-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Lint GitHub Actions workflows
+        uses: rhysd/actionlint@v1
+
+  fast-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Run Rust-based JavaScript lint
+        run: npm run lint:fast
+
   base:
+    needs: [workflow-lint, fast-lint]
     uses: ./.github/workflows/base.yml
     with:
       build: false
@@ -47,14 +80,12 @@ jobs:
       lcov: true
   finish:
     needs: [app-1,eslint-config-react,browser-clipboard,measure-hook,pkce]
-    if: ${{ always() }}
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [22.x]
     steps:
-    - name: Coveralls Finished
-      uses: coverallsapp/github-action@v2
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@v2
         with:
+          github-token: ${{ github.token }}
           parallel-finished: true
           carryforward: "app-1,eslint-config-react,browser-clipboard,measure-hook,pkce"

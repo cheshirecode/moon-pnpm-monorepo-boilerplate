@@ -1,0 +1,56 @@
+name: publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_to_npm:
+        description: 'Publish packages to npm after validation'
+        required: true
+        type: boolean
+        default: false
+      npm_tag:
+        description: 'npm dist-tag to publish'
+        required: true
+        type: string
+        default: latest
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: ${{ inputs.publish_to_npm }}
+      - uses: ./.github/actions/setup
+      - name: Install dependencies
+        run: node common/scripts/install-run-rush.js install
+      - name: Run fast lint
+        run: npm run lint:fast
+      - name: Build packages
+        run: node common/scripts/install-run-rush.js build
+      - name: Test packages
+        run: node common/scripts/install-run-rush.js test
+      - name: Pack publishable packages
+        run: node common/scripts/install-run-rush.js publish --publish --include-all --pack --release-folder common/temp/release
+      - name: Publish packages
+        if: inputs.publish_to_npm && github.ref == 'refs/heads/main'
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          NPM_TAG: ${{ inputs.npm_tag }}
+        run: |
+          test -n "$NPM_AUTH_TOKEN"
+          node common/scripts/install-run-rush.js publish --apply --publish --include-all --add-commit-details --target-branch main --commit "$GITHUB_SHA" --tag "$NPM_TAG" --set-access-level public
+      - name: Explain skipped publish
+        if: inputs.publish_to_npm && github.ref != 'refs/heads/main'
+        run: |
+          echo "Publishing is only enabled from refs/heads/main."
+          exit 1

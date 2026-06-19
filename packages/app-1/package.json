@@ -13,7 +13,7 @@
     "test": "vitest run",
     "coverage": "vitest run --coverage",
     "format": "prettier --write {**/*,*}.{js,ts,jsx,tsx} --ignore-path .gitignore",
-    "lint": "eslint . --fix"
+    "lint": "node ../../common/scripts/install-run.js oxlint@1.70.0 oxlint src --ignore-path ../../.gitignore --quiet"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

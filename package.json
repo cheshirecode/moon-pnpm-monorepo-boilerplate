@@ -22,6 +22,7 @@
     "vitest": "^4.1.9"
   },
   "scripts": {
+    "lint:fast": "node common/scripts/install-run.js oxlint@1.70.0 oxlint packages tests --ignore-path .gitignore --ignore-pattern 'packages/eslint-config-react/fails/**' --quiet",
     "test": "vitest run"
   }
 }

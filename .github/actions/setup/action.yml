@@ -1,6 +1,14 @@
 name: setup
-description: 'pull source code + install node and '
+description: 'Install Node.js and warm Rush-related caches'
 inputs:
+  node-version:
+    required: false
+    description: 'Node.js version to install'
+    default: '22.x'
+  registry-url:
+    required: false
+    description: 'npm registry URL for setup-node'
+    default: 'https://registry.npmjs.org'
   skip-rush:
     required: false
     description: 'flag to specify rush usage'
@@ -12,14 +20,12 @@ inputs:
 runs:
   using: "composite"
   steps:
-    # Get code from repo
-    - name: Checkout code
-      uses: actions/checkout@v6.0.3
     # Install NodeJS
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js ${{ inputs.node-version }}
       uses: actions/setup-node@v6.4.0
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: ${{ inputs.node-version }}
+        registry-url: ${{ inputs.registry-url }}
     - name: Get npm cache directory
       shell: bash
       id: npm-cache-dir
@@ -30,7 +36,9 @@ runs:
       id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
       with:
         path: ${{ steps.npm-cache-dir.outputs.dir }}
-        key: ${{ runner.os }}-${{ matrix.node-version }}-npm-${{ hashFiles('rush.json') }}
+        key: ${{ runner.os }}-${{ inputs.node-version }}-npm-${{ hashFiles('rush.json') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ inputs.node-version }}-npm-
     - name: Cache Rush
       uses: actions/cache@v5.0.5
       if: inputs.skip-rush != 'true'
@@ -38,11 +46,15 @@ runs:
         path: |
           common/temp/install-run
           ~/.rush
-        key: ${{ runner.os }}-${{ matrix.node-version }}-rush-${{ hashFiles('rush.json') }}
+        key: ${{ runner.os }}-${{ inputs.node-version }}-rush-${{ hashFiles('rush.json') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ inputs.node-version }}-rush-
     - name: Cache pnpm
       uses: actions/cache@v5.0.5
       if: inputs.skip-pnpm != 'true'
       with:
         path: |
           common/temp/pnpm-store
-        key: ${{ runner.os }}-${{ matrix.node-version }}-pnpm-${{ hashFiles('common/config/rush/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-${{ inputs.node-version }}-pnpm-${{ hashFiles('common/config/rush/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ inputs.node-version }}-pnpm-

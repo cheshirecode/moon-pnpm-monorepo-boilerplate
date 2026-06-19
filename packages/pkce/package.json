@@ -23,7 +23,7 @@
     "build:site": "SITE=1 vite build",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "lint": "eslint . --fix --max-warnings 0",
+    "lint": "node ../../common/scripts/install-run.js oxlint@1.70.0 oxlint src lib --ignore-path ../../.gitignore --quiet",
     "preview": "vite preview"
   },
   "devDependencies": {
