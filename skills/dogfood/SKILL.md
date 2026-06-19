@@ -22,6 +22,10 @@ scripts/check.sh dogfood all
 `all` includes the external package consumer plus `npm publish --dry-run` for
 each packed tarball. It must not publish real packages.
 
+After the command finishes, inspect `.artifacts/dogfood/report.json` for the
+package list, tarball sizes, and passed gates. Set `DOGFOOD_REPORT` to write the
+report somewhere else.
+
 Set `DOGFOOD_KEEP_TEMP=1` only when debugging the generated temp consumer.
 
 Expected end-to-end use:

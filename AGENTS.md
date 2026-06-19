@@ -48,6 +48,9 @@ End-to-end development flow:
 6. For toolchain, Dockerfile, install, or workflow changes, finish with
    `scripts/check.sh docker`.
 
+After dogfood runs, inspect `.artifacts/dogfood/report.json` for the package
+list, tarball sizes, and which dogfood gates passed.
+
 Agent quick verification path:
 
 1. Clean isolation baseline:

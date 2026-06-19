@@ -1,10 +1,22 @@
-import { mkdtemp, readdir, rm, writeFile } from 'node:fs/promises';
+import {
+  mkdir,
+  mkdtemp,
+  readdir,
+  rename,
+  rm,
+  stat,
+  writeFile
+} from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { basename, join, resolve } from 'node:path';
+import { basename, dirname, join, relative, resolve } from 'node:path';
 import { spawn } from 'node:child_process';
 
 const root = resolve(import.meta.dirname, '..');
 const releaseDir = join(root, '.artifacts', 'release');
+const dogfoodDir = join(root, '.artifacts', 'dogfood');
+const reportPath = process.env.DOGFOOD_REPORT
+  ? resolve(root, process.env.DOGFOOD_REPORT)
+  : join(dogfoodDir, 'report.json');
 const mode = process.argv[2] ?? 'packages';
 const validModes = new Set(['packages', 'release', 'all']);
 
@@ -18,16 +30,34 @@ await run('scripts/check.sh', ['pack'], root);
 
 const tarballs = await getTarballs();
 const packages = await getPackedPackages(tarballs);
+const report = {
+  mode,
+  generatedAt: new Date().toISOString(),
+  packages: packages.map((pkg) => ({
+    name: pkg.name,
+    version: pkg.version,
+    tarballPath: pkg.tarballPath,
+    tarballBytes: pkg.tarballBytes
+  })),
+  checks: {
+    packageConsumption: 'skipped',
+    releaseDryRun: 'skipped'
+  }
+};
 
 if (mode === 'packages' || mode === 'all') {
   await dogfoodPackages(packages);
+  report.checks.packageConsumption = 'passed';
 }
 
 if (mode === 'release' || mode === 'all') {
   await dogfoodRelease(packages);
+  report.checks.releaseDryRun = 'passed';
 }
 
+await writeReport(report);
 console.log(`Dogfood ${mode} passed for ${tarballs.length} publishable package(s).`);
+console.log(`Wrote dogfood report to ${relative(root, reportPath)}.`);
 
 function usage() {
   console.log(`Usage: scripts/dogfood.mjs [packages|release|all]
@@ -63,7 +93,10 @@ async function getPackedPackages(tarballs) {
 
     packages.push({
       name: packageJson.name,
+      version: packageJson.version,
       tarball,
+      tarballPath: relative(root, tarball),
+      tarballBytes: (await stat(tarball)).size,
       spec: `file:${tarball}`
     });
   }
@@ -128,6 +161,12 @@ async function dogfoodRelease(packages) {
       root
     );
   }
+}
+
+async function writeReport(report) {
+  await mkdir(dirname(reportPath), { recursive: true });
+  await writeFile(`${reportPath}.tmp`, `${JSON.stringify(report, null, 2)}\n`);
+  await rename(`${reportPath}.tmp`, reportPath);
 }
 
 function consumerScript() {
