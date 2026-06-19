@@ -24,6 +24,7 @@
   },
   "files": [
     "!**/*.test.js",
+    "getTsNow.js",
     "index.js"
   ],
   "bin": "index.js",

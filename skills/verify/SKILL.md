@@ -33,6 +33,7 @@ For package-facing or release changes, add:
 
 ```sh
 scripts/check.sh pack
+scripts/check.sh dogfood packages
 ```
 
 For a single coverage job that failed in CI, reproduce the matrix entry:

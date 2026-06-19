@@ -76,6 +76,19 @@ jobs:
           flag-name: ${{ matrix.package }}
           parallel: true
 
+  package-dogfood:
+    needs: [checks]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Dogfood packed packages
+        run: scripts/check.sh dogfood packages
+
   finish:
     needs: [coverage]
     if: ${{ always() && !cancelled() }}
