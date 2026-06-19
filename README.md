@@ -18,6 +18,9 @@ pnpm install
 pnpm run ci
 ```
 
+Requires Node.js `>=24.11.0`. GitHub Actions and the Docker verifier use
+Node 24.
+
 ## Common Commands
 
 ```sh
@@ -33,10 +36,17 @@ pnpm run version-packages
 pnpm run publish-packages
 ```
 
-To verify the repo in a clean container, use the repo Dockerfile. If the sibling
-`oss/sandbox` checkout is present, the wrapper first records a sandboxed
-headless verification attempt. If that sandbox cannot run Docker itself, the
-wrapper falls back to the same host Docker build:
+To verify the repo in a clean container, use the repo Dockerfile directly:
+
+```sh
+docker build --progress=plain -t moon-pnpm-monorepo-boilerplate:verify .
+```
+
+The `scripts/sandbox-verify.sh` wrapper is a nicer optional path for machines
+that already use [cheshirecode/sandbox](https://github.com/cheshirecode/sandbox).
+It runs the same Docker build by default. Set `SANDBOX_ROOT` to a local sandbox
+checkout when you explicitly want the wrapper to record a sandboxed headless
+attempt first:
 
 ```sh
 scripts/sandbox-verify.sh
@@ -80,5 +90,9 @@ Read `AGENTS.md` first. The short version:
 
 - Do not use Rush; it was intentionally removed.
 - Use `pnpm` and `moon` for all normal work.
+- Use Node.js `>=24.11.0`; Node 24 is what CI and Docker verify.
 - Keep package-specific framework choices local to each package.
-- Validate changes with `pnpm run ci` before handoff.
+- Validate ordinary changes with `pnpm run ci` before handoff.
+- For package-facing or release changes, also run `pnpm run pack`.
+- GitHub adds workflow lint, dirty-diff detection after lint, and package
+  coverage/Coveralls gates.

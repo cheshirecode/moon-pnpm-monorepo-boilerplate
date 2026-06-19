@@ -6,6 +6,7 @@ Scope: this file applies to the entire repository.
 
 This repo is a moonrepo + pnpm + Changesets monorepo.
 
+- Runtime: Node.js `>=24.11.0`; GitHub Actions and Docker use Node 24.
 - Package manager: `pnpm@11.8.0` via Corepack.
 - Task runner: `moon` from `@moonrepo/cli`.
 - Release/versioning: Changesets.
@@ -21,7 +22,7 @@ Use the user's shell environment for Node tooling:
 zsh -lc 'source ~/.zshrc >/dev/null 2>&1 || true; corepack enable; corepack prepare pnpm@11.8.0 --activate; pnpm install'
 ```
 
-Primary verification:
+Primary local verification:
 
 ```sh
 pnpm run lint:fast
@@ -33,15 +34,40 @@ pnpm exec vitest run
 pnpm run pack
 ```
 
-Isolation verification:
+Agent quick verification path:
+
+1. Clean isolation baseline:
+
+```sh
+docker build --progress=plain -t moon-pnpm-monorepo-boilerplate:verify .
+```
+
+2. Local task graph parity:
+
+```sh
+pnpm run ci
+```
+
+3. Package-facing or release changes:
+
+```sh
+pnpm run pack
+```
+
+GitHub adds workflow lint, `git diff --exit-code` after lint, the package
+coverage matrix, and Coveralls contexts.
+
+Optional sandbox convenience:
 
 ```sh
 scripts/sandbox-verify.sh
 ```
 
-This uses the sibling `oss/sandbox` wrapper when it exists. If that sandbox
-cannot run Docker itself, the script records the sandbox attempt and falls back
-to `docker build` against the repo `Dockerfile` directly.
+The wrapper runs the same Docker build by default. Set `SANDBOX_ROOT` to a local
+[cheshirecode/sandbox](https://github.com/cheshirecode/sandbox) checkout when
+you explicitly want it to record a sandboxed headless verification attempt
+first; if Docker is unavailable inside that sandbox, it falls back to the host
+Docker build.
 
 `pnpm run ci` runs the normal combined path.
 
@@ -82,4 +108,7 @@ pnpm moon ci :lint :typecheck :build :test
 - If a package cannot resolve a local dependency, check `pnpm-workspace.yaml` and `workspace:^` ranges first.
 - If moon does not see a project, run `pnpm moon projects` and check `packages/<name>/moon.yml`.
 - If a CI task is skipped unexpectedly, check `options.runInCI` in `.moon/tasks/node.yml`.
+- If GitHub coverage fails while local package coverage passes, verify
+  package `coverage/lcov.info` paths and moon build `outputs` for local
+  dependencies.
 - If publishing includes the wrong package, check `private: true` and `.changeset/config.json`.

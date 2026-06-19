@@ -2,9 +2,31 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-sandbox_root="${SANDBOX_ROOT:-/Users/fredtran/Documents/oss/sandbox}"
+sandbox_root="${SANDBOX_ROOT:-}"
 image_tag="${SANDBOX_VERIFY_IMAGE:-moon-pnpm-monorepo-boilerplate:verify}"
 repo_name="$(basename "$repo_root")"
+
+usage() {
+  cat <<'EOF'
+Usage: scripts/sandbox-verify.sh
+
+Docker is the default clean-isolation verifier:
+  docker build --progress=plain -t moon-pnpm-monorepo-boilerplate:verify .
+
+Set SANDBOX_ROOT to a local checkout of https://github.com/cheshirecode/sandbox
+to record a sandboxed headless verification attempt first. If Docker is
+unavailable inside that sandbox, this script falls back to the host Docker build.
+
+Environment:
+  SANDBOX_ROOT          Optional path to a local cheshirecode/sandbox checkout.
+  SANDBOX_VERIFY_IMAGE  Docker image tag to build.
+EOF
+}
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  usage
+  exit 0
+fi
 
 run_build() {
   docker build \
@@ -42,7 +64,7 @@ run_sandbox_build() {
   return "$rc"
 }
 
-if [[ -x "$sandbox_root/bin/sandbox.sh" ]]; then
+if [[ -n "$sandbox_root" && -x "$sandbox_root/bin/sandbox.sh" ]]; then
   run_sandbox_build
 else
   run_build
