@@ -1,0 +1,63 @@
+{
+  "$id": "prospect-brief",
+  "title": "ProspectBrief",
+  "type": "object",
+  "required": [
+    "mode",
+    "fitScore",
+    "recommendedTemplate",
+    "gtmMotion",
+    "buyerTier",
+    "pitchBullets",
+    "demoPath",
+    "provisionChecklist",
+    "honestScope",
+    "risks",
+    "worklogRefs",
+    "generatedAt",
+    "knowledgeVersion",
+    "schemaVersion"
+  ],
+  "properties": {
+    "mode": { "const": "prospect" },
+    "fitScore": { "enum": ["HIGH", "MEDIUM", "LOW"] },
+    "recommendedTemplate": { "type": "string" },
+    "templateStatus": { "enum": ["live", "build", "gated"] },
+    "gtmMotion": { "type": "string" },
+    "buyerTier": {
+      "enum": ["enterprise-web", "api-platform", "embed-oem", "agency"]
+    },
+    "pitchBullets": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "maxItems": 5
+    },
+    "demoPath": { "type": "string" },
+    "displacement": { "type": "string" },
+    "provisionChecklist": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "honestScope": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "risks": {
+      "type": "array",
+      "items": { "type": "string" },
+      "maxItems": 5
+    },
+    "worklogRefs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 3
+    },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "knowledgeVersion": { "type": "string" },
+    "schemaVersion": { "type": "string" },
+    "submissionId": { "type": "string" },
+    "companyName": { "type": "string" }
+  },
+  "additionalProperties": false
+}

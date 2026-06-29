@@ -1,0 +1,46 @@
+{
+  "name": "@cheshirecode/brief-schema",
+  "version": "0.0.0",
+  "description": "AJV validators and JSON schemas for prospect and brainstorm briefs.",
+  "type": "module",
+  "private": false,
+  "keywords": ["brief", "json-schema", "validation"],
+  "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate.git",
+    "directory": "packages/brief-schema"
+  },
+  "bugs": {
+    "url": "https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate/issues"
+  },
+  "engines": {
+    "node": ">=24.11.0"
+  },
+  "files": ["index.d.ts", "index.js", "*.schema.json"],
+  "main": "./index.js",
+  "module": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    },
+    "./brainstorm.schema.json": "./brainstorm.schema.json",
+    "./prospect.schema.json": "./prospect.schema.json"
+  },
+  "scripts": {
+    "test": "vitest run index.test.js",
+    "coverage": "vitest run --coverage",
+    "lint": "oxlint . --ignore-path ../../.gitignore --quiet"
+  },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.9",
+    "vitest": "^4.1.9"
+  }
+}

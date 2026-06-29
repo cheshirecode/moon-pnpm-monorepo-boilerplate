@@ -1,0 +1,45 @@
+{
+  "$id": "brainstorm-brief",
+  "title": "BrainstormBrief",
+  "type": "object",
+  "required": [
+    "mode",
+    "suggestedOpening",
+    "capabilitiesToPitch",
+    "liveDemoOption",
+    "questionsToAsk",
+    "landmines",
+    "worklogRefs",
+    "generatedAt",
+    "knowledgeVersion",
+    "schemaVersion"
+  ],
+  "properties": {
+    "mode": { "const": "brainstorm" },
+    "suggestedOpening": { "type": "string" },
+    "capabilitiesToPitch": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "maxItems": 3
+    },
+    "liveDemoOption": { "type": "string" },
+    "questionsToAsk": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "landmines": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "worklogRefs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 3
+    },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "knowledgeVersion": { "type": "string" },
+    "schemaVersion": { "type": "string" }
+  },
+  "additionalProperties": false
+}

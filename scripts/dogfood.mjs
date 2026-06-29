@@ -234,6 +234,40 @@ const eslintConfig = require('@fieryeagle/eslint-config-react');
 assert.equal(Array.isArray(eslintConfig), true);
 assert.ok(eslintConfig.length > 0);
 
+const briefSchema = await import('@cheshirecode/brief-schema');
+const prospectSchemaAsset = await import(
+  '@cheshirecode/brief-schema/prospect.schema.json',
+  { with: { type: 'json' } }
+);
+const brainstormSchemaAsset = await import(
+  '@cheshirecode/brief-schema/brainstorm.schema.json',
+  { with: { type: 'json' } }
+);
+assert.equal(briefSchema.prospectSchema.title, 'ProspectBrief');
+assert.equal(prospectSchemaAsset.default.title, 'ProspectBrief');
+assert.equal(brainstormSchemaAsset.default.title, 'BrainstormBrief');
+assert.equal(
+  briefSchema.validateBrainstorm({
+    capabilitiesToPitch: ['background removal'],
+    generatedAt: '2026-06-29T18:30:00.000Z',
+    knowledgeVersion: 'dogfood',
+    landmines: ['avoid overpromising automation'],
+    liveDemoOption: 'catalog background removal',
+    mode: 'brainstorm',
+    questionsToAsk: ['What is the current asset volume?'],
+    schemaVersion: briefSchema.SCHEMA_VERSION,
+    suggestedOpening: 'Lead with an existing live demo',
+    worklogRefs: ['sales-eng-r01', 'sales-eng-r02', 'sales-eng-r03']
+  }),
+  true
+);
+assert.deepEqual(
+  briefSchema.findKilledHits('Ship a step runner registry next week', {
+    patterns: [{ pattern: 'step runner registry' }]
+  }),
+  [{ matched: 'step runner registry', pattern: 'step runner registry' }]
+);
+
 const formValidators = await import('@cheshirecode/form-validators');
 assert.equal(formValidators.validateEmail('person@example.test'), undefined);
 assert.equal(formValidators.validateRequired('', 'Name'), 'Name is required');

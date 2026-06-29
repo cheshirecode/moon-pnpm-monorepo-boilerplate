@@ -1,0 +1,7 @@
+language: "javascript"
+layer: "library"
+stack: "frontend"
+tags:
+  - "isomorphic"
+  - "schema"
+  - "validation"
