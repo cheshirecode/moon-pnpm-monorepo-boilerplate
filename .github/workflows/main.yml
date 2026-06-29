@@ -45,20 +45,32 @@ jobs:
       - name: Verify lint did not rewrite files
         run: git diff --exit-code
 
-  coverage:
+  coverage-packages:
     needs: [checks]
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.coverage-packages.outputs.packages }}
+      carryforward: ${{ steps.coverage-packages.outputs.carryforward }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: List coverage packages
+        id: coverage-packages
+        run: |
+          echo "packages=$(scripts/check.sh coverage-packages json)" >> "$GITHUB_OUTPUT"
+          echo "carryforward=$(scripts/check.sh coverage-packages csv)" >> "$GITHUB_OUTPUT"
+
+  coverage:
+    needs: [checks, coverage-packages]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        package:
-          - app-1
-          - browser-clipboard
-          - create-moon-pnpm-monorepo
-          - eslint-config-react
-          - flatten-workspace
-          - measure-hook
-          - pkce
+        package: ${{ fromJSON(needs.coverage-packages.outputs.packages) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -92,7 +104,7 @@ jobs:
         run: scripts/check.sh dogfood packages
 
   finish:
-    needs: [coverage]
+    needs: [coverage, coverage-packages]
     if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     steps:
@@ -101,4 +113,4 @@ jobs:
         with:
           github-token: ${{ github.token }}
           parallel-finished: true
-          carryforward: "app-1,browser-clipboard,create-moon-pnpm-monorepo,eslint-config-react,flatten-workspace,measure-hook,pkce"
+          carryforward: ${{ needs.coverage-packages.outputs.carryforward }}

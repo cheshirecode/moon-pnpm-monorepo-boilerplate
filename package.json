@@ -5,12 +5,12 @@
     "node": ">=24.11.0"
   },
   "devDependencies": {
-    "eslint": "^10.5.0",
+    "eslint": "^10.6.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.9",
     "@changesets/cli": "^2.31.0",
-    "@moonrepo/cli": "^2.3.4",
-    "oxlint": "^1.70.0"
+    "@moonrepo/cli": "^2.3.5",
+    "oxlint": "^1.71.0"
   },
   "scripts": {
     "setup": "scripts/check.sh setup",
@@ -28,7 +28,7 @@
     "pack": "scripts/check.sh pack",
     "publish-packages": "changeset publish"
   },
-  "packageManager": "pnpm@11.8.0",
+  "packageManager": "pnpm@11.9.0",
   "workspaces": [
     "packages/*"
   ]
