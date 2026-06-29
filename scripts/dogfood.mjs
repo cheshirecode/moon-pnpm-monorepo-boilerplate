@@ -234,6 +234,50 @@ const eslintConfig = require('@fieryeagle/eslint-config-react');
 assert.equal(Array.isArray(eslintConfig), true);
 assert.ok(eslintConfig.length > 0);
 
+const formValidators = await import('@cheshirecode/form-validators');
+assert.equal(formValidators.validateEmail('person@example.test'), undefined);
+assert.equal(formValidators.validateRequired('', 'Name'), 'Name is required');
+const composedValidator = formValidators.composeValidators(
+  (value) => formValidators.validateRequired(value, 'Name'),
+  (value) => formValidators.validateMinLength(value, 3, 'Name')
+);
+assert.equal(composedValidator('Al'), 'Name must be at least 3 characters');
+
+const inputValidation = await import('@cheshirecode/input-validation');
+assert.deepEqual(inputValidation.validateChatMessage('hello'), {
+  isValid: true,
+  sanitizedValue: 'hello'
+});
+assert.equal(
+  inputValidation.validateChatMessage('<script>alert(1)</script>').isValid,
+  false
+);
+assert.equal(inputValidation.sanitizeTextInput('<b>hello</b>'), 'hello');
+
+const urlState = await import('@cheshirecode/url-state');
+assert.equal(
+  urlState.buildQueryUrl('https://example.test/path?keep=1', { room: 'alpha' }),
+  'https://example.test/path?keep=1&room=alpha'
+);
+assert.equal(urlState.getQueryParam('room', '?room=alpha'), 'alpha');
+const replacedUrls = [];
+const replacedUrl = urlState.replaceQueryUrl(
+  { room: 'beta' },
+  {
+    href: 'https://example.test/path?keep=1',
+    history: {
+      replaceState(_state, _title, url) {
+        replacedUrls.push(url);
+      }
+    }
+  }
+);
+assert.equal(
+  replacedUrl.toString(),
+  'https://example.test/path?keep=1&room=beta'
+);
+assert.deepEqual(replacedUrls, ['https://example.test/path?keep=1&room=beta']);
+
 const flattenWorkspacePackage = await import('@cheshirecode/flatten-workspace');
 assert.equal(typeof flattenWorkspacePackage.flattenWorkspace, 'function');
 const workspaceDir = await mkdtemp(join(tmpdir(), 'flatten-workspace-dogfood-'));
