@@ -1,0 +1,42 @@
+{
+  "name": "@cheshirecode/form-validators",
+  "version": "0.0.0",
+  "description": "Small framework-agnostic form validation helpers.",
+  "type": "module",
+  "private": false,
+  "keywords": ["forms", "validation", "validators"],
+  "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate.git",
+    "directory": "packages/form-validators"
+  },
+  "bugs": {
+    "url": "https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate/issues"
+  },
+  "engines": {
+    "node": ">=24.11.0"
+  },
+  "files": ["dist"],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "lint": "oxlint src --ignore-path ../../.gitignore --quiet"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.9",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
+  }
+}
