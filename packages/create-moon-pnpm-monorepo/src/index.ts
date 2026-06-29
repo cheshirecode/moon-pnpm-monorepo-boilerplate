@@ -113,7 +113,7 @@ function rootPackageJson(repoName: string): Record<string, unknown> {
     engines: {
       node: '>=24.11.0'
     },
-    packageManager: 'pnpm@11.8.0',
+    packageManager: 'pnpm@11.9.0',
     workspaces: ['packages/*'],
     scripts: {
       setup: 'scripts/check.sh setup',
@@ -133,10 +133,10 @@ function rootPackageJson(repoName: string): Record<string, unknown> {
     },
     devDependencies: {
       '@changesets/cli': '^2.31.0',
-      '@moonrepo/cli': '^2.3.4',
+      '@moonrepo/cli': '^2.3.5',
       '@types/node': '^24.10.2',
       '@vitest/coverage-v8': '^4.1.9',
-      oxlint: '^1.70.0',
+      oxlint: '^1.71.0',
       typescript: '^6.0.3',
       vitest: '^4.1.9'
     }
@@ -179,7 +179,7 @@ function examplePackageJson(repoName: string): Record<string, unknown> {
       }
     },
     scripts: {
-      build: 'tsc -p tsconfig.json',
+      build: 'rm -rf dist && tsc -p tsconfig.json',
       test: 'vitest run',
       coverage: 'vitest run --coverage',
       typecheck: 'tsc -p tsconfig.json --noEmit',
@@ -199,14 +199,14 @@ function pnpmWorkspaceYaml(): string {
   - "packages/*"
 
 minimumReleaseAgeExclude:
-  - "@moonrepo/cli@2.3.4"
-  - "@moonrepo/core-linux-arm64-gnu@2.3.4"
-  - "@moonrepo/core-linux-arm64-musl@2.3.4"
-  - "@moonrepo/core-linux-x64-gnu@2.3.4"
-  - "@moonrepo/core-linux-x64-musl@2.3.4"
-  - "@moonrepo/core-macos-arm64@2.3.4"
-  - "@moonrepo/core-macos-x64@2.3.4"
-  - "@moonrepo/core-windows-x64-msvc@2.3.4"
+  - "@moonrepo/cli@2.3.5"
+  - "@moonrepo/core-linux-arm64-gnu@2.3.5"
+  - "@moonrepo/core-linux-arm64-musl@2.3.5"
+  - "@moonrepo/core-linux-x64-gnu@2.3.5"
+  - "@moonrepo/core-linux-x64-musl@2.3.5"
+  - "@moonrepo/core-macos-arm64@2.3.5"
+  - "@moonrepo/core-macos-x64@2.3.5"
+  - "@moonrepo/core-windows-x64-msvc@2.3.5"
 `;
 }
 
@@ -219,7 +219,7 @@ A clean moon + pnpm + Changesets monorepo.
 
 \`\`\`sh
 corepack enable
-corepack prepare pnpm@11.8.0 --activate
+corepack prepare pnpm@11.9.0 --activate
 pnpm install
 pnpm run ci
 pnpm run dogfood all
@@ -253,7 +253,7 @@ scripts/check.sh dogfood all
 \`\`\`
 
 Keep package-specific framework choices inside \`packages/*\`. The root stays framework-neutral.
-Use Node.js \`>=24.11.0\`, pnpm \`11.8.0\`, moon, Changesets, and oxlint.
+Use Node.js \`>=24.11.0\`, pnpm \`11.9.0\`, moon, Changesets, and oxlint.
 `;
 }
 
@@ -393,7 +393,7 @@ has_git_head() {
 case "\${1:-}" in
   setup)
     run corepack enable
-    run corepack prepare pnpm@11.8.0 --activate
+    run corepack prepare pnpm@11.9.0 --activate
     run pnpm install --frozen-lockfile
     ;;
   lint-fast)
@@ -449,8 +449,7 @@ case "\${1:-}" in
       echo "Unknown package: $package" >&2
       exit 2
     fi
-    run pnpm -r --if-present build
-    run pnpm --filter "./packages/$package" run coverage
+    run pnpm exec moon run "$package:coverage"
     ;;
   pack)
     run node scripts/pack-publishable.mjs
@@ -564,7 +563,7 @@ async function dogfoodPackages(packages) {
     await writeFile(join(consumerDir, 'pnpm-workspace.yaml'), 'packages: []\\n');
     await writeFile(join(consumerDir, 'dogfood.mjs'), \`import assert from 'node:assert/strict';\\nconst pkg = await import('\${packages[0]?.name ?? ''}');\\nassert.equal(typeof pkg.greet, 'function');\\nassert.equal(pkg.greet('dogfood'), 'hello, dogfood');\\n\`);
     await run('corepack', ['enable'], consumerDir);
-    await run('corepack', ['prepare', 'pnpm@11.8.0', '--activate'], consumerDir);
+    await run('corepack', ['prepare', 'pnpm@11.9.0', '--activate'], consumerDir);
     await run('pnpm', ['install'], consumerDir);
     await run('pnpm', ['run', 'dogfood'], consumerDir);
   } finally {
@@ -623,7 +622,7 @@ runs:
     - shell: bash
       run: |
         corepack enable
-        corepack prepare pnpm@11.8.0 --activate
+        corepack prepare pnpm@11.9.0 --activate
     - shell: bash
       run: pnpm install --frozen-lockfile
 `;
@@ -745,6 +744,7 @@ function exampleVitestConfig(): string {
 export default defineConfig({
   test: {
     environment: 'node',
+    include: ['src/**/*.test.ts'],
     coverage: {
       reporter: ['text', 'lcov']
     }

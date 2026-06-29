@@ -7,7 +7,7 @@ Scope: this file applies to the entire repository.
 This repo is a moonrepo + pnpm + Changesets monorepo.
 
 - Runtime: Node.js `>=24.11.0`; GitHub Actions and Docker use Node 24.
-- Package manager: `pnpm@11.8.0` via Corepack.
+- Package manager: `pnpm@11.9.0` via Corepack.
 - Task runner: `moon` from `@moonrepo/cli`.
 - Release/versioning: Changesets.
 - Fast lint: `oxlint`.

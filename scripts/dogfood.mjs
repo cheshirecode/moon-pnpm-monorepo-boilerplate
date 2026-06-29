@@ -132,7 +132,7 @@ async function dogfoodPackages(packages) {
     await writeFile(join(consumerDir, 'dogfood.mjs'), consumerScript());
 
     await run('corepack', ['enable'], consumerDir);
-    await run('corepack', ['prepare', 'pnpm@11.8.0', '--activate'], consumerDir);
+    await run('corepack', ['prepare', 'pnpm@11.9.0', '--activate'], consumerDir);
     await run('pnpm', ['install'], consumerDir);
     await run('pnpm', ['run', 'dogfood'], consumerDir);
   } finally {
@@ -327,7 +327,7 @@ await writeFile(join(workspaceDir, 'packages', 'core', 'package.json'), JSON.str
   devDependencies: { vitest: '^4.1.9' }
 }));
 await writeFile(join(workspaceDir, 'packages', 'tools', 'package.json'), JSON.stringify({
-  dependencies: { oxlint: '^1.70.0', vite: '^8.0.15' }
+  dependencies: { oxlint: '^1.71.0', vite: '^8.0.15' }
 }));
 const flattened = await flattenWorkspacePackage.flattenWorkspace({
   root: workspaceDir,
@@ -365,7 +365,7 @@ const bootstrapResult = await bootstrapPackage.createMonorepo({
 assert.equal(bootstrapResult.name, 'generated-monorepo');
 assert.ok(bootstrapResult.files.includes('packages/example-lib/src/index.ts'));
 await execFileAsync('corepack', ['enable'], { cwd: bootstrapDir });
-await execFileAsync('corepack', ['prepare', 'pnpm@11.8.0', '--activate'], { cwd: bootstrapDir });
+await execFileAsync('corepack', ['prepare', 'pnpm@11.9.0', '--activate'], { cwd: bootstrapDir });
 await execFileAsync('pnpm', ['install'], { cwd: bootstrapDir });
 await execFileAsync('scripts/check.sh', ['ci'], { cwd: bootstrapDir });
 await execFileAsync('scripts/check.sh', ['dogfood', 'all'], { cwd: bootstrapDir });

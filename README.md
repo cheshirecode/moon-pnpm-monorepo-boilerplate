@@ -13,7 +13,7 @@ The repo intentionally avoids a battery-included framework lock-in. Packages can
 
 ```sh
 corepack enable
-corepack prepare pnpm@11.8.0 --activate
+corepack prepare pnpm@11.9.0 --activate
 pnpm install
 pnpm run ci
 ```

@@ -39,7 +39,7 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "rm -rf dist && tsc -p tsconfig.json",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
     "lint": "oxlint src --ignore-path ../../.gitignore --quiet"

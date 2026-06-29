@@ -14,7 +14,7 @@ RUN apt-get update -qq \
     && apt-get install -y --no-install-recommends ca-certificates git \
     && rm -rf /var/lib/apt/lists/* \
     && corepack enable \
-    && corepack prepare pnpm@11.8.0 --activate
+    && corepack prepare pnpm@11.9.0 --activate
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc .gitignore ./
 COPY .moon ./.moon

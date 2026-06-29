@@ -18,7 +18,8 @@ Commands:
   full                  Run the full non-affected package and dogfood path.
   dogfood [MODE]        Dogfood packed packages in an external consumer.
   coverage              Run all package coverage targets through moon.
-  coverage-package NAME Build workspace packages, then run coverage for one package.
+  coverage-packages     List package directories that define coverage scripts.
+  coverage-package NAME Run coverage for one package through moon.
   pack                  Pack publishable packages into .artifacts/release.
   workflow-lint         Lint GitHub Actions workflows with actionlint in Docker.
   docker                Build the repo verification Docker image.
@@ -33,6 +34,10 @@ run() {
   (cd "$repo_root" && "$@")
 }
 
+has_git_head() {
+  run git rev-parse --verify HEAD >/dev/null 2>&1
+}
+
 command="${1:-}"
 if [[ $# -gt 0 ]]; then
   shift
@@ -41,7 +46,7 @@ fi
 case "$command" in
   setup)
     run corepack enable
-    run corepack prepare pnpm@11.8.0 --activate
+    run corepack prepare pnpm@11.9.0 --activate
     run pnpm install --frozen-lockfile
     ;;
   lint-fast)
@@ -52,21 +57,44 @@ case "$command" in
       --quiet
     ;;
   lint)
-    run pnpm exec moon run :lint
+    if has_git_head; then
+      run pnpm exec moon run :lint
+    else
+      run pnpm -r --if-present lint
+    fi
     ;;
   typecheck)
-    run pnpm exec moon run :typecheck
+    if has_git_head; then
+      run pnpm exec moon run :typecheck
+    else
+      run pnpm -r --if-present typecheck
+    fi
     ;;
   build)
-    run pnpm exec moon run :build
+    if has_git_head; then
+      run pnpm exec moon run :build
+    else
+      run pnpm -r --if-present build
+    fi
     ;;
   test)
-    run pnpm exec moon run :test
+    if has_git_head; then
+      run pnpm exec moon run :test
+    else
+      run pnpm -r --if-present test
+    fi
     run pnpm exec vitest run
     ;;
   ci)
     "$repo_root/scripts/check.sh" lint-fast
-    run pnpm exec moon ci :lint :typecheck :build :test
+    if has_git_head; then
+      run pnpm exec moon ci :lint :typecheck :build :test
+    else
+      run pnpm -r --if-present lint
+      run pnpm -r --if-present typecheck
+      run pnpm -r --if-present build
+      run pnpm -r --if-present test
+    fi
     run pnpm exec vitest run
     ;;
   full)
@@ -84,6 +112,9 @@ case "$command" in
   coverage)
     run pnpm exec moon run :coverage
     ;;
+  coverage-packages)
+    run node scripts/list-coverage-packages.mjs "${1:-json}"
+    ;;
   coverage-package)
     package="${1:-}"
     if [[ -z "$package" ]]; then
@@ -94,8 +125,7 @@ case "$command" in
       echo "Unknown package: $package" >&2
       exit 2
     fi
-    run pnpm -r --if-present build
-    run pnpm --filter "./packages/$package" run coverage
+    run pnpm exec moon run "$package:coverage"
     ;;
   pack)
     run node scripts/pack-publishable.mjs
