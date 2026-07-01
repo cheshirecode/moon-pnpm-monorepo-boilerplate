@@ -21,6 +21,7 @@
     "build": "scripts/check.sh build",
     "test": "scripts/check.sh test",
     "coverage": "scripts/check.sh coverage",
+    "renderer-showcase": "scripts/check.sh renderer-showcase",
     "ci": "scripts/check.sh ci",
     "package-drift": "scripts/check.sh package-drift",
     "dogfood": "scripts/check.sh dogfood",

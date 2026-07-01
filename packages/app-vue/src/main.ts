@@ -1,5 +1,7 @@
-import { createApp } from 'vue';
+import { mount } from './microfrontend';
 
-import App from './App.vue';
+const root = document.getElementById('app');
 
-createApp(App).mount('#app');
+if (root) {
+  mount(root);
+}

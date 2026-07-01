@@ -36,12 +36,8 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - name: Fast Rust lint
-        run: scripts/check.sh lint-fast
-      - name: moon affected lint/typecheck/build/test
-        run: pnpm moon ci :lint :typecheck :build :test
-      - name: Root smoke tests
-        run: pnpm exec vitest run
+      - name: CI parity checks
+        run: scripts/check.sh ci
       - name: Verify lint did not rewrite files
         run: git diff --exit-code
 

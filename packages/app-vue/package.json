@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "exports": {
+    "./microfrontend": "./src/microfrontend.ts"
+  },
   "scripts": {
     "dev": "vite --host",
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",

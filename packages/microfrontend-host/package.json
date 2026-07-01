@@ -1,0 +1,44 @@
+{
+  "name": "@cheshirecode/microfrontend-host",
+  "version": "0.0.0",
+  "description": "Framework-neutral helpers for mounting microfrontend demos into a host shell.",
+  "type": "module",
+  "private": false,
+  "keywords": ["microfrontend", "host", "showcase", "utilities"],
+  "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate.git",
+    "directory": "packages/microfrontend-host"
+  },
+  "bugs": {
+    "url": "https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate/issues"
+  },
+  "engines": {
+    "node": ">=24.11.0"
+  },
+  "files": ["dist"],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "lint": "oxlint src --ignore-path ../../.gitignore --quiet"
+  },
+  "devDependencies": {
+    "@cheshirecode/tsconfig": "workspace:^",
+    "@vitest/coverage-v8": "^4.1.9",
+    "happy-dom": "^20.10.6",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
+  }
+}

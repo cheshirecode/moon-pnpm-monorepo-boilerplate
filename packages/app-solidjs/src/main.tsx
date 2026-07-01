@@ -1,9 +1,7 @@
-import { render } from 'solid-js/web';
-
-import { App } from './App';
+import { mount } from './microfrontend';
 
 const root = document.getElementById('app');
 
 if (root) {
-  render(() => <App />, root);
+  mount(root);
 }
