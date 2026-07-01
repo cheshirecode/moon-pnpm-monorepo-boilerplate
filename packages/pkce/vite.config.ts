@@ -4,9 +4,15 @@ import { resolve } from "path";
 import react from "@vitejs/plugin-react";
 import UnoCSS from "unocss/vite";
 import { defineConfig } from "vite";
-import { configDefaults, coverageConfigDefaults } from "vitest/config";
+
+import {
+  configDefaults,
+  coverageConfigDefaults,
+  viteAppTestConfig,
+} from "../../vitest.shared.mjs";
 
 const isSite = !!process.env.SITE;
+const coverageExclude = [...coverageConfigDefaults.exclude, "site/**/*"];
 
 export default defineConfig((config) => ({
   plugins: [react(), UnoCSS()],
@@ -32,19 +38,16 @@ export default defineConfig((config) => ({
           },
         }),
   },
-  test: {
-    globals: true,
-    environment: "happy-dom",
+  test: viteAppTestConfig({
     environmentOptions: {
       happyDOM: {
         url: "https://localhost/",
       },
     },
     setupFiles: ["src/services/test/setup.ts"],
-    include: ["**/*(*.)?{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
     exclude: [...configDefaults.exclude, "site/**/*"],
     coverage: {
-      exclude: [...coverageConfigDefaults.exclude, "site/**/*"],
+      exclude: coverageExclude,
       reporter: [
         ["lcov"],
         ["json", { file: "coverage.json" }],
@@ -53,7 +56,7 @@ export default defineConfig((config) => ({
       ],
       provider: "v8",
     },
-  },
+  }),
   resolve: {
     alias: {
       "~": resolve(__dirname, "./"),

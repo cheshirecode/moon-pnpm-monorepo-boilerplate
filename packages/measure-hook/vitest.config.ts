@@ -1,14 +1,13 @@
 /// <reference types="vitest" />
 
-import { configDefaults, defineConfig } from 'vitest/config';
+import { defineConfig } from 'vitest/config';
 
-export default defineConfig({
-  test: {
+import { configDefaults, packageTestConfig } from '../../vitest.shared.mjs';
+
+export default defineConfig(
+  packageTestConfig({
     globals: true,
     include: ['**/*(*.)?{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    exclude: [...configDefaults.exclude, './test/**/*'],
-    coverage: {
-      reporter: ['text', 'lcov']
-    }
-  }
-});
+    exclude: [...configDefaults.exclude, './test/**/*']
+  })
+);

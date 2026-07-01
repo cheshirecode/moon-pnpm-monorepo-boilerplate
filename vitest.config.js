@@ -1,6 +1,5 @@
 import { defineConfig } from 'vitest/config';
-export default defineConfig({
-  test: {
-    include: ['tests/**/*.test.js'],
-  },
-});
+
+import { rootSmokeTestConfig } from './vitest.shared.mjs';
+
+export default defineConfig(rootSmokeTestConfig());

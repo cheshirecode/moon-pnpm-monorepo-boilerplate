@@ -30,6 +30,7 @@ scripts/check.sh typecheck       # moon graph TypeScript checks
 scripts/check.sh build           # moon graph build across packages
 scripts/check.sh test            # moon graph tests + root smoke tests
 scripts/check.sh full            # full non-affected verification path
+scripts/check.sh package-drift   # package metadata/dependency coverage guard
 scripts/check.sh coverage        # package coverage tasks
 scripts/check.sh dogfood packages # install packed tarballs in an external consumer
 scripts/check.sh dogfood all      # package dogfood + npm publish dry-run
@@ -50,6 +51,7 @@ Use moon targets for tight loops, then move outward:
 ```sh
 pnpm moon run pkce:test
 scripts/check.sh ci
+scripts/check.sh package-drift
 scripts/check.sh dogfood packages
 scripts/check.sh docker
 ```
@@ -83,7 +85,7 @@ scripts/sandbox-verify.sh
 Target a single package with moon:
 
 ```sh
-pnpm moon run app-1:build
+pnpm moon run app-react:build
 pnpm moon run pkce:test
 pnpm moon run :lint --affected
 pnpm moon ci :lint :typecheck :build :test
@@ -93,7 +95,13 @@ pnpm moon ci :lint :typecheck :build :test
 
 ```text
 packages/
-  app-1/                  React + Vite application
+  app-react/              React + Vite application
+  app-preact/             Preact + Vite application
+  app-astro/              Astro static application
+  app-vue/                Vue + Vite application
+  app-svelte/             Svelte + Vite application
+  app-solidjs/            SolidJS + Vite application
+  demo-contract/          Shared renderer demo contract package
   browser-clipboard/      Browser/isomorphic clipboard helper
   create-moon-pnpm-monorepo/ Clean monorepo generator for this tooling stack
   eslint-config-react/    Shared ESLint flat config package
@@ -106,7 +114,9 @@ Each package owns its framework-specific config. moon reads `packages/*/moon.yml
 
 ## Publishing
 
-Published packages are versioned through Changesets. Private packages, such as `app-1`, are ignored.
+Published packages are versioned through Changesets. Private demo apps, such
+as `app-react`, `app-preact`, `app-astro`, `app-vue`, `app-svelte`, and
+`app-solidjs`, are ignored.
 
 1. Run `pnpm changeset` in a feature branch for user-facing package changes.
 2. Run `pnpm run pack` locally or in CI to verify publishable tarballs.
@@ -125,6 +135,7 @@ Read `AGENTS.md` first. The short version:
 - Use Node.js `>=24.11.0`; Node 24 is what CI and Docker verify.
 - Keep package-specific framework choices local to each package.
 - Validate ordinary changes with `pnpm run ci` before handoff.
+- For package topology/config changes, also run `scripts/check.sh package-drift`.
 - For package-facing changes, also run `scripts/check.sh dogfood packages`.
 - For publishing workflow changes, run `scripts/check.sh dogfood all`.
 - GitHub adds workflow lint, dirty-diff detection after lint, package dogfood,

@@ -1,0 +1,28 @@
+{
+  "name": "app-solidjs",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "vite build",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "lint": "oxlint src --ignore-path ../../.gitignore --quiet"
+  },
+  "dependencies": {
+    "@cheshirecode/demo-contract": "workspace:^",
+    "solid-js": "^1.9.13"
+  },
+  "devDependencies": {
+    "@cheshirecode/tsconfig": "workspace:^",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@vitest/coverage-v8": "^4.1.9",
+    "happy-dom": "^20.10.6",
+    "typescript": "^6.0.3",
+    "vite": "^8.1.2",
+    "vite-plugin-solid": "^2.11.12",
+    "vitest": "^4.1.9"
+  }
+}

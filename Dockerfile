@@ -22,7 +22,7 @@ RUN rm -rf .moon/cache
 COPY packages ./packages
 COPY scripts ./scripts
 COPY tests ./tests
-COPY eslint.config.cjs vitest.config.js ./
+COPY eslint.config.cjs vitest.config.js vitest.shared.d.mts vitest.shared.mjs ./
 
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
     pnpm install --frozen-lockfile

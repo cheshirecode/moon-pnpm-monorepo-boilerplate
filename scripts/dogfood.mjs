@@ -266,6 +266,12 @@ const tsconfigNodeTypes = await import('@cheshirecode/tsconfig/node-types.json',
 assert.equal(tsconfigBase.default.compilerOptions.module, 'NodeNext');
 assert.equal(tsconfigNodeTypes.default.compilerOptions.types[0], 'node');
 
+const demoContract = await import('@cheshirecode/demo-contract');
+const vueDemo = demoContract.createRendererDemoContract('Vue');
+assert.equal(vueDemo.slug, 'vue-renderer');
+assert.equal(vueDemo.emailValidation, 'valid');
+assert.match(demoContract.formatRendererDemo(vueDemo), /Vue renderer/);
+
 const briefSchema = await import('@cheshirecode/brief-schema');
 const prospectSchemaAsset = await import(
   '@cheshirecode/brief-schema/prospect.schema.json',
