@@ -327,7 +327,7 @@ await writeFile(join(workspaceDir, 'packages', 'core', 'package.json'), JSON.str
   devDependencies: { vitest: '^4.1.9' }
 }));
 await writeFile(join(workspaceDir, 'packages', 'tools', 'package.json'), JSON.stringify({
-  dependencies: { oxlint: '^1.71.0', vite: '^8.0.15' }
+  dependencies: { oxlint: '^1.72.0', vite: '^8.0.15' }
 }));
 const flattened = await flattenWorkspacePackage.flattenWorkspace({
   root: workspaceDir,
