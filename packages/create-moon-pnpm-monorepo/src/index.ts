@@ -136,7 +136,7 @@ function rootPackageJson(repoName: string): Record<string, unknown> {
       '@moonrepo/cli': '^2.3.5',
       '@types/node': '^24.10.2',
       '@vitest/coverage-v8': '^4.1.9',
-      oxlint: '^1.71.0',
+      oxlint: '^1.72.0',
       typescript: '^6.0.3',
       vitest: '^4.1.9'
     }
@@ -623,6 +623,23 @@ runs:
       run: |
         corepack enable
         corepack prepare pnpm@11.9.0 --activate
+    - shell: bash
+      id: pnpm-store
+      run: echo "dir=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+    - uses: actions/cache@v5.0.5
+      with:
+        path: \${{ steps.pnpm-store.outputs.dir }}
+        key: \${{ runner.os }}-\${{ inputs.node-version }}-pnpm-\${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: |
+          \${{ runner.os }}-\${{ inputs.node-version }}-pnpm-
+    - uses: actions/cache@v5.0.5
+      with:
+        path: |
+          ~/.moon/plugins
+          .moon/cache
+        key: \${{ runner.os }}-\${{ inputs.node-version }}-moon-\${{ hashFiles('.moon/**/*.yml', 'packages/*/moon.yml', 'pnpm-lock.yaml') }}
+        restore-keys: |
+          \${{ runner.os }}-\${{ inputs.node-version }}-moon-
     - shell: bash
       run: pnpm install --frozen-lockfile
 `;
