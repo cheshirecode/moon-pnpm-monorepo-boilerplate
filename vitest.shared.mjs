@@ -4,6 +4,11 @@ const lcovTextCoverage = {
   reporter: ['text', 'lcov']
 };
 
+const appCoverage = {
+  reporter: ['text', 'lcov', 'html'],
+  provider: 'v8'
+};
+
 export function packageTestConfig(options = {}) {
   const {
     environment,
@@ -47,6 +52,7 @@ export function viteAppTestConfig(options = {}) {
     globals = true,
     include = ['**/*(*.)?{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude = configDefaults.exclude,
+    coverage = appCoverage,
     ...rest
   } = options;
 
@@ -55,6 +61,7 @@ export function viteAppTestConfig(options = {}) {
     environment,
     include,
     exclude,
+    coverage,
     ...rest
   };
 }

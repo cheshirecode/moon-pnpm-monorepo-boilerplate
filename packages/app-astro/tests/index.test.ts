@@ -1,13 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { createRendererDemoContract, formatRendererDemo } from '@cheshirecode/demo-contract';
+import { astroDemoContract, astroDemoText } from '../src/demo';
 
 describe('app-astro', () => {
   it('uses the shared contract rendered by the Astro page', () => {
-    const contract = createRendererDemoContract('Astro');
-
-    expect(formatRendererDemo(contract)).toContain('Astro renderer');
-    expect(contract.slug).toBe('astro-renderer');
-    expect(contract.url).toContain('renderer=astro-renderer');
+    expect(astroDemoText).toContain('Astro renderer');
+    expect(astroDemoContract.slug).toBe('astro-renderer');
+    expect(astroDemoContract.url).toContain('renderer=astro-renderer');
   });
 });
