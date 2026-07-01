@@ -3,8 +3,8 @@ import Unocss from '@unocss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import vitePluginImportus from 'vite-plugin-importus';
-import { configDefaults } from 'vitest/config';
 
+import { configDefaults, viteAppTestConfig } from '../../vitest.shared.mjs';
 import alias from './alias';
 import pkg from './package.json';
 import unocssConfig from './unocss.config';
@@ -101,11 +101,8 @@ export default defineConfig((config) => ({
   json: {
     stringify: true
   },
-  test: {
-    globals: true,
-    environment: 'happy-dom',
+  test: viteAppTestConfig({
     setupFiles: ['./src/services/test/setup.js'],
-    include: ['**/*(*.)?{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: [...configDefaults.exclude, 'src/test/**/*'],
     coverage: {
       reporter: [
@@ -116,5 +113,5 @@ export default defineConfig((config) => ({
       ],
       provider: 'v8'
     }
-  }
+  })
 }));

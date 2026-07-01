@@ -22,6 +22,7 @@
     "test": "scripts/check.sh test",
     "coverage": "scripts/check.sh coverage",
     "ci": "scripts/check.sh ci",
+    "package-drift": "scripts/check.sh package-drift",
     "dogfood": "scripts/check.sh dogfood",
     "changeset": "changeset",
     "version-packages": "changeset version",

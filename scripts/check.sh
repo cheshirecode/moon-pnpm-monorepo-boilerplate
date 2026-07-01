@@ -10,6 +10,7 @@ Usage: scripts/check.sh <command> [args]
 Commands:
   setup                 Install dependencies with the pinned pnpm version.
   lint-fast             Run the fast Rust-based lint guard.
+  package-drift         Check package metadata, dependency, coverage, and dogfood drift.
   lint                  Run package lint targets through moon.
   typecheck             Run package type checks through moon.
   build                 Run package builds through moon.
@@ -57,6 +58,9 @@ case "$command" in
       --ignore-pattern 'packages/eslint-config-react/fails/**' \
       --quiet
     ;;
+  package-drift)
+    run node scripts/package-drift.mjs
+    ;;
   lint)
     if has_git_head; then
       run pnpm exec moon run :lint
@@ -88,6 +92,7 @@ case "$command" in
     ;;
   ci)
     "$repo_root/scripts/check.sh" lint-fast
+    "$repo_root/scripts/check.sh" package-drift
     if has_git_head; then
       run pnpm exec moon ci :lint :typecheck :build :test
     else

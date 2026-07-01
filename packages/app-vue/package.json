@@ -1,0 +1,28 @@
+{
+  "name": "app-vue",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "typecheck": "vue-tsc -p tsconfig.json --noEmit",
+    "build": "vite build",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "lint": "oxlint src --ignore-path ../../.gitignore --quiet"
+  },
+  "dependencies": {
+    "@cheshirecode/demo-contract": "workspace:^",
+    "vue": "^3.5.39"
+  },
+  "devDependencies": {
+    "@cheshirecode/tsconfig": "workspace:^",
+    "@vitejs/plugin-vue": "^6.0.7",
+    "@vitest/coverage-v8": "^4.1.9",
+    "happy-dom": "^20.10.6",
+    "typescript": "^6.0.3",
+    "vite": "^8.1.2",
+    "vitest": "^4.1.9",
+    "vue-tsc": "^3.2.0"
+  }
+}

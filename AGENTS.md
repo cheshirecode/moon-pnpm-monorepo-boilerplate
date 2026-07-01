@@ -31,6 +31,7 @@ scripts/check.sh typecheck
 scripts/check.sh build
 scripts/check.sh test
 scripts/check.sh full
+scripts/check.sh package-drift
 scripts/check.sh pack
 scripts/check.sh dogfood packages
 ```
@@ -41,11 +42,12 @@ End-to-end development flow:
 2. Run the narrow package target while iterating, for example
    `pnpm moon run pkce:test`.
 3. Before handoff, run `scripts/check.sh ci`.
-4. For package-facing changes, run `scripts/check.sh dogfood packages` so
+4. For package topology/config changes, run `scripts/check.sh package-drift`.
+5. For package-facing changes, run `scripts/check.sh dogfood packages` so
    packed tarballs are installed into a temporary external consumer.
-5. For release or publishing changes, run `scripts/check.sh dogfood all` so
+6. For release or publishing changes, run `scripts/check.sh dogfood all` so
    package consumption and `npm publish --dry-run` both pass.
-6. For toolchain, Dockerfile, install, or workflow changes, finish with
+7. For toolchain, Dockerfile, install, or workflow changes, finish with
    `scripts/check.sh docker`.
 
 After dogfood runs, inspect `.artifacts/dogfood/report.json` for the package
@@ -120,7 +122,7 @@ to `scripts/check.sh`.
 Use moon targets for package-specific work:
 
 ```sh
-pnpm moon run app-1:build
+pnpm moon run app-react:build
 pnpm moon run pkce:test
 pnpm moon run :lint --affected
 pnpm moon ci :lint :typecheck :build :test
@@ -129,7 +131,9 @@ pnpm moon ci :lint :typecheck :build :test
 ## Release Rules
 
 - For package-facing changes, add a changeset with `pnpm changeset`.
-- `app-1` is private and ignored by Changesets.
+- Renderer demo apps such as `app-react`, `app-preact`, `app-astro`,
+  `app-vue`, `app-svelte`, and `app-solidjs` are private and ignored by
+  Changesets.
 - `scripts/check.sh pack` and `scripts/check.sh dogfood packages` must succeed
   before package-facing handoff.
 - For publishing workflow changes, `scripts/check.sh dogfood all` must succeed;

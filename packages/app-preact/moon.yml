@@ -1,0 +1,11 @@
+language: "typescript"
+layer: "application"
+stack: "frontend"
+tags:
+  - "preact"
+  - "vite"
+
+tasks:
+  build:
+    outputs:
+      - "dist/**/*"

@@ -1,0 +1,30 @@
+{
+  "name": "app-preact",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "vite build",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "lint": "oxlint src --ignore-path ../../.gitignore --quiet"
+  },
+  "dependencies": {
+    "@cheshirecode/demo-contract": "workspace:^",
+    "@fieryeagle/browser-clipboard": "workspace:^",
+    "preact": "^10.29.3"
+  },
+  "devDependencies": {
+    "@cheshirecode/tsconfig": "workspace:^",
+    "@preact/preset-vite": "^2.10.5",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitest/coverage-v8": "^4.1.9",
+    "happy-dom": "^20.10.6",
+    "typescript": "^6.0.3",
+    "vite": "^8.1.2",
+    "vitest": "^4.1.9"
+  }
+}

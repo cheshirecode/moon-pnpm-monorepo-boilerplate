@@ -1,0 +1,28 @@
+{
+  "name": "app-svelte",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "typecheck": "svelte-check --tsconfig tsconfig.json",
+    "build": "vite build",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "lint": "oxlint src --ignore-path ../../.gitignore --quiet"
+  },
+  "dependencies": {
+    "@cheshirecode/demo-contract": "workspace:^",
+    "svelte": "^5.56.4"
+  },
+  "devDependencies": {
+    "@cheshirecode/tsconfig": "workspace:^",
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@vitest/coverage-v8": "^4.1.9",
+    "happy-dom": "^20.10.6",
+    "svelte-check": "^4.4.4",
+    "typescript": "^6.0.3",
+    "vite": "^8.1.2",
+    "vitest": "^4.1.9"
+  }
+}

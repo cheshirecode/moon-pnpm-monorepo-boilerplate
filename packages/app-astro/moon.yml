@@ -1,0 +1,10 @@
+language: "typescript"
+layer: "application"
+stack: "frontend"
+tags:
+  - "astro"
+
+tasks:
+  build:
+    outputs:
+      - "dist/**/*"

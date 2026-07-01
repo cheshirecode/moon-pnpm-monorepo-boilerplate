@@ -1,0 +1,11 @@
+language: "typescript"
+layer: "application"
+stack: "frontend"
+tags:
+  - "solidjs"
+  - "vite"
+
+tasks:
+  build:
+    outputs:
+      - "dist/**/*"

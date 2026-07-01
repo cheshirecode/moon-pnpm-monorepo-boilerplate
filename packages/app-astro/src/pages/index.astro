@@ -1,0 +1,18 @@
+---
+import { createRendererDemoContract, formatRendererDemo } from '@cheshirecode/demo-contract';
+
+const contract = createRendererDemoContract('Astro');
+---
+
+<html lang="en">
+  <head>
+    <title>{contract.title}</title>
+  </head>
+  <body>
+    <main>
+      <h1>{contract.title}</h1>
+      <p>{formatRendererDemo(contract)}</p>
+      <p>{contract.url}</p>
+    </main>
+  </body>
+</html>

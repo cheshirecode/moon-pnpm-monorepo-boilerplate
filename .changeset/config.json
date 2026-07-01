@@ -7,5 +7,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["app-1"]
+  "ignore": ["app-react", "app-preact", "app-astro", "app-vue", "app-svelte", "app-solidjs"]
 }
