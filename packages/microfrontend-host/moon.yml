@@ -1,0 +1,12 @@
+language: "typescript"
+layer: "library"
+stack: "frontend"
+tags:
+  - "browser"
+  - "microfrontend"
+  - "utilities"
+
+tasks:
+  build:
+    outputs:
+      - "dist/**/*"

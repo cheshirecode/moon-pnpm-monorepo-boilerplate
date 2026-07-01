@@ -32,6 +32,7 @@ scripts/check.sh test            # moon graph tests + root smoke tests
 scripts/check.sh full            # full non-affected verification path
 scripts/check.sh package-drift   # package metadata/dependency coverage guard
 scripts/check.sh coverage        # package coverage tasks
+scripts/check.sh renderer-showcase # build and smoke-check embedded renderer showcase
 scripts/check.sh dogfood packages # install packed tarballs in an external consumer
 scripts/check.sh dogfood all      # package dogfood + npm publish dry-run
 scripts/check.sh pack            # pack publishable packages into .artifacts/release
@@ -52,6 +53,7 @@ Use moon targets for tight loops, then move outward:
 pnpm moon run pkce:test
 scripts/check.sh ci
 scripts/check.sh package-drift
+scripts/check.sh renderer-showcase
 scripts/check.sh dogfood packages
 scripts/check.sh docker
 ```
@@ -101,7 +103,9 @@ packages/
   app-vue/                Vue + Vite application
   app-svelte/             Svelte + Vite application
   app-solidjs/            SolidJS + Vite application
+  renderer-showcase/      Plain HTML host embedding renderer app microfrontends
   demo-contract/          Shared renderer demo contract package
+  microfrontend-host/     Framework-neutral host shell and mount helpers
   browser-clipboard/      Browser/isomorphic clipboard helper
   create-moon-pnpm-monorepo/ Clean monorepo generator for this tooling stack
   eslint-config-react/    Shared ESLint flat config package
@@ -116,13 +120,27 @@ Each package owns its framework-specific config. moon reads `packages/*/moon.yml
 
 Published packages are versioned through Changesets. Private demo apps, such
 as `app-react`, `app-preact`, `app-astro`, `app-vue`, `app-svelte`, and
-`app-solidjs`, are ignored.
+`app-solidjs`, plus `renderer-showcase`, are ignored.
 
 1. Run `pnpm changeset` in a feature branch for user-facing package changes.
 2. Run `pnpm run pack` locally or in CI to verify publishable tarballs.
 3. On `main`, run the `publish` GitHub workflow with `publish_to_npm=true` and `NPM_AUTH_TOKEN` configured.
 
 The publish workflow validates install, lint, build, test, and tarball packaging before Changesets publishes packages.
+
+## Renderer Showcase
+
+`packages/renderer-showcase` is a plain HTML/Vite host that embeds the renderer
+demo apps in one page. Client-rendered apps expose package-local
+`mount(container): () => void` adapters. Astro is represented as a static tile
+from the shared renderer demo contract. Reusable framework-neutral host logic
+lives in `@cheshirecode/microfrontend-host`.
+
+Verify the full embedding path with:
+
+```sh
+scripts/check.sh renderer-showcase
+```
 
 ## Agent Pickup
 
@@ -136,6 +154,7 @@ Read `AGENTS.md` first. The short version:
 - Keep package-specific framework choices local to each package.
 - Validate ordinary changes with `pnpm run ci` before handoff.
 - For package topology/config changes, also run `scripts/check.sh package-drift`.
+- For renderer app or host-shell changes, also run `scripts/check.sh renderer-showcase`.
 - For package-facing changes, also run `scripts/check.sh dogfood packages`.
 - For publishing workflow changes, run `scripts/check.sh dogfood all`.
 - GitHub adds workflow lint, dirty-diff detection after lint, package dogfood,

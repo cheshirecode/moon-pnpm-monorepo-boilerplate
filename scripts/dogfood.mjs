@@ -272,6 +272,13 @@ assert.equal(vueDemo.slug, 'vue-renderer');
 assert.equal(vueDemo.emailValidation, 'valid');
 assert.match(demoContract.formatRendererDemo(vueDemo), /Vue renderer/);
 
+const microfrontendHost = await import('@cheshirecode/microfrontend-host');
+const registry = microfrontendHost.createMicrofrontendRegistry([
+  { id: 'dogfood-static', title: 'Dogfood static', kind: 'static', render: () => 'ok' }
+]);
+assert.equal(registry[0].id, 'dogfood-static');
+assert.equal(microfrontendHost.microfrontendMountId('dogfood-static'), 'microfrontend-dogfood-static');
+
 const briefSchema = await import('@cheshirecode/brief-schema');
 const prospectSchemaAsset = await import(
   '@cheshirecode/brief-schema/prospect.schema.json',

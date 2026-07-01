@@ -22,6 +22,7 @@ Commands:
   coverage              Run all package coverage targets through moon.
   coverage-packages     List package directories that define coverage scripts.
   coverage-package NAME Run coverage for one package through moon.
+  renderer-showcase     Build and smoke-check the renderer microfrontend showcase.
   pack                  Pack publishable packages into .artifacts/release.
   workflow-lint         Lint GitHub Actions workflows with actionlint in Docker.
   docker                Build the repo verification Docker image.
@@ -93,6 +94,7 @@ case "$command" in
   ci)
     "$repo_root/scripts/check.sh" lint-fast
     "$repo_root/scripts/check.sh" package-drift
+    "$repo_root/scripts/check.sh" renderer-showcase
     if has_git_head; then
       run pnpm exec moon ci :lint :typecheck :build :test
     else
@@ -105,6 +107,8 @@ case "$command" in
     ;;
   full)
     "$repo_root/scripts/check.sh" lint-fast
+    "$repo_root/scripts/check.sh" package-drift
+    "$repo_root/scripts/check.sh" renderer-showcase
     run pnpm -r --if-present lint
     run pnpm -r --if-present typecheck
     run pnpm -r --if-present build
@@ -136,6 +140,10 @@ case "$command" in
       exit 2
     fi
     run pnpm exec moon run "$package:coverage"
+    ;;
+  renderer-showcase)
+    run pnpm exec moon run app-react:build app-preact:build app-astro:build app-vue:build app-svelte:build app-solidjs:build renderer-showcase:build
+    run node scripts/verify-renderer-showcase.mjs --dist
     ;;
   pack)
     run node scripts/pack-publishable.mjs

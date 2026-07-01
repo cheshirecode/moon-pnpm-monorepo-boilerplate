@@ -32,6 +32,7 @@ scripts/check.sh build
 scripts/check.sh test
 scripts/check.sh full
 scripts/check.sh package-drift
+scripts/check.sh renderer-showcase
 scripts/check.sh pack
 scripts/check.sh dogfood packages
 ```
@@ -43,11 +44,12 @@ End-to-end development flow:
    `pnpm moon run pkce:test`.
 3. Before handoff, run `scripts/check.sh ci`.
 4. For package topology/config changes, run `scripts/check.sh package-drift`.
-5. For package-facing changes, run `scripts/check.sh dogfood packages` so
+5. For renderer app or host-shell changes, run `scripts/check.sh renderer-showcase`.
+6. For package-facing changes, run `scripts/check.sh dogfood packages` so
    packed tarballs are installed into a temporary external consumer.
-6. For release or publishing changes, run `scripts/check.sh dogfood all` so
+7. For release or publishing changes, run `scripts/check.sh dogfood all` so
    package consumption and `npm publish --dry-run` both pass.
-7. For toolchain, Dockerfile, install, or workflow changes, finish with
+8. For toolchain, Dockerfile, install, or workflow changes, finish with
    `scripts/check.sh docker`.
 
 After dogfood runs, inspect `.artifacts/dogfood/report.json` for the package
@@ -67,14 +69,20 @@ scripts/check.sh docker
 scripts/check.sh ci
 ```
 
-3. Package-facing or release changes:
+3. Renderer app or host-shell changes:
+
+```sh
+scripts/check.sh renderer-showcase
+```
+
+4. Package-facing or release changes:
 
 ```sh
 scripts/check.sh pack
 scripts/check.sh dogfood packages
 ```
 
-4. Publishing workflow changes:
+5. Publishing workflow changes:
 
 ```sh
 scripts/check.sh dogfood all
@@ -132,8 +140,14 @@ pnpm moon ci :lint :typecheck :build :test
 
 - For package-facing changes, add a changeset with `pnpm changeset`.
 - Renderer demo apps such as `app-react`, `app-preact`, `app-astro`,
-  `app-vue`, `app-svelte`, and `app-solidjs` are private and ignored by
-  Changesets.
+  `app-vue`, `app-svelte`, `app-solidjs`, and `renderer-showcase` are private
+  and ignored by Changesets.
+- `renderer-showcase` embeds the renderer demo apps as microfrontends. Its
+  registry must include exactly `app-react`, `app-preact`, `app-astro`,
+  `app-vue`, `app-svelte`, and `app-solidjs`; do not use a raw `app-*` glob
+  because `app-utils` is a publishable library.
+- Keep reusable host-shell logic in `@cheshirecode/microfrontend-host`; keep
+  framework-specific mount adapters package-local.
 - `scripts/check.sh pack` and `scripts/check.sh dogfood packages` must succeed
   before package-facing handoff.
 - For publishing workflow changes, `scripts/check.sh dogfood all` must succeed;

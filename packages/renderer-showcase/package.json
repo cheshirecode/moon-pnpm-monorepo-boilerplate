@@ -1,14 +1,11 @@
 {
-  "name": "app-svelte",
+  "name": "renderer-showcase",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "exports": {
-    "./microfrontend": "./src/microfrontend.ts"
-  },
   "scripts": {
     "dev": "vite --host",
-    "typecheck": "svelte-check --tsconfig tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "build": "vite build",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
@@ -16,16 +13,27 @@
   },
   "dependencies": {
     "@cheshirecode/demo-contract": "workspace:^",
-    "svelte": "^5.56.4"
+    "@cheshirecode/microfrontend-host": "workspace:^",
+    "@fieryeagle/browser-clipboard": "workspace:^",
+    "preact": "^10.29.3",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "solid-js": "^1.9.13",
+    "svelte": "^5.56.4",
+    "vue": "^3.5.39"
   },
   "devDependencies": {
     "@cheshirecode/tsconfig": "workspace:^",
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@types/node": "^24.10.2",
+    "@vitejs/plugin-react": "^6.0.3",
+    "@vitejs/plugin-vue": "^6.0.7",
     "@vitest/coverage-v8": "^4.1.9",
+    "@testing-library/jest-dom": "^6.9.1",
     "happy-dom": "^20.10.6",
-    "svelte-check": "^4.4.4",
     "typescript": "^6.0.3",
     "vite": "^8.1.2",
+    "vite-plugin-solid": "^2.11.12",
     "vitest": "^4.1.9"
   }
 }
