@@ -17,7 +17,9 @@ const dogfoodDir = join(root, '.artifacts', 'dogfood');
 const reportPath = process.env.DOGFOOD_REPORT
   ? resolve(root, process.env.DOGFOOD_REPORT)
   : join(dogfoodDir, 'report.json');
-const mode = process.argv[2] ?? 'packages';
+const args = process.argv.slice(2);
+const mode = args.find((arg) => !arg.startsWith('-')) ?? 'packages';
+const skipBuild = args.includes('--skip-build');
 const validModes = new Set(['packages', 'release', 'all']);
 
 if (!validModes.has(mode) || process.argv.includes('-h') || process.argv.includes('--help')) {
@@ -25,7 +27,9 @@ if (!validModes.has(mode) || process.argv.includes('-h') || process.argv.include
   process.exit(validModes.has(mode) ? 0 : 2);
 }
 
-await run('scripts/check.sh', ['build'], root);
+if (!skipBuild) {
+  await run('scripts/check.sh', ['build'], root);
+}
 await run('scripts/check.sh', ['pack'], root);
 
 const tarballs = await getTarballs();
@@ -40,6 +44,7 @@ const report = {
     tarballBytes: pkg.tarballBytes
   })),
   checks: {
+    build: skipBuild ? 'skipped' : 'passed',
     packageConsumption: 'skipped',
     releaseDryRun: 'skipped'
   }
@@ -63,9 +68,12 @@ function usage() {
   console.log(`Usage: scripts/dogfood.mjs [packages|release|all]
 
 Modes:
-  packages  Pack packages, install tarballs in a temp external consumer, and import/use them.
-  release   Pack packages and run npm publish --dry-run for each tarball.
+  packages  Build, pack, install tarballs in a temp external consumer, and import/use them.
+  release   Build, pack, and run npm publish --dry-run for each tarball.
   all       Run package-consumption and release dry-run dogfood.
+
+Flags:
+  --skip-build  Reuse already-built package artifacts and only pack/dogfood them.
 `);
 }
 
@@ -233,6 +241,21 @@ assert.equal(typeof finish(), 'number');
 const eslintConfig = require('@fieryeagle/eslint-config-react');
 assert.equal(Array.isArray(eslintConfig), true);
 assert.ok(eslintConfig.length > 0);
+
+const appUtils = await import('@cheshirecode/app-utils');
+assert.equal(appUtils.pascalToSeparatedWords('fontFamily'), 'font-family');
+assert.deepEqual(appUtils.deepFilter(['os-windows', 'os-linux'], 'os-linux'), [
+  'os-linux'
+]);
+assert.deepEqual(appUtils.getIntervals([], 100), [25, 50, 100]);
+assert.equal(appUtils.isEmptyObject({ a: undefined, b: null }), true);
+
+const urlSearchParams = await import('@cheshirecode/url-search-params');
+const dogfoodParams = urlSearchParams
+  .createUrlSearchParams('?keep=1', { 'foo-bar': 2 })
+  .toUnderscoredKeys();
+assert.equal(dogfoodParams.toString(), 'keep=1&foo_bar=2');
+assert.deepEqual(dogfoodParams.entriesAsObj(), { keep: '1', foo_bar: '2' });
 
 const briefSchema = await import('@cheshirecode/brief-schema');
 const prospectSchemaAsset = await import(

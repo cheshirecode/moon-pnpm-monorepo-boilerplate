@@ -1,0 +1,45 @@
+{
+  "name": "@cheshirecode/app-utils",
+  "version": "0.0.0",
+  "description": "Framework-neutral string, filtering, interval, and object utility helpers.",
+  "type": "module",
+  "private": false,
+  "keywords": ["app", "utilities", "strings", "filtering"],
+  "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate.git",
+    "directory": "packages/app-utils"
+  },
+  "bugs": {
+    "url": "https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate/issues"
+  },
+  "engines": {
+    "node": ">=24.11.0"
+  },
+  "files": ["dist"],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "lint": "oxlint src --ignore-path ../../.gitignore --quiet"
+  },
+  "dependencies": {
+    "fast-json-stable-stringify": "^2.1.0"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.9",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
+  }
+}

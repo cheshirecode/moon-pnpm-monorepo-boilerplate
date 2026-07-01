@@ -455,7 +455,13 @@ case "\${1:-}" in
     run node scripts/pack-publishable.mjs
     ;;
   dogfood)
-    run node scripts/dogfood.mjs "\${2:-packages}"
+    mode="\${2:-packages}"
+    if [[ $# -gt 1 ]]; then
+      shift 2
+    else
+      shift $#
+    fi
+    run node scripts/dogfood.mjs "$mode" "$@"
     ;;
   -h|--help|help|"")
     echo "Usage: scripts/check.sh setup|lint-fast|lint|typecheck|build|test|ci|coverage|coverage-package|pack|dogfood"
@@ -518,9 +524,13 @@ import { spawn } from 'node:child_process';
 const root = resolve(import.meta.dirname, '..');
 const releaseDir = join(root, '.artifacts', 'release');
 const dogfoodDir = join(root, '.artifacts', 'dogfood');
-const mode = process.argv[2] ?? 'packages';
+const args = process.argv.slice(2);
+const mode = args.find((arg) => !arg.startsWith('-')) ?? 'packages';
+const skipBuild = args.includes('--skip-build');
 
-await run('scripts/check.sh', ['build'], root);
+if (!skipBuild) {
+  await run('scripts/check.sh', ['build'], root);
+}
 await run('scripts/check.sh', ['pack'], root);
 
 const tarballs = (await readdir(releaseDir)).filter((file) => file.endsWith('.tgz')).map((file) => join(releaseDir, file)).sort();
