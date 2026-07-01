@@ -142,7 +142,24 @@ case "$command" in
     run pnpm exec moon run "$package:coverage"
     ;;
   renderer-showcase)
-    run pnpm exec moon run app-react:build app-preact:build app-astro:build app-vue:build app-svelte:build app-solidjs:build renderer-showcase:build
+    if has_git_head; then
+      run pnpm exec moon run app-react:build app-preact:build app-astro:build app-vue:build app-svelte:build app-solidjs:build renderer-showcase:build
+    else
+      for package in \
+        microfrontend-host \
+        demo-contract \
+        browser-clipboard \
+        app-react \
+        app-preact \
+        app-astro \
+        app-vue \
+        app-svelte \
+        app-solidjs \
+        renderer-showcase
+      do
+        run pnpm --dir "packages/$package" build
+      done
+    fi
     run node scripts/verify-renderer-showcase.mjs --dist
     ;;
   pack)
