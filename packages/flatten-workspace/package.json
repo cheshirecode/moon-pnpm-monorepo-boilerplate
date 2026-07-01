@@ -44,6 +44,7 @@
     "lint": "oxlint src --ignore-path ../../.gitignore --quiet"
   },
   "devDependencies": {
+    "@cheshirecode/tsconfig": "workspace:^",
     "@types/node": "^24.10.2",
     "@vitest/coverage-v8": "^4.1.9",
     "typescript": "^6.0.3",

@@ -1,15 +1,8 @@
 {
+  "extends": "@cheshirecode/tsconfig/dom.json",
   "compilerOptions": {
-    "declaration": true,
-    "declarationMap": true,
-    "lib": ["DOM", "ESNext"],
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
     "outDir": "dist",
-    "rootDir": "src",
-    "skipLibCheck": true,
-    "strict": true,
-    "target": "ES2022"
+    "rootDir": "src"
   },
   "include": ["src"],
   "exclude": ["src/**/*.test.ts"]

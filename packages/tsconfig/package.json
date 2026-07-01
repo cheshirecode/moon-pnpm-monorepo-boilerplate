@@ -1,0 +1,28 @@
+{
+  "name": "@cheshirecode/tsconfig",
+  "version": "0.0.0",
+  "description": "Shared TypeScript configs for Cheshire Code packages.",
+  "type": "module",
+  "private": false,
+  "keywords": ["typescript", "tsconfig", "monorepo"],
+  "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate.git",
+    "directory": "packages/tsconfig"
+  },
+  "bugs": {
+    "url": "https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate/issues"
+  },
+  "engines": {
+    "node": ">=24.11.0"
+  },
+  "files": ["*.json"],
+  "exports": {
+    "./base.json": "./base.json",
+    "./dom.json": "./dom.json",
+    "./node.json": "./node.json",
+    "./node-types.json": "./node-types.json"
+  }
+}
