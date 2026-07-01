@@ -257,6 +257,15 @@ const dogfoodParams = urlSearchParams
 assert.equal(dogfoodParams.toString(), 'keep=1&foo_bar=2');
 assert.deepEqual(dogfoodParams.entriesAsObj(), { keep: '1', foo_bar: '2' });
 
+const tsconfigBase = await import('@cheshirecode/tsconfig/base.json', {
+  with: { type: 'json' }
+});
+const tsconfigNodeTypes = await import('@cheshirecode/tsconfig/node-types.json', {
+  with: { type: 'json' }
+});
+assert.equal(tsconfigBase.default.compilerOptions.module, 'NodeNext');
+assert.equal(tsconfigNodeTypes.default.compilerOptions.types[0], 'node');
+
 const briefSchema = await import('@cheshirecode/brief-schema');
 const prospectSchemaAsset = await import(
   '@cheshirecode/brief-schema/prospect.schema.json',

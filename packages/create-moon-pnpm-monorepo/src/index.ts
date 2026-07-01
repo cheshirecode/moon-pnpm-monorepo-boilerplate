@@ -93,9 +93,12 @@ function templateFiles(repoName: string): Array<[string, string]> {
     ['.github/actions/setup/action.yml', setupAction()],
     ['.github/workflows/main.yml', mainWorkflow()],
     ['.github/workflows/publish.yml', publishWorkflow()],
+    ['packages/tsconfig/package.json', json(tsconfigPackageJson(repoName))],
+    ['packages/tsconfig/base.json', json(tsconfigBase())],
+    ['packages/tsconfig/node-types.json', json(tsconfigNodeTypes())],
     ['packages/example-lib/package.json', json(examplePackageJson(repoName))],
     ['packages/example-lib/moon.yml', exampleMoon()],
-    ['packages/example-lib/tsconfig.json', json(exampleTsconfig())],
+    ['packages/example-lib/tsconfig.json', json(exampleTsconfig(repoName))],
     ['packages/example-lib/vitest.config.ts', exampleVitestConfig()],
     ['packages/example-lib/src/index.ts', exampleSource()],
     ['packages/example-lib/src/index.test.ts', exampleTest()]
@@ -186,10 +189,54 @@ function examplePackageJson(repoName: string): Record<string, unknown> {
       lint: 'oxlint src --ignore-path ../../.gitignore --quiet'
     },
     devDependencies: {
+      [`${repoName}-tsconfig`]: 'workspace:^',
       '@types/node': '^24.10.2',
       '@vitest/coverage-v8': '^4.1.9',
       typescript: '^6.0.3',
       vitest: '^4.1.9'
+    }
+  };
+}
+
+function tsconfigPackageJson(repoName: string): Record<string, unknown> {
+  return {
+    name: `${repoName}-tsconfig`,
+    version: '0.0.0',
+    description: 'Shared TypeScript configs for this monorepo.',
+    type: 'module',
+    private: false,
+    license: 'MIT',
+    engines: {
+      node: '>=24.11.0'
+    },
+    files: ['*.json'],
+    exports: {
+      './base.json': './base.json',
+      './node-types.json': './node-types.json'
+    }
+  };
+}
+
+function tsconfigBase(): Record<string, unknown> {
+  return {
+    compilerOptions: {
+      declaration: true,
+      declarationMap: true,
+      lib: ['ESNext'],
+      module: 'NodeNext',
+      moduleResolution: 'NodeNext',
+      skipLibCheck: true,
+      strict: true,
+      target: 'ES2022'
+    }
+  };
+}
+
+function tsconfigNodeTypes(): Record<string, unknown> {
+  return {
+    extends: './base.json',
+    compilerOptions: {
+      types: ['node']
     }
   };
 }
@@ -745,20 +792,12 @@ tasks:
 `;
 }
 
-function exampleTsconfig(): Record<string, unknown> {
+function exampleTsconfig(repoName: string): Record<string, unknown> {
   return {
+    extends: `${repoName}-tsconfig/node-types.json`,
     compilerOptions: {
-      declaration: true,
-      declarationMap: true,
-      lib: ['ESNext'],
-      module: 'NodeNext',
-      moduleResolution: 'NodeNext',
       outDir: 'dist',
-      rootDir: 'src',
-      skipLibCheck: true,
-      strict: true,
-      target: 'ES2022',
-      types: ['node']
+      rootDir: 'src'
     },
     include: ['src'],
     exclude: ['src/**/*.test.ts']

@@ -169,6 +169,9 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
     devDependencies:
+      '@cheshirecode/tsconfig':
+        specifier: workspace:^
+        version: link:../tsconfig
       '@vitest/coverage-v8':
         specifier: ^4.1.9
         version: 4.1.9(vitest@4.1.9)
@@ -197,6 +200,9 @@ importers:
 
   packages/browser-clipboard:
     devDependencies:
+      '@cheshirecode/tsconfig':
+        specifier: workspace:^
+        version: link:../tsconfig
       '@fieryeagle/eslint-config-react':
         specifier: workspace:^
         version: link:../eslint-config-react
@@ -218,6 +224,9 @@ importers:
 
   packages/create-moon-pnpm-monorepo:
     devDependencies:
+      '@cheshirecode/tsconfig':
+        specifier: workspace:^
+        version: link:../tsconfig
       '@types/node':
         specifier: ^24.10.2
         version: 24.13.2
@@ -270,6 +279,9 @@ importers:
 
   packages/flatten-workspace:
     devDependencies:
+      '@cheshirecode/tsconfig':
+        specifier: workspace:^
+        version: link:../tsconfig
       '@types/node':
         specifier: ^24.10.2
         version: 24.13.2
@@ -285,6 +297,9 @@ importers:
 
   packages/form-validators:
     devDependencies:
+      '@cheshirecode/tsconfig':
+        specifier: workspace:^
+        version: link:../tsconfig
       '@vitest/coverage-v8':
         specifier: ^4.1.9
         version: 4.1.9(vitest@4.1.9)
@@ -301,6 +316,9 @@ importers:
         specifier: ^3.18.0
         version: 3.18.0
     devDependencies:
+      '@cheshirecode/tsconfig':
+        specifier: workspace:^
+        version: link:../tsconfig
       '@vitest/coverage-v8':
         specifier: ^4.1.9
         version: 4.1.9(vitest@4.1.9)
@@ -402,8 +420,13 @@ importers:
         specifier: ^0.4.5
         version: 0.4.5(vitest@4.1.9)
 
+  packages/tsconfig: {}
+
   packages/url-search-params:
     devDependencies:
+      '@cheshirecode/tsconfig':
+        specifier: workspace:^
+        version: link:../tsconfig
       '@vitest/coverage-v8':
         specifier: ^4.1.9
         version: 4.1.9(vitest@4.1.9)
@@ -416,6 +439,9 @@ importers:
 
   packages/url-state:
     devDependencies:
+      '@cheshirecode/tsconfig':
+        specifier: workspace:^
+        version: link:../tsconfig
       '@vitest/coverage-v8':
         specifier: ^4.1.9
         version: 4.1.9(vitest@4.1.9)

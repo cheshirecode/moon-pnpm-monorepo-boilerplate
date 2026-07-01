@@ -23,6 +23,7 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "@cheshirecode/tsconfig": "workspace:^",
     "@fieryeagle/eslint-config-react": "workspace:^",
     "@vitest/coverage-v8": "^4.1.9",
     "eslint": "^10.6.0",

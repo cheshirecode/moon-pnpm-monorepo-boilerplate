@@ -38,6 +38,7 @@
     "fast-json-stable-stringify": "^2.1.0"
   },
   "devDependencies": {
+    "@cheshirecode/tsconfig": "workspace:^",
     "@vitest/coverage-v8": "^4.1.9",
     "typescript": "^6.0.3",
     "vitest": "^4.1.9"
