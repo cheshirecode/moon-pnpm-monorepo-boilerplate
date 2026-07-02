@@ -1,7 +1,10 @@
-import { toHyphen } from '@cheshirecode/app-utils';
-import { validateEmail, validateRequired } from '@cheshirecode/form-validators';
-import { createUrlSearchParams } from '@cheshirecode/url-search-params';
-import { buildQueryUrl } from '@cheshirecode/url-state';
+import {
+  buildQueryUrl,
+  createUrlSearchParams,
+  toHyphen,
+  validateEmail,
+  validateRequired
+} from '@cheshirecode/browser-utils';
 
 export interface RendererDemoContract {
   renderer: string;

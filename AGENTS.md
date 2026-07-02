@@ -145,9 +145,12 @@ pnpm moon ci :lint :typecheck :build :test
 - `renderer-showcase` embeds the renderer demo apps as microfrontends. Its
   registry must include exactly `app-react`, `app-preact`, `app-astro`,
   `app-vue`, `app-svelte`, and `app-solidjs`; do not use a raw `app-*` glob
-  because `app-utils` is a publishable library.
+  because non-renderer packages can still share the `app-*` prefix.
 - Keep reusable host-shell logic in `@cheshirecode/microfrontend-host`; keep
   framework-specific mount adapters package-local.
+- Put generic string, form, filtering, and URL helpers in
+  `@cheshirecode/browser-utils`. Keep sanitizer-backed validation in
+  `@cheshirecode/input-validation`.
 - `scripts/check.sh pack` and `scripts/check.sh dogfood packages` must succeed
   before package-facing handoff.
 - For publishing workflow changes, `scripts/check.sh dogfood all` must succeed;

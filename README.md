@@ -106,12 +106,16 @@ packages/
   renderer-showcase/      Plain HTML host embedding renderer app microfrontends
   demo-contract/          Shared renderer demo contract package
   microfrontend-host/     Framework-neutral host shell and mount helpers
+  browser-utils/          Framework-neutral string, form, filtering, and URL helpers
+  input-validation/       Sanitization-backed input validation helpers
   browser-clipboard/      Browser/isomorphic clipboard helper
+  brief-schema/           JSON schemas and validators for brief payloads
   create-moon-pnpm-monorepo/ Clean monorepo generator for this tooling stack
   eslint-config-react/    Shared ESLint flat config package
   flatten-workspace/      Workspace package-manifest flattening utility
   measure-hook/           Small timing helper package
   pkce/                   PKCE library + Vite demo
+  tsconfig/               Shared TypeScript config package
 ```
 
 Each package owns its framework-specific config. moon reads `packages/*/moon.yml` for metadata and inherits standard `lint`, `build`, `test`, `coverage`, and `typecheck` tasks from `.moon/tasks/node.yml`.

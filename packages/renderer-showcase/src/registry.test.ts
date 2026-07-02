@@ -20,8 +20,10 @@ describe('renderer showcase registry', () => {
     );
   });
 
-  it('keeps app-utils and the host package out of the embeddable set', () => {
-    expect(rendererShowcaseEntries.map((entry) => entry.id)).not.toContain('app-utils');
+  it('keeps utility and host packages out of the embeddable set', () => {
+    expect(rendererShowcaseEntries.map((entry) => entry.id)).not.toContain(
+      'browser-utils'
+    );
     expect(rendererShowcaseEntries.map((entry) => entry.id)).not.toContain(
       'renderer-showcase'
     );
