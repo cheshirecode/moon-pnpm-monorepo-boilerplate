@@ -35,10 +35,7 @@
     "lint": "oxlint src --ignore-path ../../.gitignore --quiet"
   },
   "dependencies": {
-    "@cheshirecode/app-utils": "workspace:^",
-    "@cheshirecode/form-validators": "workspace:^",
-    "@cheshirecode/url-search-params": "workspace:^",
-    "@cheshirecode/url-state": "workspace:^"
+    "@cheshirecode/browser-utils": "workspace:^"
   },
   "devDependencies": {
     "@cheshirecode/tsconfig": "workspace:^",

@@ -1,16 +1,16 @@
 {
-  "name": "@cheshirecode/form-validators",
+  "name": "@cheshirecode/browser-utils",
   "version": "0.0.0",
-  "description": "Small framework-agnostic form validation helpers.",
+  "description": "Framework-neutral string, form, URL, filtering, and browser utility helpers.",
   "type": "module",
   "private": false,
-  "keywords": ["forms", "validation", "validators"],
+  "keywords": ["browser", "utilities", "forms", "url", "strings"],
   "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate.git",
-    "directory": "packages/form-validators"
+    "directory": "packages/browser-utils"
   },
   "bugs": {
     "url": "https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate/issues"
@@ -34,9 +34,13 @@
     "coverage": "vitest run --coverage",
     "lint": "oxlint src --ignore-path ../../.gitignore --quiet"
   },
+  "dependencies": {
+    "fast-json-stable-stringify": "^2.1.0"
+  },
   "devDependencies": {
     "@cheshirecode/tsconfig": "workspace:^",
     "@vitest/coverage-v8": "^4.1.9",
+    "happy-dom": "^20.10.6",
     "typescript": "^6.0.3",
     "vitest": "^4.1.9"
   }

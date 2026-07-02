@@ -147,6 +147,7 @@ case "$command" in
     else
       for package in \
         microfrontend-host \
+        browser-utils \
         demo-contract \
         browser-clipboard \
         app-react \

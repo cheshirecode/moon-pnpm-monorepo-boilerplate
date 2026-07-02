@@ -242,16 +242,15 @@ const eslintConfig = require('@fieryeagle/eslint-config-react');
 assert.equal(Array.isArray(eslintConfig), true);
 assert.ok(eslintConfig.length > 0);
 
-const appUtils = await import('@cheshirecode/app-utils');
-assert.equal(appUtils.pascalToSeparatedWords('fontFamily'), 'font-family');
-assert.deepEqual(appUtils.deepFilter(['os-windows', 'os-linux'], 'os-linux'), [
+const browserUtils = await import('@cheshirecode/browser-utils');
+assert.equal(browserUtils.pascalToSeparatedWords('fontFamily'), 'font-family');
+assert.deepEqual(browserUtils.deepFilter(['os-windows', 'os-linux'], 'os-linux'), [
   'os-linux'
 ]);
-assert.deepEqual(appUtils.getIntervals([], 100), [25, 50, 100]);
-assert.equal(appUtils.isEmptyObject({ a: undefined, b: null }), true);
+assert.deepEqual(browserUtils.getIntervals([], 100), [25, 50, 100]);
+assert.equal(browserUtils.isEmptyObject({ a: undefined, b: null }), true);
 
-const urlSearchParams = await import('@cheshirecode/url-search-params');
-const dogfoodParams = urlSearchParams
+const dogfoodParams = browserUtils
   .createUrlSearchParams('?keep=1', { 'foo-bar': 2 })
   .toUnderscoredKeys();
 assert.equal(dogfoodParams.toString(), 'keep=1&foo_bar=2');
@@ -313,12 +312,11 @@ assert.deepEqual(
   [{ matched: 'step runner registry', pattern: 'step runner registry' }]
 );
 
-const formValidators = await import('@cheshirecode/form-validators');
-assert.equal(formValidators.validateEmail('person@example.test'), undefined);
-assert.equal(formValidators.validateRequired('', 'Name'), 'Name is required');
-const composedValidator = formValidators.composeValidators(
-  (value) => formValidators.validateRequired(value, 'Name'),
-  (value) => formValidators.validateMinLength(value, 3, 'Name')
+assert.equal(browserUtils.validateEmail('person@example.test'), undefined);
+assert.equal(browserUtils.validateRequired('', 'Name'), 'Name is required');
+const composedValidator = browserUtils.composeValidators(
+  (value) => browserUtils.validateRequired(value, 'Name'),
+  (value) => browserUtils.validateMinLength(value, 3, 'Name')
 );
 assert.equal(composedValidator('Al'), 'Name must be at least 3 characters');
 
@@ -333,14 +331,13 @@ assert.equal(
 );
 assert.equal(inputValidation.sanitizeTextInput('<b>hello</b>'), 'hello');
 
-const urlState = await import('@cheshirecode/url-state');
 assert.equal(
-  urlState.buildQueryUrl('https://example.test/path?keep=1', { room: 'alpha' }),
+  browserUtils.buildQueryUrl('https://example.test/path?keep=1', { room: 'alpha' }),
   'https://example.test/path?keep=1&room=alpha'
 );
-assert.equal(urlState.getQueryParam('room', '?room=alpha'), 'alpha');
+assert.equal(browserUtils.getQueryParam('room', '?room=alpha'), 'alpha');
 const replacedUrls = [];
-const replacedUrl = urlState.replaceQueryUrl(
+const replacedUrl = browserUtils.replaceQueryUrl(
   { room: 'beta' },
   {
     href: 'https://example.test/path?keep=1',

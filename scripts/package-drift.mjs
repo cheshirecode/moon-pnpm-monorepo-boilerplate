@@ -7,6 +7,16 @@ const root = resolve(import.meta.dirname, '..');
 const packagesDir = join(root, 'packages');
 const errors = [];
 const staleAppRef = `app-${1}`;
+const removedUtilityRefs = [
+  '@cheshirecode/app-utils',
+  '@cheshirecode/form-validators',
+  '@cheshirecode/url-search-params',
+  '@cheshirecode/url-state',
+  'packages/app-utils',
+  'packages/form-validators',
+  'packages/url-search-params',
+  'packages/url-state'
+];
 
 const moonAllowlist = new Set(['tsconfig']);
 const coverageScriptAllowlist = new Set(['tsconfig']);
@@ -69,9 +79,12 @@ for (const dirName of entries) {
   }
 }
 
-const staleAppRefs = await staleReferences();
-for (const ref of staleAppRefs) {
-    errors.push(`stale ${staleAppRef} reference: ${ref}`);
+const staleRefs = await staleReferences([
+  staleAppRef,
+  ...removedUtilityRefs
+]);
+for (const { path, token } of staleRefs) {
+  errors.push(`stale ${token} reference: ${path}`);
 }
 
 errors.push(...(await verifyRendererShowcase()));
@@ -86,7 +99,7 @@ if (errors.length > 0) {
 
 console.log(`Package drift check passed for ${entries.length} package(s).`);
 
-async function staleReferences() {
+async function staleReferences(tokens) {
   const stale = [];
   const ignoredDirs = new Set([
     '.artifacts',
@@ -100,7 +113,10 @@ async function staleReferences() {
     'rush-logs',
     'storybook-static'
   ]);
-  const ignoredFiles = new Set(['pnpm-lock.yaml']);
+  const ignoredFiles = new Set([
+    'pnpm-lock.yaml',
+    'package-drift.mjs'
+  ]);
 
   async function visit(dir) {
     for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -119,8 +135,10 @@ async function staleReferences() {
       }
 
       const content = await readText(path);
-      if (content?.includes(staleAppRef)) {
-        stale.push(path.slice(root.length + 1));
+      for (const token of tokens) {
+        if (content?.includes(token)) {
+          stale.push({ path: path.slice(root.length + 1), token });
+        }
       }
     }
   }

@@ -2,8 +2,9 @@ language: "typescript"
 layer: "library"
 stack: "frontend"
 tags:
+  - "browser"
   - "isomorphic"
-  - "forms"
+  - "utilities"
 
 tasks:
   build:
