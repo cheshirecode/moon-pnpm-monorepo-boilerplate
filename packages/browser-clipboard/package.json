@@ -6,9 +6,6 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -34,5 +31,5 @@
   "engines": {
     "node": ">=24.11.0"
   },
-  "license": "UNLICENSE"
+  "license": "MIT"
 }

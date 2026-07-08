@@ -4,7 +4,13 @@
   "description": "Framework-neutral string, form, URL, filtering, and browser utility helpers.",
   "type": "module",
   "private": false,
-  "keywords": ["browser", "utilities", "forms", "url", "strings"],
+  "keywords": [
+    "browser",
+    "utilities",
+    "forms",
+    "url",
+    "strings"
+  ],
   "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
   "license": "MIT",
   "repository": {
@@ -18,10 +24,9 @@
   "engines": {
     "node": ">=24.11.0"
   },
-  "files": ["dist"],
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

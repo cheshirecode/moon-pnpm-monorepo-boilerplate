@@ -78,6 +78,15 @@ for (const dirName of entries) {
   if (packageJson.private !== true && !dogfoodAllowlist.has(packageName) && !dogfoodScript.includes(packageName)) {
     errors.push(`${packageName} is publishable but has no explicit dogfood assertion`);
   }
+
+  if (packageJson.private !== true) {
+    if (!existsSync(join(packageDir, 'README.md'))) {
+      errors.push(`${dirName} is publishable but has no README.md`);
+    }
+    if (!packageJson.license) {
+      errors.push(`${dirName} is publishable but has no license field`);
+    }
+  }
 }
 
 const staleRefs = await staleReferences([
