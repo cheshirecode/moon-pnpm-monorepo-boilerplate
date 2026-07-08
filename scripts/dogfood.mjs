@@ -126,6 +126,7 @@ async function dogfoodPackages(packages) {
           name: 'moon-pnpm-monorepo-boilerplate-dogfood-consumer',
           private: true,
           type: 'module',
+          packageManager: 'pnpm@11.10.0',
           scripts: {
             dogfood: 'node dogfood.mjs'
           },
@@ -140,7 +141,6 @@ async function dogfoodPackages(packages) {
     await writeFile(join(consumerDir, 'dogfood.mjs'), consumerScript());
 
     await run('corepack', ['enable'], consumerDir);
-    await run('corepack', ['prepare', 'pnpm@11.9.0', '--activate'], consumerDir);
     await run('pnpm', ['install'], consumerDir);
     await run('pnpm', ['run', 'dogfood'], consumerDir);
   } finally {
@@ -407,7 +407,6 @@ const bootstrapResult = await bootstrapPackage.createMonorepo({
 assert.equal(bootstrapResult.name, 'generated-monorepo');
 assert.ok(bootstrapResult.files.includes('packages/example-lib/src/index.ts'));
 await execFileAsync('corepack', ['enable'], { cwd: bootstrapDir });
-await execFileAsync('corepack', ['prepare', 'pnpm@11.9.0', '--activate'], { cwd: bootstrapDir });
 await execFileAsync('pnpm', ['install'], { cwd: bootstrapDir });
 await execFileAsync('scripts/check.sh', ['ci'], { cwd: bootstrapDir });
 await execFileAsync('scripts/check.sh', ['dogfood', 'all'], { cwd: bootstrapDir });

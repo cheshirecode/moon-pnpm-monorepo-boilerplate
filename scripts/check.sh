@@ -51,7 +51,6 @@ fi
 case "$command" in
   setup)
     run corepack enable
-    run corepack prepare pnpm@11.9.0 --activate
     run pnpm install --frozen-lockfile
     ;;
   lint-fast)

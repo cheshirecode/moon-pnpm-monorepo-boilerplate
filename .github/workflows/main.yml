@@ -80,7 +80,7 @@ jobs:
       - name: Coverage for ${{ matrix.package }}
         run: scripts/check.sh coverage-package ${{ matrix.package }}
       - name: Coveralls GitHub Action
-        uses: coverallsapp/github-action@v2
+        uses: coverallsapp/github-action@v2.3.6
         with:
           github-token: ${{ github.token }}
           file: ${{ github.workspace }}/packages/${{ matrix.package }}/coverage/lcov.info
@@ -136,7 +136,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Coveralls Finished
-        uses: coverallsapp/github-action@v2
+        uses: coverallsapp/github-action@v2.3.6
         with:
           github-token: ${{ github.token }}
           parallel-finished: true
