@@ -130,7 +130,11 @@ async function dogfoodPackages(packages) {
           scripts: {
             dogfood: 'node dogfood.mjs'
           },
-          dependencies
+          dependencies,
+          devDependencies: {
+            react: '^19.2.7',
+            'react-dom': '^19.2.7'
+          }
         },
         null,
         2
