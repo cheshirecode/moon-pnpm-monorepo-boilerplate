@@ -8,8 +8,6 @@
   "engines": {
     "node": ">=24.11.0"
   },
-  "main": "./dist/lib.umd.cjs",
-  "module": "./dist/lib.js",
   "exports": {
     ".": {
       "import": "./dist/lib.js",
@@ -54,5 +52,6 @@
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.11",
     "js-cookie": "^3.0.5"
-  }
+  },
+  "license": "MIT"
 }

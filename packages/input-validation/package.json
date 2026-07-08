@@ -4,7 +4,11 @@
   "description": "Framework-neutral text input validation and sanitization helpers.",
   "type": "module",
   "private": false,
-  "keywords": ["input", "validation", "sanitization"],
+  "keywords": [
+    "input",
+    "validation",
+    "sanitization"
+  ],
   "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
   "license": "MIT",
   "repository": {
@@ -18,10 +22,9 @@
   "engines": {
     "node": ">=24.11.0"
   },
-  "files": ["dist"],
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

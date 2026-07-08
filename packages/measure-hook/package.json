@@ -9,14 +9,14 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate.git/packages/measure-hook"
+    "url": "git+https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate.git",
+    "directory": "packages/measure-hook"
   },
   "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
-  "license": "UNLICENSE",
+  "license": "MIT",
   "private": false,
   "bugs": {
-    "url": "https://github.com/cheshirecode/measure-hook/issues",
-    "email": "dac4158+github@gmail.com"
+    "url": "https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate/issues"
   },
   "engines": {
     "npm": ">=7",

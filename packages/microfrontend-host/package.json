@@ -4,7 +4,12 @@
   "description": "Framework-neutral helpers for mounting microfrontend demos into a host shell.",
   "type": "module",
   "private": false,
-  "keywords": ["microfrontend", "host", "showcase", "utilities"],
+  "keywords": [
+    "microfrontend",
+    "host",
+    "showcase",
+    "utilities"
+  ],
   "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
   "license": "MIT",
   "repository": {
@@ -18,10 +23,9 @@
   "engines": {
     "node": ">=24.11.0"
   },
-  "files": ["dist"],
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
