@@ -204,7 +204,7 @@ import { promisify } from 'node:util';
 const require = createRequire(import.meta.url);
 const execFileAsync = promisify(execFile);
 
-const clipboard = await import('@fieryeagle/browser-clipboard');
+const clipboard = await import('@cheshirecode/browser-clipboard');
 assert.equal(typeof clipboard.copyToClipboard, 'function');
 assert.equal(typeof clipboard.createCopyToClipboard, 'function');
 const copied = await clipboard.copyToClipboard('dogfood', {
@@ -218,7 +218,7 @@ const copied = await clipboard.copyToClipboard('dogfood', {
 });
 assert.equal(copied, true);
 
-const PKCEWrapper = (await import('@fieryeagle/pkce')).default;
+const PKCEWrapper = (await import('@cheshirecode/pkce')).default;
 const storage = new Map();
 const pkce = new PKCEWrapper({
   authz_uri: 'https://example.test/authorize',
@@ -233,12 +233,12 @@ const pkce = new PKCEWrapper({
 });
 assert.match(pkce.getAuthorizeUrl({ state: 'dogfood-state' }), /^https:\\/\\/example\\.test\\/authorize\\?/);
 
-const measure = require('measure-hook');
+const measure = require('@cheshirecode/measure-hook');
 assert.equal(typeof measure, 'function');
 const finish = measure(1000);
 assert.equal(typeof finish(), 'number');
 
-const eslintConfig = require('@fieryeagle/eslint-config-react');
+const eslintConfig = require('@cheshirecode/eslint-config-react');
 assert.equal(Array.isArray(eslintConfig), true);
 assert.ok(eslintConfig.length > 0);
 

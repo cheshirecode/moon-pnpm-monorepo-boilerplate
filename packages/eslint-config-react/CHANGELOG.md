@@ -1,4 +1,4 @@
-# Change Log - @fieryeagle/eslint-config-react
+# Change Log - @cheshirecode/eslint-config-react
 
 This log was last generated on Fri, 22 Dec 2023 14:09:18 GMT and should not be manually modified.
 
@@ -77,5 +77,5 @@ Sun, 07 Aug 2022 16:15:58 GMT
 
 ### Patches
 
-- keep @fieryeagle/eslint-config-react
+- keep @cheshirecode/eslint-config-react
 

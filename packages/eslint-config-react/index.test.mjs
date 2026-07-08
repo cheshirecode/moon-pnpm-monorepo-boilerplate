@@ -17,7 +17,7 @@ const eslint = new ESLint({
   overrideConfigFile: true
 });
 
-describe('@fieryeagle/eslint-config-react', () => {
+describe('@cheshirecode/eslint-config-react', () => {
   it('accepts passing fixtures', async () => {
     const results = await eslint.lintFiles(['passes/**/*.ts*']);
 

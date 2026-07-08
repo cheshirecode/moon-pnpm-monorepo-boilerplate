@@ -1,10 +1,10 @@
 {
-  "name": "measure-hook",
+  "name": "@cheshirecode/measure-hook",
   "keywords": [
     "measure",
     "timing"
   ],
-  "version": "1.0.3",
+  "version": "0.0.0",
   "description": "Measure how long an op takes, then do a callback to post results, do something else etc",
   "main": "index.js",
   "repository": {

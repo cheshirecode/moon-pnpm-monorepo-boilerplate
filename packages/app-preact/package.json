@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@cheshirecode/demo-contract": "workspace:^",
-    "@fieryeagle/browser-clipboard": "workspace:^",
+    "@cheshirecode/browser-clipboard": "workspace:^",
     "preact": "^10.29.3"
   },
   "devDependencies": {

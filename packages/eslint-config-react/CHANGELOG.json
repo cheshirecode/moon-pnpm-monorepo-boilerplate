@@ -1,9 +1,9 @@
 {
-  "name": "@fieryeagle/eslint-config-react",
+  "name": "@cheshirecode/eslint-config-react",
   "entries": [
     {
       "version": "0.3.0",
-      "tag": "@fieryeagle/eslint-config-react_v0.3.0",
+      "tag": "@cheshirecode/eslint-config-react_v0.3.0",
       "date": "Fri, 22 Dec 2023 14:09:18 GMT",
       "comments": {
         "minor": [
@@ -15,7 +15,7 @@
     },
     {
       "version": "1.0.0",
-      "tag": "@fieryeagle/eslint-config-react_v1.0.0",
+      "tag": "@cheshirecode/eslint-config-react_v1.0.0",
       "date": "Fri, 22 Dec 2023 14:01:03 GMT",
       "comments": {
         "major": [
@@ -27,7 +27,7 @@
     },
     {
       "version": "0.2.1",
-      "tag": "@fieryeagle/eslint-config-react_v0.2.1",
+      "tag": "@cheshirecode/eslint-config-react_v0.2.1",
       "date": "Tue, 22 Nov 2022 07:27:06 GMT",
       "comments": {
         "patch": [
@@ -39,7 +39,7 @@
     },
     {
       "version": "0.2.0",
-      "tag": "@fieryeagle/eslint-config-react_v0.2.0",
+      "tag": "@cheshirecode/eslint-config-react_v0.2.0",
       "date": "Tue, 22 Nov 2022 06:26:29 GMT",
       "comments": {
         "minor": [
@@ -51,7 +51,7 @@
     },
     {
       "version": "0.1.2",
-      "tag": "@fieryeagle/eslint-config-react_v0.1.2",
+      "tag": "@cheshirecode/eslint-config-react_v0.1.2",
       "date": "Tue, 22 Nov 2022 03:35:45 GMT",
       "comments": {
         "patch": [
@@ -63,7 +63,7 @@
     },
     {
       "version": "0.1.1",
-      "tag": "@fieryeagle/eslint-config-react_v0.1.1",
+      "tag": "@cheshirecode/eslint-config-react_v0.1.1",
       "date": "Tue, 22 Nov 2022 03:18:05 GMT",
       "comments": {
         "patch": [
@@ -75,7 +75,7 @@
     },
     {
       "version": "0.1.0",
-      "tag": "@fieryeagle/eslint-config-react_v0.1.0",
+      "tag": "@cheshirecode/eslint-config-react_v0.1.0",
       "date": "Tue, 22 Nov 2022 02:57:54 GMT",
       "comments": {
         "minor": [
@@ -87,7 +87,7 @@
     },
     {
       "version": "0.0.12",
-      "tag": "@fieryeagle/eslint-config-react_v0.0.12",
+      "tag": "@cheshirecode/eslint-config-react_v0.0.12",
       "date": "Wed, 02 Nov 2022 03:29:15 GMT",
       "comments": {
         "patch": [
@@ -99,7 +99,7 @@
     },
     {
       "version": "0.0.11",
-      "tag": "@fieryeagle/eslint-config-react_v0.0.11",
+      "tag": "@cheshirecode/eslint-config-react_v0.0.11",
       "date": "Tue, 01 Nov 2022 13:52:17 GMT",
       "comments": {
         "patch": [
@@ -111,7 +111,7 @@
     },
     {
       "version": "0.0.10",
-      "tag": "@fieryeagle/eslint-config-react_v0.0.10",
+      "tag": "@cheshirecode/eslint-config-react_v0.0.10",
       "date": "Tue, 01 Nov 2022 13:20:06 GMT",
       "comments": {
         "patch": [
@@ -123,12 +123,12 @@
     },
     {
       "version": "0.0.8",
-      "tag": "@fieryeagle/eslint-config-react_v0.0.8",
+      "tag": "@cheshirecode/eslint-config-react_v0.0.8",
       "date": "Sun, 07 Aug 2022 16:15:58 GMT",
       "comments": {
         "patch": [
           {
-            "comment": "keep @fieryeagle/eslint-config-react"
+            "comment": "keep @cheshirecode/eslint-config-react"
           }
         ]
       }
