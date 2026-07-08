@@ -26,6 +26,10 @@ pnpm add -D @cheshirecode/tsconfig
 - `node.json` — extends base, adds Node types
 - `node-types.json` — extends node, for type declaration emission
 
+## Consumers
+
+Consumed by 13+ packages across the monorepo that extend @cheshirecode/tsconfig/base, /dom, or /node.
+
 ## License
 
 MIT

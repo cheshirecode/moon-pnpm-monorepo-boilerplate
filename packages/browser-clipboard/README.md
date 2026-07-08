@@ -17,6 +17,10 @@ const button = document.querySelector('button');
 button.addEventListener('click', () => copyToClipboard('text to copy'));
 ```
 
+## Consumers
+
+Consumed by @cheshirecode/pkce and the app-react renderer demo for clipboard operations with a textarea fallback.
+
 ## License
 
 MIT

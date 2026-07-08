@@ -55,6 +55,7 @@ case "$command" in
     ;;
   lint-fast)
     run pnpm exec oxlint packages tests \
+      --config .oxlintrc.json \
       --ignore-path .gitignore \
       --ignore-pattern '**/node_modules/**' \
       --ignore-pattern 'packages/eslint-config-react/fails/**' \

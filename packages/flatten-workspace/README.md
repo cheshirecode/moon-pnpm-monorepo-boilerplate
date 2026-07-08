@@ -17,3 +17,7 @@ The CLI reads package manifests under a workspace and writes the flattened resul
 ```sh
 flatten-workspace --root . --location packages --out-file package.flattened.json
 ```
+
+## Consumers
+
+Used by monorepo operators to flatten workspace dependency manifests into a single resolved package.json.

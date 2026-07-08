@@ -20,6 +20,10 @@ import { mountMicrofrontend } from '@cheshirecode/microfrontend-host';
 const unmount = mountMicrofrontend(container, descriptor);
 ```
 
+## Consumers
+
+Consumed by renderer-showcase for mounting renderer demo apps as microfrontends.
+
 ## License
 
 MIT

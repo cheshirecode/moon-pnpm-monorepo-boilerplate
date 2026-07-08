@@ -17,6 +17,10 @@ const camel = toCamel('hello-world'); // 'helloWorld'
 const valid = validateEmail('test@example.com'); // true
 ```
 
+## Consumers
+
+Consumed by @cheshirecode/demo-contract and the renderer demo apps for string, form, URL, and filtering utilities.
+
 ## License
 
 MIT

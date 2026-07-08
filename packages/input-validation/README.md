@@ -19,6 +19,10 @@ if (!result.isValid) {
 }
 ```
 
+## Consumers
+
+Framework-neutral validation and sanitization for text inputs. Ready for direct consumer use in any browser or Node app.
+
 ## License
 
 MIT
