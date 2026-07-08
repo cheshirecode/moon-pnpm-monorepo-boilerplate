@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
 import { createRendererDemoContract, formatRendererDemo } from '@cheshirecode/demo-contract';
-import { copyToClipboard } from '@fieryeagle/browser-clipboard';
+import { copyToClipboard } from '@cheshirecode/browser-clipboard';
 import { memo } from 'preact/compat';
 
 const contract = createRendererDemoContract('Preact');

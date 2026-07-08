@@ -2,7 +2,7 @@ import cx from 'classnames';
 import stringify from 'fast-json-stable-stringify';
 import { isString } from 'lodash-es';
 
-import createOnClickCopyToClipboard from '@fieryeagle/browser-clipboard';
+import createOnClickCopyToClipboard from '@cheshirecode/browser-clipboard';
 
 const Download = ({ data, className, children }: BaseProps & { data: unknown }) => (
   <button

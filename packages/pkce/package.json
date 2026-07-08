@@ -1,5 +1,5 @@
 {
-  "name": "@fieryeagle/pkce",
+  "name": "@cheshirecode/pkce",
   "version": "0.0.0",
   "type": "module",
   "files": [
@@ -27,7 +27,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@fieryeagle/eslint-config-react": "workspace:^",
+    "@cheshirecode/eslint-config-react": "workspace:^",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -50,7 +50,7 @@
     "vitest-fetch-mock": "^0.4.5"
   },
   "dependencies": {
-    "@fieryeagle/browser-clipboard": "workspace:^",
+    "@cheshirecode/browser-clipboard": "workspace:^",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.11",
     "js-cookie": "^3.0.5"

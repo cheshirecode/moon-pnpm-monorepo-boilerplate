@@ -1,3 +1,3 @@
-const prettierConfig = require('@fieryeagle/eslint-config-react/.prettierrc.js');
+const prettierConfig = require('@cheshirecode/eslint-config-react/.prettierrc.js');
 
 module.exports = prettierConfig;

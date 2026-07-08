@@ -1,4 +1,4 @@
-# Change Log - measure-hook
+# Change Log - @cheshirecode/measure-hook
 
 This log was last generated on Mon, 05 Dec 2022 21:13:32 GMT and should not be manually modified.
 

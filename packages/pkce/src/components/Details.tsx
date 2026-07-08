@@ -1,6 +1,6 @@
 import cx from "classnames";
 
-import createOnClickCopyToClipboard from "@fieryeagle/browser-clipboard";
+import createOnClickCopyToClipboard from "@cheshirecode/browser-clipboard";
 
 import type { DetailsProps } from "./typings";
 

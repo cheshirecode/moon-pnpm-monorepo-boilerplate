@@ -1,9 +1,9 @@
 {
-  "name": "measure-hook",
+  "name": "@cheshirecode/measure-hook",
   "entries": [
     {
       "version": "1.0.3",
-      "tag": "measure-hook_v1.0.3",
+      "tag": "@cheshirecode/measure-hook_v1.0.3",
       "date": "Mon, 05 Dec 2022 21:13:32 GMT",
       "comments": {
         "patch": [

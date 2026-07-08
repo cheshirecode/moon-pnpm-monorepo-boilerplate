@@ -15,7 +15,8 @@ const removedUtilityRefs = [
   'packages/app-utils',
   'packages/form-validators',
   'packages/url-search-params',
-  'packages/url-state'
+  'packages/url-state',
+  '@fieryeagle/'
 ];
 
 const moonAllowlist = new Set(['tsconfig']);
