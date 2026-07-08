@@ -15,3 +15,7 @@ module.exports = require('@cheshirecode/eslint-config-react');
 The package carries its own ESLint 10, TypeScript ESLint, React Hooks, React
 Refresh, and globals dependencies so consuming projects do not need to repeat
 that tooling stack.
+
+## Consumers
+
+Consumed by app-react, browser-clipboard, and pkce for shared ESLint flat config.

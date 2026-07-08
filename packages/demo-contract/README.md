@@ -21,6 +21,10 @@ const contract = createRendererDemoContract('React');
 console.log(contract.title); // 'React renderer'
 ```
 
+## Consumers
+
+Consumed by all 6 renderer demo apps (app-react, app-preact, app-astro, app-vue, app-svelte, app-solidjs) and renderer-showcase.
+
 ## License
 
 MIT

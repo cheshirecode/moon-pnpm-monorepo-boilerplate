@@ -11,7 +11,8 @@
   "exports": {
     ".": {
       "import": "./dist/lib.js",
-      "require": "./dist/lib.umd.cjs"
+      "require": "./dist/lib.umd.cjs",
+      "types": "./dist/lib.d.ts"
     }
   },
   "scripts": {
@@ -44,6 +45,7 @@
     "typescript": "^6.0.3",
     "unocss": "^66.7.4",
     "vite": "^8.1.2",
+    "vite-plugin-dts": "^5.0.3",
     "vitest": "^4.1.9",
     "vitest-fetch-mock": "^0.4.5"
   },

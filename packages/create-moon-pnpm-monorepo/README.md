@@ -13,3 +13,7 @@ scripts/check.sh dogfood all
 The generated repo starts with one `example-lib` package so linting, testing,
 building, packing, package dogfood, publish dry-runs, and GitHub workflows have
 a real package to validate. Replace it with your own packages when ready.
+
+## Consumers
+
+This is the primary product of the boilerplate. Used by developers scaffolding new monorepos from this template.

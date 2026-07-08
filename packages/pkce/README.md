@@ -24,6 +24,10 @@ const pkce = new PKCE({
 The `src/` directory contains a Vite demo showing the PKCE flow with refresh
 token rotation. Run it with `pnpm dev` from this package.
 
+## Consumers
+
+Used by applications implementing PKCE (Proof Key for Code Exchange) OAuth flows with refresh token rotation.
+
 ## License
 
 MIT

@@ -3,6 +3,7 @@ import { resolve } from "path";
 
 import react from "@vitejs/plugin-react";
 import UnoCSS from "unocss/vite";
+import dts from "vite-plugin-dts";
 import { defineConfig } from "vite";
 
 import {
@@ -15,7 +16,7 @@ const isSite = !!process.env.SITE;
 const coverageExclude = [...coverageConfigDefaults.exclude, "site/**/*"];
 
 export default defineConfig((config) => ({
-  plugins: [react(), UnoCSS()],
+  plugins: [react(), UnoCSS(), ...(isSite ? [] : [dts({ include: ["lib/**/*.ts"], entryRoot: "lib" })])],
   build: {
     // skip minification to make tests faster
     minify: config.mode !== "test" ? "esbuild" : false,

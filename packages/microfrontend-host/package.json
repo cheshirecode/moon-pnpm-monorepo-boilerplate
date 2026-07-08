@@ -36,7 +36,8 @@
     "build": "rm -rf dist && tsc -p tsconfig.json",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "lint": "oxlint src --ignore-path ../../.gitignore --quiet"
+    "lint": "oxlint src --ignore-path ../../.gitignore --quiet",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@cheshirecode/tsconfig": "workspace:^",

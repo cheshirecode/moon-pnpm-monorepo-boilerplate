@@ -19,6 +19,10 @@ if (!valid) {
 }
 ```
 
+## Consumers
+
+Used by sales engineering workflows to validate prospect and brainstorm briefs against JSON schemas before processing.
+
 ## License
 
 MIT
