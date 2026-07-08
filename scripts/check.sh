@@ -128,7 +128,7 @@ case "$command" in
     run pnpm exec moon run :coverage
     ;;
   coverage-packages)
-    run node scripts/list-coverage-packages.mjs "${1:-json}"
+    run node scripts/list-coverage-packages.mjs "${1:-json}" "${@:2}"
     ;;
   coverage-package)
     package="${1:-}"
