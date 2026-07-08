@@ -17,24 +17,12 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
         registry-url: ${{ inputs.registry-url }}
+        cache: 'pnpm'
     - name: Enable pnpm
       shell: bash
-      run: |
-        corepack enable
-        corepack prepare pnpm@11.9.0 --activate
-    - name: Get pnpm store directory
-      shell: bash
-      id: pnpm-store
-      run: echo "dir=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
-    - name: Cache pnpm store
-      uses: actions/cache@v5.0.5
-      with:
-        path: ${{ steps.pnpm-store.outputs.dir }}
-        key: ${{ runner.os }}-${{ inputs.node-version }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-        restore-keys: |
-          ${{ runner.os }}-${{ inputs.node-version }}-pnpm-
+      run: corepack enable
     - name: Cache moon
-      uses: actions/cache@v5.0.5
+      uses: actions/cache@v6.1.0
       with:
         path: |
           ~/.moon/plugins

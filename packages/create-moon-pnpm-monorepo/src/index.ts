@@ -116,7 +116,7 @@ function rootPackageJson(repoName: string): Record<string, unknown> {
     engines: {
       node: '>=24.11.0'
     },
-    packageManager: 'pnpm@11.9.0',
+    packageManager: 'pnpm@11.10.0',
     workspaces: ['packages/*'],
     scripts: {
       setup: 'scripts/check.sh setup',
@@ -266,7 +266,7 @@ A clean moon + pnpm + Changesets monorepo.
 
 \`\`\`sh
 corepack enable
-corepack prepare pnpm@11.9.0 --activate
+corepack prepare pnpm@11.10.0 --activate
 pnpm install
 pnpm run ci
 pnpm run dogfood all
@@ -300,7 +300,7 @@ scripts/check.sh dogfood all
 \`\`\`
 
 Keep package-specific framework choices inside \`packages/*\`. The root stays framework-neutral.
-Use Node.js \`>=24.11.0\`, pnpm \`11.9.0\`, moon, Changesets, and oxlint.
+Use Node.js \`>=24.11.0\`, pnpm \`11.10.0\`, moon, Changesets, and oxlint.
 `;
 }
 
@@ -440,7 +440,7 @@ has_git_head() {
 case "\${1:-}" in
   setup)
     run corepack enable
-    run corepack prepare pnpm@11.9.0 --activate
+    run corepack prepare pnpm@11.10.0 --activate
     run pnpm install --frozen-lockfile
     ;;
   lint-fast)
@@ -620,7 +620,7 @@ async function dogfoodPackages(packages) {
     await writeFile(join(consumerDir, 'pnpm-workspace.yaml'), 'packages: []\\n');
     await writeFile(join(consumerDir, 'dogfood.mjs'), \`import assert from 'node:assert/strict';\\nconst pkg = await import('\${packages[0]?.name ?? ''}');\\nassert.equal(typeof pkg.greet, 'function');\\nassert.equal(pkg.greet('dogfood'), 'hello, dogfood');\\n\`);
     await run('corepack', ['enable'], consumerDir);
-    await run('corepack', ['prepare', 'pnpm@11.9.0', '--activate'], consumerDir);
+    await run('corepack', ['prepare', 'pnpm@11.10.0', '--activate'], consumerDir);
     await run('pnpm', ['install'], consumerDir);
     await run('pnpm', ['run', 'dogfood'], consumerDir);
   } finally {
@@ -679,7 +679,7 @@ runs:
     - shell: bash
       run: |
         corepack enable
-        corepack prepare pnpm@11.9.0 --activate
+        corepack prepare pnpm@11.10.0 --activate
     - shell: bash
       id: pnpm-store
       run: echo "dir=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
