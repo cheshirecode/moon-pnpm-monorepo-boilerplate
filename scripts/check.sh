@@ -24,6 +24,8 @@ Commands:
   coverage-package NAME Run coverage for one package through moon.
   renderer-showcase     Build and smoke-check the renderer microfrontend showcase.
   pack                  Pack publishable packages into .artifacts/release.
+  publish-check         Pack and validate publishable tarballs (README, LICENSE, exports).
+  changeset-check       Verify changeset presence when publishable packages change.
   workflow-lint         Lint GitHub Actions workflows with actionlint in Docker.
   docker                Build the repo verification Docker image.
   sandbox               Run the optional sandbox/Docker verification wrapper.
@@ -165,6 +167,12 @@ case "$command" in
     ;;
   pack)
     run node scripts/pack-publishable.mjs
+    ;;
+  publish-check)
+    run node scripts/check-publishable.mjs
+    ;;
+  changeset-check)
+    run node scripts/check-changeset.mjs
     ;;
   workflow-lint)
     run docker run --rm -v "$repo_root:/repo" -w /repo rhysd/actionlint:1.7.7
