@@ -21,6 +21,7 @@ const removedUtilityRefs = [
 
 const moonAllowlist = new Set(['tsconfig']);
 const coverageScriptAllowlist = new Set(['tsconfig']);
+const testAllowlist = new Set(['tsconfig']);
 const dogfoodAllowlist = new Set([]);
 const expectedVersions = new Map([
   ['@types/node', '^24.10.2'],
@@ -85,6 +86,9 @@ for (const dirName of entries) {
     }
     if (!packageJson.license) {
       errors.push(`${dirName} is publishable but has no license field`);
+    }
+    if (!testAllowlist.has(dirName) && !scripts.test) {
+      errors.push(`${dirName} is publishable but has no test script`);
     }
   }
 }

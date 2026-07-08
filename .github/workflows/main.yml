@@ -102,6 +102,34 @@ jobs:
       - name: Dogfood packed packages
         run: scripts/check.sh dogfood packages
 
+  publish-check:
+    needs: [checks]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Validate publishable tarballs
+        run: scripts/check.sh publish-check
+
+  changeset-check:
+    needs: [workflow-lint]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify changeset presence
+        run: scripts/check.sh changeset-check
+        env:
+          CHANGESET_BASE_REF: origin/main
+
   finish:
     needs: [coverage, coverage-packages]
     if: ${{ always() && !cancelled() }}
