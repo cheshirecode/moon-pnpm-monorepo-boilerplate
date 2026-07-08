@@ -21,7 +21,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: false
       - name: Lint GitHub Actions workflows
         uses: suzuki-shunsuke/actionlint-action@v0.1.4
@@ -60,8 +60,14 @@ jobs:
       - name: List coverage packages
         id: coverage-packages
         run: |
-          echo "packages=$(scripts/check.sh coverage-packages json)" >> "$GITHUB_OUTPUT"
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            echo "packages=$(scripts/check.sh coverage-packages json --affected)" >> "$GITHUB_OUTPUT"
+          else
+            echo "packages=$(scripts/check.sh coverage-packages json)" >> "$GITHUB_OUTPUT"
+          fi
           echo "carryforward=$(scripts/check.sh coverage-packages csv)" >> "$GITHUB_OUTPUT"
+        env:
+          CHANGESET_BASE_REF: origin/main
 
   coverage:
     needs: [checks, coverage-packages]
