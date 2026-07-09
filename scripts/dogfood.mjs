@@ -268,6 +268,14 @@ const tsconfigNodeTypes = await import('@cheshirecode/tsconfig/node-types.json',
 });
 assert.equal(tsconfigBase.default.compilerOptions.module, 'NodeNext');
 assert.equal(tsconfigNodeTypes.default.compilerOptions.types[0], 'node');
+const tsconfigDom = await import('@cheshirecode/tsconfig/dom.json', {
+  with: { type: 'json' }
+});
+const tsconfigNode = await import('@cheshirecode/tsconfig/node.json', {
+  with: { type: 'json' }
+});
+assert.equal(tsconfigDom.default.compilerOptions.lib[0], 'DOM');
+assert.equal(tsconfigNode.default.compilerOptions.lib[0], 'ESNext');
 
 const demoContract = await import('@cheshirecode/demo-contract');
 const vueDemo = demoContract.createRendererDemoContract('Vue');
@@ -414,6 +422,18 @@ await execFileAsync('corepack', ['enable'], { cwd: bootstrapDir });
 await execFileAsync('pnpm', ['install'], { cwd: bootstrapDir });
 await execFileAsync('scripts/check.sh', ['ci'], { cwd: bootstrapDir });
 await execFileAsync('scripts/check.sh', ['dogfood', 'all'], { cwd: bootstrapDir });
+
+const binBootstrapParent = await mkdtemp(join(tmpdir(), 'moon-pnpm-bin-dogfood-'));
+const binBootstrapDir = join(binBootstrapParent, 'bin-generated-monorepo');
+await execFileAsync('pnpm', [
+  'exec',
+  'create-moon-pnpm-monorepo',
+  '--name',
+  'bin-generated-monorepo',
+  '--directory',
+  binBootstrapDir
+]);
+assert.ok(await readFile(join(binBootstrapDir, 'package.json'), 'utf8').then(JSON.parse).catch(() => null));
 
 console.log('External package consumption dogfood passed.');
 `;

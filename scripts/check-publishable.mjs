@@ -70,6 +70,18 @@ for (const tarball of tarballs) {
       }
     }
   }
+
+  if (packageJson.bin) {
+    const binEntries = typeof packageJson.bin === 'string'
+      ? { [packageJson.name]: packageJson.bin }
+      : packageJson.bin;
+    for (const [binName, binPath] of Object.entries(binEntries)) {
+      const tarballPath = `package/${binPath.replace(/^\.\//, '')}`;
+      if (!contents.includes(tarballPath)) {
+        errors.push(`${tarball}: bin["${binName}"] path ${binPath} not found in tarball`);
+      }
+    }
+  }
 }
 
 if (errors.length > 0) {
