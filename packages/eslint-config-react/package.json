@@ -9,7 +9,7 @@
     "prettier",
     "linting"
   ],
-  "sideEffects": false,
+  "sideEffects": true,
   "main": "index.js",
   "files": [
     "index.js",

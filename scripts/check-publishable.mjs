@@ -94,6 +94,13 @@ for (const tarball of tarballs) {
       }
     }
   }
+
+  if (packageJson.main && !packageJson.exports) {
+    const mainPath = `package/${packageJson.main.replace(/^\.\//, '')}`;
+    if (!contents.includes(mainPath)) {
+      errors.push(`${tarball}: main path ${packageJson.main} not found in tarball`);
+    }
+  }
 }
 
 if (errors.length > 0) {
