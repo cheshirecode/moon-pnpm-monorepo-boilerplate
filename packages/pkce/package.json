@@ -1,7 +1,26 @@
 {
   "name": "@cheshirecode/pkce",
   "version": "0.0.0",
+  "description": "PKCE (Proof Key for Code Exchange) library with refresh token rotation.",
   "type": "module",
+  "keywords": [
+    "pkce",
+    "oauth",
+    "auth",
+    "code-verifier",
+    "code-challenge",
+    "refresh-token"
+  ],
+  "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate.git",
+    "directory": "packages/pkce"
+  },
+  "bugs": {
+    "url": "https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate/issues"
+  },
   "files": [
     "dist"
   ],

@@ -59,6 +59,18 @@ for (const tarball of tarballs) {
     errors.push(`${tarball}: tarball package.json has no license field`);
   }
 
+  if (!packageJson.description) {
+    errors.push(`${tarball}: tarball package.json has no description field`);
+  }
+
+  if (!packageJson.keywords) {
+    errors.push(`${tarball}: tarball package.json has no keywords field`);
+  }
+
+  if (packageJson.sideEffects === undefined) {
+    errors.push(`${tarball}: tarball package.json has no sideEffects field`);
+  }
+
   if (packageJson.exports) {
     for (const [exportKey, exportValue] of Object.entries(packageJson.exports)) {
       const paths = exportPaths(exportValue);

@@ -1,6 +1,15 @@
 {
   "name": "@cheshirecode/eslint-config-react",
   "version": "0.3.0",
+  "description": "common eslint + prettier config for React with workaround for its own dependencies",
+  "keywords": [
+    "eslint",
+    "eslint-config",
+    "react",
+    "prettier",
+    "linting"
+  ],
+  "sideEffects": false,
   "main": "index.js",
   "files": [
     "index.js",
