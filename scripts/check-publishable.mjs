@@ -61,13 +61,11 @@ for (const tarball of tarballs) {
 
   if (packageJson.exports) {
     for (const [exportKey, exportValue] of Object.entries(packageJson.exports)) {
-      if (exportKey === '.') {
-        if (typeof exportValue === 'string') continue;
-        if (exportValue.import && !contents.includes(`package/${exportValue.import.replace(/^\.\//, '')}`)) {
-          errors.push(`${tarball}: exports["."].import path ${exportValue.import} not found in tarball`);
-        }
-        if (exportValue.require && !contents.includes(`package/${exportValue.require.replace(/^\.\//, '')}`)) {
-          errors.push(`${tarball}: exports["."].require path ${exportValue.require} not found in tarball`);
+      const paths = exportPaths(exportValue);
+      for (const path of paths) {
+        const tarballPath = `package/${path.replace(/^\.\//, '')}`;
+        if (!contents.includes(tarballPath)) {
+          errors.push(`${tarball}: exports["${exportKey}"] path ${path} not found in tarball`);
         }
       }
     }
@@ -84,6 +82,17 @@ if (errors.length > 0) {
 
 console.log(`Publishable package check passed for ${publishable.length} package(s).`);
 console.log(`Packed ${tarballs.length} tarball(s) into ${outDir}.`);
+
+function exportPaths(exportValue) {
+  if (typeof exportValue === 'string') return [exportValue];
+  if (exportValue === null || typeof exportValue !== 'object') return [];
+  const paths = [];
+  for (const field of ['types', 'import', 'require', 'browser', 'node', 'default']) {
+    const value = exportValue[field];
+    if (typeof value === 'string') paths.push(value);
+  }
+  return paths;
+}
 
 function listTarball(tarballPath) {
   return runCapture('tar', ['-tf', tarballPath], root).then((out) => out.trim().split('\n'));

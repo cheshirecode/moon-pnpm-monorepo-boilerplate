@@ -27,13 +27,12 @@
     "getTsNow.js",
     "index.js"
   ],
-  "bin": "index.js",
+  "prepublishOnly": "pnpm test",
   "scripts": {
     "test": "vitest run",
     "coverage": "vitest run --coverage",
     "lint": "oxlint . --ignore-path ../../.gitignore --quiet"
   },
-  "prepublishOnly": "pnpm test",
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.9",
     "vitest": "^4.1.9"
