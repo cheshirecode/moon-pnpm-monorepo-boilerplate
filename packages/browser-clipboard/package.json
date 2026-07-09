@@ -3,6 +3,24 @@
   "version": "0.0.0",
   "description": "Browser clipboard helpers with textarea fallback",
   "type": "module",
+  "keywords": [
+    "clipboard",
+    "copy",
+    "paste",
+    "textarea",
+    "browser"
+  ],
+  "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate.git",
+    "directory": "packages/browser-clipboard"
+  },
+  "bugs": {
+    "url": "https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate/issues"
+  },
+  "sideEffects": false,
   "files": [
     "dist"
   ],
@@ -29,6 +47,5 @@
   },
   "engines": {
     "node": ">=24.11.0"
-  },
-  "license": "MIT"
+  }
 }
