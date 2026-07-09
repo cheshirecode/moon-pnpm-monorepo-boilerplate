@@ -433,7 +433,15 @@ await execFileAsync('pnpm', [
   '--directory',
   binBootstrapDir
 ]);
-assert.ok(await readFile(join(binBootstrapDir, 'package.json'), 'utf8').then(JSON.parse).catch(() => null));
+assert.ok(
+  await readFile(join(binBootstrapDir, 'packages', 'example-lib', 'src', 'index.ts'), 'utf8')
+    .then(() => true).catch(() => false),
+  'bin-generated monorepo is missing packages/example-lib/src/index.ts'
+);
+await execFileAsync('corepack', ['enable'], { cwd: binBootstrapDir });
+await execFileAsync('pnpm', ['install'], { cwd: binBootstrapDir });
+await execFileAsync('scripts/check.sh', ['ci'], { cwd: binBootstrapDir });
+await execFileAsync('scripts/check.sh', ['dogfood', 'all'], { cwd: binBootstrapDir });
 
 console.log('External package consumption dogfood passed.');
 `;
