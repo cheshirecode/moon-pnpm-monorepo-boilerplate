@@ -22,9 +22,7 @@
   "dependencies": {},
   "devDependencies": {
     "@cheshirecode/tsconfig": "workspace:^",
-    "@cheshirecode/eslint-config-react": "workspace:^",
     "@vitest/coverage-v8": "^4.1.9",
-    "eslint": "^10.6.0",
     "happy-dom": "^20.10.6",
     "typescript": "^6.0.3",
     "vitest": "^4.1.9"
