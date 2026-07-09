@@ -10,7 +10,9 @@ const config = {
   requested_scopes: "*",
 };
 
-describe("Verify PKCE live authz", () => {
+const liveDescribe = process.env.RUN_LIVE_INTEGRATION ? describe : describe.skip;
+
+liveDescribe("Verify PKCE live authz", () => {
   test("build an authorization url", () => {
     const authInstance = new PKCEWrapper(config);
     const url = authInstance.getAuthorizeUrl();

@@ -10,9 +10,8 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/lib.js",
-      "require": "./dist/lib.umd.cjs",
-      "types": "./dist/lib.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/lib.js"
     }
   },
   "scripts": {
@@ -40,8 +39,6 @@
     "@vitest/coverage-v8": "^4.1.9",
     "classnames": "^2.5.1",
     "happy-dom": "^20.10.6",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
     "typescript": "^6.0.3",
     "unocss": "^66.7.4",
     "vite": "^8.1.2",
@@ -55,5 +52,10 @@
     "dayjs": "^1.11.11",
     "js-cookie": "^3.0.5"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "sideEffects": false
 }

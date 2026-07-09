@@ -20,22 +20,24 @@ export default defineConfig((config) => ({
   build: {
     // skip minification to make tests faster
     minify: config.mode !== "test" ? "esbuild" : false,
+    copyPublicDir: false,
     ...(isSite
       ? { outDir: "site" }
       : {
           lib: {
             entry: resolve(__dirname, "lib/index.ts"),
-            name: "cheshirecode-pkce-wrapper",
-            // the proper extensions will be added
+            formats: ["es"],
             fileName: "lib",
           },
           rollupOptions: {
-            external: ["react", "unocss"],
-            output: {
-              globals: {
-                react: "react",
-              },
-            },
+            external: [
+              "react",
+              "react-dom",
+              "crypto-js",
+              "dayjs",
+              "js-cookie",
+              "@cheshirecode/browser-clipboard",
+            ],
           },
         }),
   },
@@ -56,6 +58,12 @@ export default defineConfig((config) => ({
         ["html", { subdir: "./html" }],
       ],
       provider: "v8",
+      thresholds: {
+        lines: 50,
+        functions: 50,
+        branches: 40,
+        statements: 50,
+      },
     },
   }),
   resolve: {
