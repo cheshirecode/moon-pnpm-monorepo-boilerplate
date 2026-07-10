@@ -1,165 +1,162 @@
 # moon-pnpm-monorepo-boilerplate
 
-A fast, framework-neutral JavaScript monorepo boilerplate built on:
+A framework-neutral JavaScript monorepo starter with package development, verification, and publishing wired together.
 
-- **pnpm workspaces** for dependency installation and local package linking.
-- **moonrepo** for task graph execution, affected runs, and local caching.
+## Stack and requirements
+
+- **pnpm workspaces** for installation and local package linking.
+- **moonrepo** for task-graph execution, affected runs, and local caching.
 - **Changesets** for package versioning, changelogs, and npm publishing.
-- **oxlint** for a fast Rust-based JavaScript/TypeScript lint guard.
+- **oxlint** for fast JavaScript and TypeScript linting.
 
-The repo intentionally avoids a battery-included framework lock-in. Packages can be React, Preact, vanilla JS, Astro, Vite apps, Node/isomorphic libraries, or shared configuration.
+Requires Node.js `>=24.11.0` and pnpm `11.10.0`. GitHub Actions and the Docker verifier use Node 24.
 
-## Quick Start
+## Quick start
 
 ```sh
 corepack enable
-corepack prepare pnpm@11.9.0 --activate
+corepack prepare pnpm@11.10.0 --activate
 pnpm install
 pnpm run ci
 ```
 
-Requires Node.js `>=24.11.0`. GitHub Actions and the Docker verifier use
-Node 24.
+## Workspace map
 
-## Common Commands
+### Renderer surface
 
-```sh
-scripts/check.sh lint-fast       # oxlint over packages and root tests
-scripts/check.sh lint            # moon graph lint across packages
-scripts/check.sh typecheck       # moon graph TypeScript checks
-scripts/check.sh build           # moon graph build across packages
-scripts/check.sh test            # moon graph tests + root smoke tests
-scripts/check.sh full            # full non-affected verification path
-scripts/check.sh package-drift   # package metadata/dependency coverage guard
-scripts/check.sh coverage        # package coverage tasks
-scripts/check.sh renderer-showcase # build and smoke-check embedded renderer showcase
-scripts/check.sh dogfood packages # install packed tarballs in an external consumer
-scripts/check.sh dogfood all      # package dogfood + npm publish dry-run
-scripts/check.sh pack            # pack publishable packages into .artifacts/release
-pnpm changeset           # record a release change
-pnpm run version-packages
-pnpm run publish-packages
+Six private framework apps are embedded by one private showcase host.
+
+<table>
+  <thead>
+    <tr><th>Technology</th><th>Package</th><th>Role</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><img src="docs/assets/package-icons/react.svg" alt="" width="20" height="20"> React</td><td><a href="packages/app-react/"><code>app-react</code></a><br><sub>TSX</sub></td><td>React renderer demo and mount adapter.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/preact.svg" alt="" width="20" height="20"> Preact</td><td><a href="packages/app-preact/"><code>app-preact</code></a><br><sub>TSX</sub></td><td>Preact renderer demo and mount adapter.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/astro.svg" alt="" width="20" height="20"> Astro</td><td><a href="packages/app-astro/"><code>app-astro</code></a><br><sub>Astro → TS</sub></td><td>Astro static renderer demo.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/vuedotjs.svg" alt="" width="20" height="20"> Vue.js</td><td><a href="packages/app-vue/"><code>app-vue</code></a><br><sub>Vue → TS</sub></td><td>Vue renderer demo and mount adapter.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/svelte.svg" alt="" width="20" height="20"> Svelte</td><td><a href="packages/app-svelte/"><code>app-svelte</code></a><br><sub>Svelte → TS</sub></td><td>Svelte renderer demo and mount adapter.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/solid.svg" alt="" width="20" height="20"> Solid</td><td><a href="packages/app-solidjs/"><code>app-solidjs</code></a><br><sub>TSX</sub></td><td>Solid renderer demo and mount adapter.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/renderer-showcase/"><code>renderer-showcase</code></a><br><sub>TS</sub></td><td>Vite host for all six renderer demos.</td></tr>
+  </tbody>
+</table>
+
+### Shared runtime graph
+
+Publishable packages connected by internal runtime dependencies.
+
+<table>
+  <thead>
+    <tr><th>Technology</th><th>Package</th><th>Role</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/microfrontend-host/"><code>@cheshirecode/microfrontend-host</code></a><br><sub>TS</sub></td><td>Framework-neutral microfrontend host shell.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/demo-contract/"><code>@cheshirecode/demo-contract</code></a><br><sub>TS</sub></td><td>Shared renderer demo contract and helpers.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/browser-clipboard/"><code>@cheshirecode/browser-clipboard</code></a><br><sub>TS</sub></td><td>Browser-safe clipboard access.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/browser-utils/"><code>@cheshirecode/browser-utils</code></a><br><sub>TS</sub></td><td>Shared string, form, filtering, and URL helpers.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/pkce/"><code>@cheshirecode/pkce</code></a><br><sub>TS</sub></td><td>PKCE library with a browser demo.</td></tr>
+  </tbody>
+</table>
+
+### Tooling and standalone
+
+CLIs, shared configuration, and packages without an internal runtime edge.
+
+<table>
+  <thead>
+    <tr><th>Technology</th><th>Package</th><th>Role</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/create-moon-pnpm-monorepo/"><code>@cheshirecode/create-moon-pnpm-monorepo</code></a><br><sub>TS</sub></td><td>CLI that generates a clean starter workspace.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/flatten-workspace/"><code>@cheshirecode/flatten-workspace</code></a><br><sub>TS</sub></td><td>CLI for flattening workspace package manifests.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/input-validation/"><code>@cheshirecode/input-validation</code></a><br><sub>TS</sub></td><td>Sanitizer-backed input validation helpers.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/javascript.svg" alt="" width="20" height="20"> JavaScript</td><td><a href="packages/brief-schema/"><code>@cheshirecode/brief-schema</code></a><br><sub>JS</sub></td><td>JSON schemas and brief payload validators.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/javascript.svg" alt="" width="20" height="20"> JavaScript</td><td><a href="packages/measure-hook/"><code>@cheshirecode/measure-hook</code></a><br><sub>JS</sub></td><td>Small synchronous and asynchronous timing helper.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/react.svg" alt="" width="20" height="20"> React</td><td><a href="packages/eslint-config-react/"><code>@cheshirecode/eslint-config-react</code></a><br><sub>JS</sub></td><td>Shared ESLint flat configuration for React.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/tsconfig/"><code>@cheshirecode/tsconfig</code></a><br><sub>JSON config</sub></td><td>Shared TypeScript compiler configurations.</td></tr>
+  </tbody>
+</table>
+
+```mermaid
+flowchart TB
+  subgraph renderer[Renderer surface]
+    showcase[renderer-showcase]
+    react[app-react]
+    preact[app-preact]
+    astro[app-astro]
+    vue[app-vue]
+    svelte[app-svelte]
+    solid[app-solidjs]
+  end
+
+  subgraph runtime[Shared runtime]
+    host["@cheshirecode/microfrontend-host"]
+    contract["@cheshirecode/demo-contract"]
+    clipboard["@cheshirecode/browser-clipboard"]
+    utils["@cheshirecode/browser-utils"]
+    pkce["@cheshirecode/pkce"]
+  end
+
+  subgraph tooling[Tooling and standalone]
+    validation["@cheshirecode/input-validation"]
+    schema["@cheshirecode/brief-schema"]
+    create["@cheshirecode/create-moon-pnpm-monorepo"]
+    eslint["@cheshirecode/eslint-config-react"]
+    flatten["@cheshirecode/flatten-workspace"]
+    measure["@cheshirecode/measure-hook"]
+    tsconfig["@cheshirecode/tsconfig"]
+  end
+
+  showcase -. embeds .-> react
+  showcase -. embeds .-> preact
+  showcase -. embeds .-> astro
+  showcase -. embeds .-> vue
+  showcase -. embeds .-> svelte
+  showcase -. embeds .-> solid
+
+  showcase --> host
+  showcase --> contract
+  showcase --> clipboard
+  preact --> contract
+  astro --> contract
+  vue --> contract
+  svelte --> contract
+  solid --> contract
+  react --> clipboard
+  preact --> clipboard
+  contract --> utils
+  pkce --> clipboard
 ```
 
-The matching `pnpm run ...` commands are thin aliases for the repo scripts.
-Dogfood commands write a machine-readable summary to
-`.artifacts/dogfood/report.json`.
+The graph intentionally omits external framework dependencies and repetitive development-only edges to the shared TypeScript and ESLint configurations.
 
-## Development Flow
+## Development
 
-Use moon targets for tight loops, then move outward:
+Keep framework-specific setup inside its package. Use a narrow Moon target while iterating, then run the routine repository checks:
 
 ```sh
 pnpm moon run pkce:test
 scripts/check.sh ci
-scripts/check.sh package-drift
-scripts/check.sh renderer-showcase
-scripts/check.sh dogfood packages
-scripts/check.sh docker
 ```
 
-For publishing workflow changes, use the release dogfood path before handoff:
-
-```sh
-scripts/check.sh dogfood all
-```
-
-CI runs workflow lint, the normal check path, external package dogfood,
-coverage, and Coveralls. The publish workflow runs package-consumption dogfood
-plus `npm publish --dry-run` before Changesets is allowed to publish.
-
-To verify the repo in a clean container, use the repo Dockerfile directly:
-
-```sh
-scripts/check.sh docker
-```
-
-The `scripts/sandbox-verify.sh` wrapper is a nicer optional path for machines
-that already use [cheshirecode/sandbox](https://github.com/cheshirecode/sandbox).
-It runs the same Docker build by default. Set `SANDBOX_ROOT` to a local sandbox
-checkout when you explicitly want the wrapper to record a sandboxed headless
-attempt first:
-
-```sh
-scripts/sandbox-verify.sh
-```
-
-Target a single package with moon:
-
-```sh
-pnpm moon run app-react:build
-pnpm moon run pkce:test
-pnpm moon run :lint --affected
-pnpm moon ci :lint :typecheck :build :test
-```
-
-## Workspace Layout
-
-```text
-packages/
-  app-react/              React + Vite application
-  app-preact/             Preact + Vite application
-  app-astro/              Astro static application
-  app-vue/                Vue + Vite application
-  app-svelte/             Svelte + Vite application
-  app-solidjs/            SolidJS + Vite application
-  renderer-showcase/      Plain HTML host embedding renderer app microfrontends
-  demo-contract/          Shared renderer demo contract package
-  microfrontend-host/     Framework-neutral host shell and mount helpers
-  browser-utils/          Framework-neutral string, form, filtering, and URL helpers
-  input-validation/       Sanitization-backed input validation helpers
-  browser-clipboard/      Browser/isomorphic clipboard helper
-  brief-schema/           JSON schemas and validators for brief payloads
-  create-moon-pnpm-monorepo/ Clean monorepo generator for this tooling stack
-  eslint-config-react/    Shared ESLint flat config package
-  flatten-workspace/      Workspace package-manifest flattening utility
-  measure-hook/           Small timing helper package
-  pkce/                   PKCE library + Vite demo
-  tsconfig/               Shared TypeScript config package
-```
-
-Each package owns its framework-specific config. moon reads `packages/*/moon.yml` for metadata and inherits standard `lint`, `build`, `test`, `coverage`, and `typecheck` tasks from `.moon/tasks/node.yml`.
+Broaden verification only for the surface changed: `package-drift` for topology or metadata, `renderer-showcase` for renderer or host-shell work, `dogfood packages` for package-facing changes, and `docker` for toolchain or workflow changes. The full agent verification contract lives in [AGENTS.md](AGENTS.md).
 
 ## Publishing
 
-Published packages are versioned through Changesets. Private demo apps, such
-as `app-react`, `app-preact`, `app-astro`, `app-vue`, `app-svelte`, and
-`app-solidjs`, plus `renderer-showcase`, are ignored.
+1. Run `pnpm changeset` for a user-facing package change.
+2. Verify publishable tarballs with `scripts/check.sh pack` and external consumption with `scripts/check.sh dogfood packages`.
+3. Merge the Changesets release PR; the `publish` workflow publishes from `main` after its dry-run checks pass.
 
-1. Run `pnpm changeset` in a feature branch for user-facing package changes.
-2. Run `pnpm run pack` locally or in CI to verify publishable tarballs.
-3. On `main`, run the `publish` GitHub workflow with `publish_to_npm=true` and `NPM_AUTH_TOKEN` configured.
+The six renderer apps and `renderer-showcase` are private and excluded from Changesets.
 
-The publish workflow validates install, lint, build, test, and tarball packaging before Changesets publishes packages.
+## Renderer showcase
 
-## Renderer Showcase
-
-`packages/renderer-showcase` is a plain HTML/Vite host that embeds the renderer
-demo apps in one page. Client-rendered apps expose package-local
-`mount(container): () => void` adapters. Astro is represented as a static tile
-from the shared renderer demo contract. Reusable framework-neutral host logic
-lives in `@cheshirecode/microfrontend-host`.
-
-Verify the full embedding path with:
+`packages/renderer-showcase` is a plain HTML/Vite host for all six renderer demos. Client-rendered apps expose package-local `mount(container): () => void` adapters; Astro provides a static tile through the shared demo contract. Reusable host logic stays in `@cheshirecode/microfrontend-host`.
 
 ```sh
 scripts/check.sh renderer-showcase
 ```
 
-## Agent Pickup
+## Agents
 
-Read `AGENTS.md` first. The short version:
-
-- Do not use Rush; it was intentionally removed.
-- Use `scripts/check.sh` for routine checks and operations; package scripts,
-  skills, and workflows are thin orchestrators for those scripts.
-- Use `pnpm` and `moon` underneath the scripts for normal package work.
-- Use Node.js `>=24.11.0`; Node 24 is what CI and Docker verify.
-- Keep package-specific framework choices local to each package.
-- Validate ordinary changes with `pnpm run ci` before handoff.
-- For package topology/config changes, also run `scripts/check.sh package-drift`.
-- For renderer app or host-shell changes, also run `scripts/check.sh renderer-showcase`.
-- For package-facing changes, also run `scripts/check.sh dogfood packages`.
-- For publishing workflow changes, run `scripts/check.sh dogfood all`.
-- GitHub adds workflow lint, dirty-diff detection after lint, package dogfood,
-  and package coverage/Coveralls gates.
+Read [AGENTS.md](AGENTS.md) before making changes. It defines the repository's editing invariants and verification matrix.
