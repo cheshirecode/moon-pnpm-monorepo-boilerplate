@@ -29,7 +29,7 @@ const expectedVersions = new Map([
   ['@vitest/coverage-v8', '^4.1.9'],
   ['react', '^19.2.7'],
   ['react-dom', '^19.2.7'],
-  ['typescript', '^6.0.3'],
+  ['typescript', '^7.0.2'],
   ['vite', '^8.1.2'],
   ['vitest', '^4.1.9']
 ]);

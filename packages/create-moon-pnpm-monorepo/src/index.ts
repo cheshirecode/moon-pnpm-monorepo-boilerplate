@@ -140,7 +140,7 @@ function rootPackageJson(repoName: string): Record<string, unknown> {
       '@types/node': '^24.10.2',
       '@vitest/coverage-v8': '^4.1.9',
       oxlint: '^1.72.0',
-      typescript: '^6.0.3',
+      typescript: '^7.0.2',
       vitest: '^4.1.9'
     }
   };
@@ -192,7 +192,7 @@ function examplePackageJson(repoName: string): Record<string, unknown> {
       [`${repoName}-tsconfig`]: 'workspace:^',
       '@types/node': '^24.10.2',
       '@vitest/coverage-v8': '^4.1.9',
-      typescript: '^6.0.3',
+      typescript: '^7.0.2',
       vitest: '^4.1.9'
     }
   };
@@ -244,6 +244,9 @@ function tsconfigNodeTypes(): Record<string, unknown> {
 function pnpmWorkspaceYaml(): string {
   return `packages:
   - "packages/*"
+
+overrides:
+  typescript: "^7.0.2"
 
 minimumReleaseAgeExclude:
   - "@moonrepo/cli@2.3.5"
@@ -371,6 +374,10 @@ tasks:
 
   build:
     command: "pnpm run --if-present build"
+    deps:
+      - target: "^:build"
+        optional: true
+        cacheStrategy: "outputs"
     inputs:
       - "@group(sources)"
       - "@group(configs)"
