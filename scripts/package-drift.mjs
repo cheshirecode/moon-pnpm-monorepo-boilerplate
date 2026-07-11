@@ -33,6 +33,11 @@ const expectedVersions = new Map([
   ['vite', '^8.1.2'],
   ['vitest', '^4.1.9']
 ]);
+const typescriptVersionExceptions = new Map([
+  ['app-astro', '^6.0.3'],
+  ['app-svelte', '^6.0.3'],
+  ['app-vue', '^6.0.3']
+]);
 
 const dogfoodScript = await readFile(join(root, 'scripts', 'dogfood.mjs'), 'utf8');
 const entries = (await readdir(packagesDir, { withFileTypes: true }))
@@ -71,8 +76,11 @@ for (const dirName of entries) {
 
   for (const [dependency, expected] of expectedVersions) {
     const actual = deps[dependency];
-    if (actual && actual !== expected) {
-      errors.push(`${dirName} uses ${dependency}@${actual}; expected ${expected}`);
+    const packageExpected = dependency === 'typescript'
+      ? typescriptVersionExceptions.get(dirName) ?? expected
+      : expected;
+    if (actual && actual !== packageExpected) {
+      errors.push(`${dirName} uses ${dependency}@${actual}; expected ${packageExpected}`);
     }
   }
 
