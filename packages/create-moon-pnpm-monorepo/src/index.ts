@@ -448,7 +448,11 @@ case "\${1:-}" in
   setup)
     run corepack enable
     run corepack prepare pnpm@11.10.0 --activate
-    run pnpm install --frozen-lockfile
+    if [[ -f "$repo_root/pnpm-lock.yaml" ]]; then
+      run pnpm install --frozen-lockfile
+    else
+      run pnpm install --no-frozen-lockfile
+    fi
     ;;
   lint-fast)
     run pnpm exec oxlint packages tests --ignore-path .gitignore --quiet

@@ -46,5 +46,11 @@ describe('createMonorepo', () => {
     const moonTasks = await readFile(join(target, '.moon', 'tasks', 'node.yml'), 'utf8');
     const buildTask = moonTasks.slice(moonTasks.indexOf('  build:'), moonTasks.indexOf('  test:'));
     expect(buildTask).toContain('target: "^:build"');
+
+    const check = await readFile(join(target, 'scripts', 'check.sh'), 'utf8');
+    const setup = check.slice(check.indexOf('  setup)'), check.indexOf('  lint-fast)'));
+    expect(setup).toContain('if [[ -f "$repo_root/pnpm-lock.yaml" ]]');
+    expect(setup).toContain('pnpm install --frozen-lockfile');
+    expect(setup).toContain('pnpm install --no-frozen-lockfile');
   });
 });
