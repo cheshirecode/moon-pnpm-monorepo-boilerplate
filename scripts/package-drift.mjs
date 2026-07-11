@@ -29,9 +29,15 @@ const expectedVersions = new Map([
   ['@vitest/coverage-v8', '^4.1.9'],
   ['react', '^19.2.7'],
   ['react-dom', '^19.2.7'],
-  ['typescript', '^6.0.3'],
+  ['typescript', '^7.0.2'],
   ['vite', '^8.1.2'],
   ['vitest', '^4.1.9']
+]);
+const typescriptVersionExceptions = new Map([
+  ['app-astro', '^6.0.3'],
+  ['app-svelte', '^6.0.3'],
+  ['app-vue', '^6.0.3'],
+  ['eslint-config-react', '^6.0.3']
 ]);
 
 const dogfoodScript = await readFile(join(root, 'scripts', 'dogfood.mjs'), 'utf8');
@@ -71,8 +77,11 @@ for (const dirName of entries) {
 
   for (const [dependency, expected] of expectedVersions) {
     const actual = deps[dependency];
-    if (actual && actual !== expected) {
-      errors.push(`${dirName} uses ${dependency}@${actual}; expected ${expected}`);
+    const packageExpected = dependency === 'typescript'
+      ? typescriptVersionExceptions.get(dirName) ?? expected
+      : expected;
+    if (actual && actual !== packageExpected) {
+      errors.push(`${dirName} uses ${dependency}@${actual}; expected ${packageExpected}`);
     }
   }
 

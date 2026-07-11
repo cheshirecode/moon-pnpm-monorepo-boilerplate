@@ -16,8 +16,9 @@ const handleFetchResponse = async (res: Response) => {
     _error = e as Error;
   }
   // very hard to test error handling
-  const error: ErrorHttp = new Error(_error ? _error.message : res.statusText); // non-2xx HTTP responses into errors
-  error.status = res.status;
+  const error = Object.assign(new Error(_error ? _error.message : res.statusText), {
+    status: res.status,
+  });
   // return something instead of throwing error so that down the line, we can process all errors in 1 place
   return error;
 };

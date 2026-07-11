@@ -31,11 +31,26 @@ describe('createMonorepo', () => {
     const rootPackage = JSON.parse(await readFile(join(target, 'package.json'), 'utf8'));
     expect(rootPackage.name).toBe('generated-repo');
     expect(rootPackage.scripts.ci).toBe('scripts/check.sh ci');
+    expect(rootPackage.devDependencies.typescript).toBe('^7.0.2');
 
     const examplePackage = JSON.parse(
       await readFile(join(target, 'packages', 'example-lib', 'package.json'), 'utf8')
     );
     expect(examplePackage.name).toBe('generated-repo-example-lib');
     expect(examplePackage.private).toBe(false);
+    expect(examplePackage.devDependencies.typescript).toBe('^7.0.2');
+
+    const workspace = await readFile(join(target, 'pnpm-workspace.yaml'), 'utf8');
+    expect(workspace).toContain('typescript: "^7.0.2"');
+
+    const moonTasks = await readFile(join(target, '.moon', 'tasks', 'node.yml'), 'utf8');
+    const buildTask = moonTasks.slice(moonTasks.indexOf('  build:'), moonTasks.indexOf('  test:'));
+    expect(buildTask).toContain('target: "^:build"');
+
+    const check = await readFile(join(target, 'scripts', 'check.sh'), 'utf8');
+    const setup = check.slice(check.indexOf('  setup)'), check.indexOf('  lint-fast)'));
+    expect(setup).toContain('if [[ -f "$repo_root/pnpm-lock.yaml" ]]');
+    expect(setup).toContain('pnpm install --frozen-lockfile');
+    expect(setup).toContain('pnpm install --no-frozen-lockfile');
   });
 });
