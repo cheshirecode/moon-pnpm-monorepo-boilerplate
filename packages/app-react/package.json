@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@cheshirecode/eslint-config-react": "workspace:^",
-    "@storybook/react-vite": "^10.4.6",
+    "@storybook/react-vite": "^10.5.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -51,7 +51,7 @@
     "esbuild": "^0.28.1",
     "happy-dom": "^20.10.6",
     "sass": "^1.101.0",
-    "storybook": "^10.4.6",
+    "storybook": "^10.5.0",
     "typescript": "^7.0.2",
     "unocss": "^66.7.4",
     "unocss-preset-scrollbar": "^4.0.0",

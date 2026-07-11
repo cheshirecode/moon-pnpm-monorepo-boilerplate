@@ -14,10 +14,4 @@ declare global {
 
   type BaseFC = FC<BaseProps>;
 
-  export interface ErrorHttp extends Error {
-    response?: unknown;
-    info?: string;
-    status?: number;
-  }
-
 }
