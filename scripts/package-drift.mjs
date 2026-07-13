@@ -112,6 +112,31 @@ for (const { path, token } of staleRefs) {
   errors.push(`stale ${token} reference: ${path}`);
 }
 
+const honoBaseSources = await sourceFiles(join(packagesDir, 'hono-base', 'src'));
+for (const path of honoBaseSources) {
+  const content = await readFile(path, 'utf8');
+  for (const token of ['node:', '@hono/node-server']) {
+    if (content.includes(token)) {
+      errors.push(`hono-base runtime boundary imports ${token}: ${path.slice(root.length + 1)}`);
+    }
+  }
+}
+
+const browserSources = [
+  'packages/app-react/src/entry-hydration.tsx',
+  'packages/app-react/src/entry-microfrontend.tsx',
+  'packages/app-react/src/shared/AppTree.tsx',
+  'packages/app-react/src/client/ErrorBoundary.tsx'
+];
+for (const relativePath of browserSources) {
+  const content = await readFile(join(root, relativePath), 'utf8');
+  for (const token of ['node:', '@hono/node-server', '/server/']) {
+    if (content.includes(token)) {
+      errors.push(`app-react browser boundary imports ${token}: ${relativePath}`);
+    }
+  }
+}
+
 errors.push(...(await verifyRendererShowcase()));
 
 if (errors.length > 0) {
@@ -123,6 +148,19 @@ if (errors.length > 0) {
 }
 
 console.log(`Package drift check passed for ${entries.length} package(s).`);
+
+async function sourceFiles(dir) {
+  const files = [];
+  for (const entry of await readdir(dir, { withFileTypes: true })) {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...(await sourceFiles(path)));
+    } else if (/\.tsx?$/.test(entry.name) && !/\.test\.tsx?$/.test(entry.name)) {
+      files.push(path);
+    }
+  }
+  return files;
+}
 
 async function staleReferences(tokens) {
   const stale = [];

@@ -43,10 +43,30 @@ has_git_head() {
   run git rev-parse --verify HEAD >/dev/null 2>&1
 }
 
+require_toolchain() {
+  local node_version pnpm_version
+  node_version="$(node -p 'process.versions.node')"
+  if ! node -e 'const current = process.versions.node.split(".").map(Number); const minimum = [24, 11, 0]; for (let i = 0; i < minimum.length; i += 1) { if (current[i] > minimum[i]) process.exit(0); if (current[i] < minimum[i]) process.exit(1); }'; then
+    echo "Node.js >=24.11.0 is required; found $node_version." >&2
+    exit 1
+  fi
+
+  pnpm_version="$(run corepack pnpm --version)"
+  if [[ "$pnpm_version" != "11.10.0" ]]; then
+    echo "pnpm 11.10.0 is required; found $pnpm_version." >&2
+    exit 1
+  fi
+}
+
 command="${1:-}"
 if [[ $# -gt 0 ]]; then
   shift
 fi
+
+case "$command" in
+  -h|--help|help|"") ;;
+  *) require_toolchain ;;
+esac
 
 case "$command" in
   setup)
