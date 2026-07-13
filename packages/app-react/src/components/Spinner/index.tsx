@@ -1,6 +1,7 @@
 import cx from 'classnames';
+import type { PropsWithChildren } from 'react';
 
-import { borderPalette } from '@/styles/palette';
+import { borderPalette } from '../../styles/palette';
 
 const borderTypes = {
   plain: {
@@ -30,14 +31,16 @@ const sizes = {
   large: 'w-20 h-20'
 };
 
-export type SpinnerProps = BaseProps & {
+export type SpinnerProps = PropsWithChildren<{
+  className?: string;
+  ['data-testid']?: string;
   type?: keyof typeof borderTypes;
   size?: keyof typeof sizes;
   palette?: keyof typeof borderPalette;
   screen?: boolean;
   screenClassName?: string;
   center?: boolean;
-};
+}>;
 
 const Spinner = ({
   className,

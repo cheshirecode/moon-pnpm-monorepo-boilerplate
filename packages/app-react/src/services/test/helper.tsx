@@ -4,7 +4,7 @@ import { Fragment } from 'react';
 import { SWRConfig } from 'swr';
 import { afterEach } from 'vitest';
 
-import ErrorBoundary from '@/components/ErrorBoundary';
+import ErrorBoundary from '@/client/ErrorBoundary';
 
 beforeAll(() => {
   global.ResizeObserver = class ResizeObserver {

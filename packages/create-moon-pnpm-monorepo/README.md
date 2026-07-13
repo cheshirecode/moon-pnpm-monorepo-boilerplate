@@ -10,9 +10,9 @@ scripts/check.sh ci
 scripts/check.sh dogfood all
 ```
 
-The generated repo starts with one `example-lib` package so linting, testing,
-building, packing, package dogfood, publish dry-runs, and GitHub workflows have
-a real package to validate. Replace it with your own packages when ready.
+The generated repo starts with a publishable Hono app factory and a private
+React SSR application so linting, testing, building, packing, package dogfood,
+publish dry-runs, and GitHub workflows have a real full-stack shape to validate.
 
 ## Consumers
 

@@ -2,6 +2,7 @@
   "compilerOptions": {
     "module": "esnext",
     "moduleResolution": "bundler",
+    "jsx": "react-jsx",
     "noEmit": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
@@ -12,9 +13,13 @@
     ]
   },
   "include": [
+    "src/server",
     "unocss.config.ts",
     "src/styles/grid.ts",
     "vite.config.ts",
+    "vite.client.config.ts",
+    "vite.config.server.ts",
+    "build.js",
     "alias.ts"
   ]
 }

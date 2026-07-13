@@ -4,23 +4,29 @@
   "version": "0.0.0",
   "type": "module",
   "exports": {
-    "./microfrontend": "./src/microfrontend.tsx"
+    "./microfrontend": "./src/entry-microfrontend.tsx"
   },
   "scripts": {
-    "dev": "vite --host",
+    "dev": "node build.js && node dist/server/node.js",
+    "start": "node dist/server/node.js",
+    "preview": "node dist/server/node.js",
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.node.json",
-    "build": "vite build",
+    "build": "node build.js",
+    "build:client:production": "vite build --config vite.client.config.ts",
+    "build:server": "vite build --config vite.config.server.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "preview": "vite preview --host",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
     "format": "prettier --write {**/*,*}.{js,ts,jsx,tsx} --ignore-path .gitignore",
     "lint": "oxlint src --ignore-path ../../.gitignore --quiet"
   },
   "dependencies": {
+    "@cheshirecode/hono-base": "workspace:^",
+    "@hono/node-server": "^1.14.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "hono": "^4.9.0",
     "@cheshirecode/browser-clipboard": "workspace:^",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.5",

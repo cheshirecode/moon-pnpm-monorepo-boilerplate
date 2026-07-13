@@ -1,5 +1,4 @@
 ---
-"@cheshirecode/brief-schema": patch
 "@cheshirecode/browser-clipboard": patch
 "@cheshirecode/browser-utils": patch
 "@cheshirecode/create-moon-pnpm-monorepo": patch

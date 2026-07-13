@@ -1,7 +1,7 @@
 import { waitFor } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { mount } from './microfrontend';
+import { mount } from './entry-microfrontend';
 
 describe('app-react microfrontend', () => {
   it('mounts into an arbitrary container and unmounts', async () => {

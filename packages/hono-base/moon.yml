@@ -1,0 +1,11 @@
+language: "typescript"
+layer: "library"
+stack: "backend"
+tags:
+  - "hono"
+  - "isomorphic"
+
+tasks:
+  build:
+    outputs:
+      - "dist/**/*"

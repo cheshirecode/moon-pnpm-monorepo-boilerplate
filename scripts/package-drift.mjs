@@ -25,10 +25,12 @@ const testAllowlist = new Set(['tsconfig']);
 const dogfoodAllowlist = new Set([]);
 const expectedVersions = new Map([
   ['@types/node', '^24.10.2'],
+  ['@hono/node-server', '^1.14.0'],
   ['@vitejs/plugin-react', '^6.0.3'],
   ['@vitest/coverage-v8', '^4.1.9'],
   ['react', '^19.2.7'],
   ['react-dom', '^19.2.7'],
+  ['hono', '^4.9.0'],
   ['typescript', '^7.0.2'],
   ['vite', '^8.1.2'],
   ['vitest', '^4.1.9']

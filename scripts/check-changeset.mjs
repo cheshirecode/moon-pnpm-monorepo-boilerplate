@@ -54,9 +54,20 @@ function isIgnoredPackage(file) {
   return ignoredPackages.has(parts[1]);
 }
 
-function getChangedFiles(ref) {
+async function getChangedFiles(ref) {
+  const outputs = await Promise.all([
+    runGit(['diff', '--name-only', `${ref}...HEAD`]),
+    runGit(['diff', '--name-only']),
+    runGit(['diff', '--name-only', '--cached']),
+    runGit(['ls-files', '--others', '--exclude-standard'])
+  ]);
+
+  return [...new Set(outputs.flatMap((output) => output.split('\n').filter(Boolean)))];
+}
+
+function runGit(args) {
   return new Promise((resolveRun, reject) => {
-    const child = spawn('git', ['diff', '--name-only', `${ref}...HEAD`], {
+    const child = spawn('git', args, {
       cwd: root,
       stdio: ['ignore', 'pipe', 'pipe'],
       shell: false
@@ -65,12 +76,6 @@ function getChangedFiles(ref) {
     let output = '';
     child.stdout.on('data', (chunk) => (output += chunk));
     child.on('error', reject);
-    child.on('exit', (code) => {
-      if (code === 0) {
-        resolveRun(output.trim().split('\n').filter(Boolean));
-      } else {
-        resolveRun([]);
-      }
-    });
+    child.on('exit', (code) => resolveRun(code === 0 ? output.trim() : ''));
   });
 }

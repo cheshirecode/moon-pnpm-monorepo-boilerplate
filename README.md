@@ -70,7 +70,7 @@ CLIs, shared configuration, and packages without an internal runtime edge.
     <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/create-moon-pnpm-monorepo/"><code>@cheshirecode/create-moon-pnpm-monorepo</code></a><br><sub>TS</sub></td><td>CLI that generates a clean starter workspace.</td></tr>
     <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/flatten-workspace/"><code>@cheshirecode/flatten-workspace</code></a><br><sub>TS</sub></td><td>CLI for flattening workspace package manifests.</td></tr>
     <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/input-validation/"><code>@cheshirecode/input-validation</code></a><br><sub>TS</sub></td><td>Sanitizer-backed input validation helpers.</td></tr>
-    <tr><td><img src="docs/assets/package-icons/javascript.svg" alt="" width="20" height="20"> JavaScript</td><td><a href="packages/brief-schema/"><code>@cheshirecode/brief-schema</code></a><br><sub>JS</sub></td><td>JSON schemas and brief payload validators.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/hono-base/"><code>@cheshirecode/hono-base</code></a><br><sub>TS</sub></td><td>Runtime-neutral Hono app factory.</td></tr>
     <tr><td><img src="docs/assets/package-icons/javascript.svg" alt="" width="20" height="20"> JavaScript</td><td><a href="packages/measure-hook/"><code>@cheshirecode/measure-hook</code></a><br><sub>JS</sub></td><td>Small synchronous and asynchronous timing helper.</td></tr>
     <tr><td><img src="docs/assets/package-icons/react.svg" alt="" width="20" height="20"> React</td><td><a href="packages/eslint-config-react/"><code>@cheshirecode/eslint-config-react</code></a><br><sub>JS</sub></td><td>Shared ESLint flat configuration for React.</td></tr>
     <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/tsconfig/"><code>@cheshirecode/tsconfig</code></a><br><sub>JSON config</sub></td><td>Shared TypeScript compiler configurations.</td></tr>
@@ -99,7 +99,7 @@ flowchart TB
 
   subgraph tooling[Tooling and standalone]
     validation["@cheshirecode/input-validation"]
-    schema["@cheshirecode/brief-schema"]
+    hono["@cheshirecode/hono-base"]
     create["@cheshirecode/create-moon-pnpm-monorepo"]
     eslint["@cheshirecode/eslint-config-react"]
     flatten["@cheshirecode/flatten-workspace"]
@@ -123,6 +123,7 @@ flowchart TB
   svelte --> contract
   solid --> contract
   react --> clipboard
+  react --> hono
   preact --> clipboard
   contract --> utils
   pkce --> clipboard
