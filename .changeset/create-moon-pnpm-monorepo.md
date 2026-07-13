@@ -1,5 +1,5 @@
 ---
-"@cheshirecode/create-moon-pnpm-monorepo": patch
+"@cheshirecode/create-moon-pnpm-monorepo": minor
 ---
 
-Add a generator for clean moon, pnpm, and Changesets monorepos with end-to-end verification wiring.
+Generate a publishable Hono base package and private React SSR application in clean moon, pnpm, and Changesets monorepos.

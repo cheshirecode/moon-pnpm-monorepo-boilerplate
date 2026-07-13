@@ -1,13 +1,14 @@
 {
-  "name": "@cheshirecode/brief-schema",
+  "name": "@cheshirecode/hono-base",
   "version": "0.0.0",
-  "description": "AJV validators and JSON schemas for prospect and brainstorm briefs.",
+  "description": "Runtime-neutral Hono app factory with health, version, and error middleware.",
   "type": "module",
   "private": false,
   "keywords": [
-    "brief",
-    "json-schema",
-    "validation"
+    "hono",
+    "server",
+    "middleware",
+    "healthz"
   ],
   "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
   "license": "MIT",
@@ -15,7 +16,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate.git",
-    "directory": "packages/brief-schema"
+    "directory": "packages/hono-base"
   },
   "bugs": {
     "url": "https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate/issues"
@@ -24,29 +25,29 @@
     "node": ">=24.11.0"
   },
   "files": [
-    "index.d.ts",
-    "index.js",
-    "*.schema.json"
+    "dist"
   ],
   "exports": {
     ".": {
-      "types": "./index.d.ts",
-      "import": "./index.js"
-    },
-    "./brainstorm.schema.json": "./brainstorm.schema.json",
-    "./prospect.schema.json": "./prospect.schema.json"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
   },
   "scripts": {
-    "test": "vitest run index.test.js",
+    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "lint": "oxlint . --ignore-path ../../.gitignore --quiet"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "oxlint src --ignore-path ../../.gitignore --quiet"
   },
   "dependencies": {
-    "ajv": "^8.20.0",
-    "ajv-formats": "^3.0.1"
+    "hono": "^4.9.0"
   },
   "devDependencies": {
+    "@cheshirecode/tsconfig": "workspace:^",
+    "@types/node": "^24.10.2",
     "@vitest/coverage-v8": "^4.1.9",
+    "typescript": "^7.0.2",
     "vitest": "^4.1.9"
   }
 }

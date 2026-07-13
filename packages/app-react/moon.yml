@@ -4,8 +4,11 @@ stack: "frontend"
 tags:
   - "react"
   - "vite"
+  - "hono"
+  - "ssr"
 
 tasks:
   build:
     outputs:
-      - "dist/**/*"
+      - "dist/client/**/*"
+      - "dist/server/**/*"

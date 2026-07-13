@@ -1,14 +1,14 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import App from './App';
+import AppTree from './shared/AppTree';
 
 export function mount(container: Element): () => void {
   const root = createRoot(container);
 
   root.render(
     <StrictMode>
-      <App />
+      <AppTree />
     </StrictMode>
   );
 

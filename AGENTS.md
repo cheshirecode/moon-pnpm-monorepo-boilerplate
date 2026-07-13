@@ -112,6 +112,7 @@ pnpm moon ci :lint :typecheck :build :test
 - Do not introduce new framework assumptions at the root; the root stays framework-neutral.
 - Keep root package scripts as thin wrappers over `scripts/check.sh`.
 - If changing `.moon/tasks/node.yml`, verify at least one package target and one all-packages target.
+- Before `git reset`, `git clean`, `git checkout --`, or `git restore`, inspect `git status`; never run them on a dirty tree unless explicitly authorized and the changes are secured.
 
 ## Common Failure Modes
 

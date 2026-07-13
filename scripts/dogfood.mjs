@@ -290,39 +290,15 @@ const registry = microfrontendHost.createMicrofrontendRegistry([
 assert.equal(registry[0].id, 'dogfood-static');
 assert.equal(microfrontendHost.microfrontendMountId('dogfood-static'), 'microfrontend-dogfood-static');
 
-const briefSchema = await import('@cheshirecode/brief-schema');
-const prospectSchemaAsset = await import(
-  '@cheshirecode/brief-schema/prospect.schema.json',
-  { with: { type: 'json' } }
-);
-const brainstormSchemaAsset = await import(
-  '@cheshirecode/brief-schema/brainstorm.schema.json',
-  { with: { type: 'json' } }
-);
-assert.equal(briefSchema.prospectSchema.title, 'ProspectBrief');
-assert.equal(prospectSchemaAsset.default.title, 'ProspectBrief');
-assert.equal(brainstormSchemaAsset.default.title, 'BrainstormBrief');
-assert.equal(
-  briefSchema.validateBrainstorm({
-    capabilitiesToPitch: ['background removal'],
-    generatedAt: '2026-06-29T18:30:00.000Z',
-    knowledgeVersion: 'dogfood',
-    landmines: ['avoid overpromising automation'],
-    liveDemoOption: 'catalog background removal',
-    mode: 'brainstorm',
-    questionsToAsk: ['What is the current asset volume?'],
-    schemaVersion: briefSchema.SCHEMA_VERSION,
-    suggestedOpening: 'Lead with an existing live demo',
-    worklogRefs: ['sales-eng-r01', 'sales-eng-r02', 'sales-eng-r03']
-  }),
-  true
-);
-assert.deepEqual(
-  briefSchema.findKilledHits('Ship a step runner registry next week', {
-    patterns: [{ pattern: 'step runner registry' }]
-  }),
-  [{ matched: 'step runner registry', pattern: 'step runner registry' }]
-);
+const honoBase = await import('@cheshirecode/hono-base');
+assert.equal(typeof honoBase.createBaseApp, 'function');
+const honoApp = honoBase.createBaseApp({ version: '0.0.0', serviceName: 'dogfood' });
+const honoHealthz = await honoApp.request('/healthz');
+assert.equal(honoHealthz.status, 200);
+assert.deepEqual(await honoHealthz.json(), { status: 'ok' });
+const honoVersion = await honoApp.request('/version');
+assert.equal(honoVersion.status, 200);
+assert.deepEqual(await honoVersion.json(), { name: 'dogfood', version: '0.0.0' });
 
 assert.equal(browserUtils.validateEmail('person@example.test'), undefined);
 assert.equal(browserUtils.validateRequired('', 'Name'), 'Name is required');
@@ -417,7 +393,7 @@ const bootstrapResult = await bootstrapPackage.createMonorepo({
   directory: bootstrapDir
 });
 assert.equal(bootstrapResult.name, 'generated-monorepo');
-assert.ok(bootstrapResult.files.includes('packages/example-lib/src/index.ts'));
+assert.ok(bootstrapResult.files.includes('packages/hono-base/src/index.ts'));
 await execFileAsync('corepack', ['enable'], { cwd: bootstrapDir });
 await execFileAsync('pnpm', ['install'], { cwd: bootstrapDir });
 await execFileAsync('scripts/check.sh', ['ci'], { cwd: bootstrapDir });
@@ -434,9 +410,9 @@ await execFileAsync('pnpm', [
   binBootstrapDir
 ]);
 assert.ok(
-  await readFile(join(binBootstrapDir, 'packages', 'example-lib', 'src', 'index.ts'), 'utf8')
+  await readFile(join(binBootstrapDir, 'packages', 'hono-base', 'src', 'index.ts'), 'utf8')
     .then(() => true).catch(() => false),
-  'bin-generated monorepo is missing packages/example-lib/src/index.ts'
+  'bin-generated monorepo is missing packages/hono-base/src/index.ts'
 );
 await execFileAsync('corepack', ['enable'], { cwd: binBootstrapDir });
 await execFileAsync('pnpm', ['install'], { cwd: binBootstrapDir });
