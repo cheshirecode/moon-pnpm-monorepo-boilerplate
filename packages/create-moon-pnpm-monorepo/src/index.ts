@@ -854,6 +854,7 @@ scripts/check.sh dogfood all
 
 Keep package-specific framework choices inside \`packages/*\`. The root stays framework-neutral.
 Use Node.js \`>=24.11.0\`, pnpm \`11.10.0\`, moon, Changesets, and oxlint.
+Before \`git reset\`, \`git clean\`, \`git checkout --\`, or \`git restore\`, inspect \`git status\`; never run them on a dirty tree unless explicitly authorized and the changes are secured.
 `;
 }
 
