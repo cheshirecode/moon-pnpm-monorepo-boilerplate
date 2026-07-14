@@ -11,7 +11,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 concurrency:
   group: publish-${{ github.ref }}
@@ -33,11 +32,19 @@ jobs:
         run: scripts/check.sh ci
       - name: Dogfood package publishability
         run: scripts/check.sh dogfood all
-      - name: Create or update release PR
+      - name: Refuse pending changesets
+        if: inputs.publish_to_npm && github.ref == 'refs/heads/main'
+        run: |
+          pending=$(find .changeset -name '*.md' ! -name 'README.md' 2>/dev/null | head -1)
+          if [ -n "$pending" ]; then
+            echo "Pending changesets remain: $pending"
+            echo "Merge the release PR before publishing."
+            exit 1
+          fi
+      - name: Publish packages
         if: inputs.publish_to_npm && github.ref == 'refs/heads/main'
         uses: changesets/action@v1.9.0
         with:
-          version: pnpm run version-packages
           publish: pnpm run publish-packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -29,6 +29,53 @@ describe('createMonorepo', () => {
     expect(result.files).toContain('packages/app-react/src/entry-microfrontend.tsx');
     await access(join(target, '.github', 'workflows', 'main.yml'));
     await access(join(target, '.github', 'workflows', 'publish.yml'));
+    await access(join(target, '.github', 'workflows', 'release-pr.yml'));
+
+    const releasePrWorkflow = await readFile(
+      join(target, '.github', 'workflows', 'release-pr.yml'),
+      'utf8'
+    );
+    expect(releasePrWorkflow).toMatch(/^on:\n  push:\n    branches:\n      - main\n/m);
+    expect(releasePrWorkflow).not.toMatch(/workflow_dispatch:/);
+    expect(releasePrWorkflow).not.toMatch(/pull_request:/);
+    expect(releasePrWorkflow).toContain('contents: write');
+    expect(releasePrWorkflow).toContain('pull-requests: write');
+    expect(releasePrWorkflow).toMatch(/group: release-pr-\$\{\{ github\.ref \}\}/);
+    expect(releasePrWorkflow).toContain('cancel-in-progress: false');
+    expect(releasePrWorkflow).toContain('fetch-depth: 0');
+    expect(releasePrWorkflow).toContain('persist-credentials: true');
+    expect(releasePrWorkflow).toContain('uses: ./.github/actions/setup');
+    expect(releasePrWorkflow).toContain('uses: changesets/action@v1.9.0');
+    expect(releasePrWorkflow).toContain('version: pnpm run version-packages');
+    expect(releasePrWorkflow).not.toContain('publish:');
+    expect(releasePrWorkflow).not.toContain('NPM_TOKEN');
+    expect(releasePrWorkflow).not.toContain('NPM_AUTH_TOKEN');
+    expect(releasePrWorkflow).not.toContain('NODE_AUTH_TOKEN');
+
+    const publishWorkflow = await readFile(
+      join(target, '.github', 'workflows', 'publish.yml'),
+      'utf8'
+    );
+    expect(publishWorkflow).toContain('workflow_dispatch:');
+    expect(publishWorkflow).toContain('publish_to_npm:');
+    expect(publishWorkflow).toContain('contents: write');
+    expect(publishWorkflow).not.toContain('pull-requests: write');
+    expect(publishWorkflow).toMatch(/group: publish-\$\{\{ github\.ref \}\}/);
+    expect(publishWorkflow).toContain('cancel-in-progress: false');
+    expect(publishWorkflow).toContain('fetch-depth: 0');
+    expect(publishWorkflow).toContain('persist-credentials: ${{ inputs.publish_to_npm }}');
+    expect(publishWorkflow).toContain('uses: ./.github/actions/setup');
+    expect(publishWorkflow).toContain('scripts/check.sh ci');
+    expect(publishWorkflow).toContain('scripts/check.sh dogfood all');
+    expect(publishWorkflow).toContain('Refuse pending changesets');
+    expect(publishWorkflow).toContain("find .changeset -name '*.md'");
+    expect(publishWorkflow).toContain('Merge the release PR before publishing.');
+    expect(publishWorkflow).toContain('uses: changesets/action@v1.9.0');
+    expect(publishWorkflow).toContain('publish: pnpm run publish-packages');
+    expect(publishWorkflow).not.toMatch(/version:\s*pnpm run version-packages/);
+    expect(publishWorkflow).toContain('NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}');
+    expect(publishWorkflow).toContain("github.ref == 'refs/heads/main'");
+    expect(publishWorkflow).toContain("github.ref != 'refs/heads/main'");
 
     const rootPackage = JSON.parse(await readFile(join(target, 'package.json'), 'utf8'));
     expect(rootPackage.name).toBe('generated-repo');

@@ -147,8 +147,9 @@ Broaden verification only for the surface changed: `package-drift` for topology 
 ## Publishing
 
 1. Run `pnpm changeset` for a user-facing package change.
-2. Verify publishable tarballs with `scripts/check.sh pack` and external consumption with `scripts/check.sh dogfood packages`.
-3. Merge the Changesets release PR; the `publish` workflow publishes from `main` after its dry-run checks pass.
+2. Pushes to `main` automatically create or update the Changesets release PR via the `release-pr` workflow; that workflow never receives `NPM_TOKEN` or publishes packages.
+3. Verify publishable tarballs with `scripts/check.sh pack` and external consumption with `scripts/check.sh dogfood packages`.
+4. Merge the release PR (consuming all changesets), then run the `publish` workflow with `publish_to_npm` enabled to publish from `main`; the publish workflow refuses to run if pending changesets remain.
 
 The six renderer apps and `renderer-showcase` are private and excluded from Changesets.
 
