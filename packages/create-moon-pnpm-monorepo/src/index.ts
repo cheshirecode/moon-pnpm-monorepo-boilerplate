@@ -92,6 +92,7 @@ function templateFiles(repoName: string): Array<[string, string]> {
     ['tests/smoke.test.js', rootSmokeTest()],
     ['.github/actions/setup/action.yml', setupAction()],
     ['.github/workflows/main.yml', mainWorkflow()],
+    ['.github/workflows/release-pr.yml', releaseWorkflow()],
     ['.github/workflows/publish.yml', publishWorkflow()],
     ['packages/tsconfig/package.json', json(tsconfigPackageJson(repoName))],
     ['packages/tsconfig/base.json', json(tsconfigBase())],
@@ -836,6 +837,12 @@ Requires Node.js \`>=24.11.0\`.
 - Changesets for versioning and npm publishing.
 - oxlint for fast lint checks.
   - A publishable Hono app factory and private React SSR application.
+
+## Publishing
+
+1. Run \`pnpm changeset\` for a user-facing package change.
+2. Pushes to \`main\` automatically create or update the Changesets release PR via the \`release-pr\` workflow; that workflow never receives \`NPM_TOKEN\` or publishes packages.
+3. Merge the release PR (consuming all changesets), then run the \`publish\` workflow with \`publish_to_npm\` enabled to publish from \`main\`; the publish workflow refuses to run if pending changesets remain.
 `;
 }
 
@@ -855,6 +862,11 @@ scripts/check.sh dogfood all
 Keep package-specific framework choices inside \`packages/*\`. The root stays framework-neutral.
 Use Node.js \`>=24.11.0\`, pnpm \`11.10.0\`, moon, Changesets, and oxlint.
 Before \`git reset\`, \`git clean\`, \`git checkout --\`, or \`git restore\`, inspect \`git status\`; never run them on a dirty tree unless explicitly authorized and the changes are secured.
+
+## Release Rules
+
+- The \`release-pr\` workflow creates/updates the Changesets release PR on push to \`main\`; it never receives \`NPM_TOKEN\` or publishes packages.
+- The \`publish\` workflow publishes packages to npm only from \`main\` when \`publish_to_npm\` is enabled; it refuses to publish if pending changesets remain.
 `;
 }
 
@@ -1321,6 +1333,41 @@ jobs:
 `;
 }
 
+function releaseWorkflow(): string {
+  return `name: release-pr
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: release-pr-\${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: ./.github/actions/setup
+      - name: Create or update release PR
+        uses: changesets/action@v1.9.0
+        with:
+          version: pnpm run version-packages
+        env:
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+`;
+}
+
 function publishWorkflow(): string {
   return `name: publish
 
@@ -1335,30 +1382,49 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
+
+concurrency:
+  group: publish-\${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout code
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           persist-credentials: \${{ inputs.publish_to_npm }}
       - uses: ./.github/actions/setup
         with:
           registry-url: https://registry.npmjs.org
-      - run: scripts/check.sh ci
-      - run: scripts/check.sh dogfood all
-      - name: Create or update release PR
+      - name: Validate workspace
+        run: scripts/check.sh ci
+      - name: Dogfood package publishability
+        run: scripts/check.sh dogfood all
+      - name: Refuse pending changesets
         if: inputs.publish_to_npm && github.ref == 'refs/heads/main'
-        uses: changesets/action@v1
+        run: |
+          pending=$(find .changeset -name '*.md' ! -name 'README.md' 2>/dev/null | head -1)
+          if [ -n "$pending" ]; then
+            echo "Pending changesets remain: $pending"
+            echo "Merge the release PR before publishing."
+            exit 1
+          fi
+      - name: Publish packages
+        if: inputs.publish_to_npm && github.ref == 'refs/heads/main'
+        uses: changesets/action@v1.9.0
         with:
-          version: pnpm run version-packages
           publish: pnpm run publish-packages
         env:
           GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: \${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Explain skipped publish
+        if: inputs.publish_to_npm && github.ref != 'refs/heads/main'
+        run: |
+          echo "Publishing is only enabled from refs/heads/main."
+          exit 1
 `;
 }
 

@@ -104,7 +104,8 @@ pnpm moon ci :lint :typecheck :build :test
 - The package-facing verification matrix row must succeed before handoff.
 - For publishing workflow changes, the release or publishing matrix row must
   succeed; its dry run must not publish real packages.
-- The GitHub `publish` workflow creates/updates the Changesets release PR and publishes only from `main`.
+- The GitHub `release-pr` workflow creates/updates the Changesets release PR on push to `main`; it never receives `NPM_TOKEN` or publishes packages.
+- The GitHub `publish` workflow publishes packages to npm only from `main` when `publish_to_npm` is enabled; it refuses to publish if pending changesets remain.
 
 ## Editing Rules
 
