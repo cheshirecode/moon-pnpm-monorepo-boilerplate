@@ -29,7 +29,7 @@ export default defineConfig({
         new URL('../app-preact/src/microfrontend.tsx', import.meta.url)
       ),
       'app-react/microfrontend': fileURLToPath(
-        new URL('../app-react/src/microfrontend.tsx', import.meta.url)
+        new URL('../app-react/src/entry-microfrontend.tsx', import.meta.url)
       ),
       'app-solidjs/microfrontend': fileURLToPath(
         new URL('../app-solidjs/src/microfrontend.tsx', import.meta.url)
