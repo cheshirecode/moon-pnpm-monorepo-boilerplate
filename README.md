@@ -22,6 +22,7 @@ pnpm run ci
 
 ## Workspace map
 
+<!-- BEGIN readme-map -->
 ### Renderer surface
 
 Six private framework apps are embedded by one private showcase host.
@@ -98,12 +99,12 @@ flowchart TB
   end
 
   subgraph tooling[Tooling and standalone]
+    create["@cheshirecode/create-moon-pnpm-monorepo"]
+    flatten["@cheshirecode/flatten-workspace"]
     validation["@cheshirecode/input-validation"]
     hono["@cheshirecode/hono-base"]
-    create["@cheshirecode/create-moon-pnpm-monorepo"]
-    eslint["@cheshirecode/eslint-config-react"]
-    flatten["@cheshirecode/flatten-workspace"]
     measure["@cheshirecode/measure-hook"]
+    eslint["@cheshirecode/eslint-config-react"]
     tsconfig["@cheshirecode/tsconfig"]
   end
 
@@ -114,20 +115,21 @@ flowchart TB
   showcase -. embeds .-> svelte
   showcase -. embeds .-> solid
 
-  showcase --> host
-  showcase --> contract
-  showcase --> clipboard
+  react --> clipboard
+  react --> hono
   preact --> contract
+  preact --> clipboard
   astro --> contract
   vue --> contract
   svelte --> contract
   solid --> contract
-  react --> clipboard
-  react --> hono
-  preact --> clipboard
+  showcase --> host
+  showcase --> contract
+  showcase --> clipboard
   contract --> utils
   pkce --> clipboard
 ```
+<!-- END readme-map -->
 
 The graph intentionally omits external framework dependencies and repetitive development-only edges to the shared TypeScript and ESLint configurations.
 
