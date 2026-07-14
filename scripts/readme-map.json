@@ -1,0 +1,115 @@
+{
+  "sharedRuntime": [
+    "microfrontend-host",
+    "demo-contract",
+    "browser-clipboard",
+    "browser-utils",
+    "pkce"
+  ],
+  "tooling": [
+    "create-moon-pnpm-monorepo",
+    "flatten-workspace",
+    "input-validation",
+    "hono-base",
+    "measure-hook",
+    "eslint-config-react",
+    "tsconfig"
+  ],
+  "packages": {
+    "app-react": {
+      "nodeId": "react",
+      "technology": "react",
+      "techName": "React",
+      "subtag": "TSX",
+      "role": "React renderer demo and mount adapter."
+    },
+    "app-preact": {
+      "nodeId": "preact",
+      "technology": "preact",
+      "techName": "Preact",
+      "subtag": "TSX",
+      "role": "Preact renderer demo and mount adapter."
+    },
+    "app-astro": {
+      "nodeId": "astro",
+      "technology": "astro",
+      "techName": "Astro",
+      "subtag": "Astro → TS",
+      "role": "Astro static renderer demo."
+    },
+    "app-vue": {
+      "nodeId": "vue",
+      "technology": "vuedotjs",
+      "techName": "Vue.js",
+      "subtag": "Vue → TS",
+      "role": "Vue renderer demo and mount adapter."
+    },
+    "app-svelte": {
+      "nodeId": "svelte",
+      "technology": "svelte",
+      "techName": "Svelte",
+      "subtag": "Svelte → TS",
+      "role": "Svelte renderer demo and mount adapter."
+    },
+    "app-solidjs": {
+      "nodeId": "solid",
+      "technology": "solid",
+      "techName": "Solid",
+      "subtag": "TSX",
+      "role": "Solid renderer demo and mount adapter."
+    },
+    "renderer-showcase": {
+      "nodeId": "showcase",
+      "role": "Vite host for all six renderer demos."
+    },
+    "microfrontend-host": {
+      "nodeId": "host",
+      "role": "Framework-neutral microfrontend host shell."
+    },
+    "demo-contract": {
+      "nodeId": "contract",
+      "role": "Shared renderer demo contract and helpers."
+    },
+    "browser-clipboard": {
+      "nodeId": "clipboard",
+      "role": "Browser-safe clipboard access."
+    },
+    "browser-utils": {
+      "nodeId": "utils",
+      "role": "Shared string, form, filtering, and URL helpers."
+    },
+    "pkce": {
+      "role": "PKCE library with a browser demo."
+    },
+    "create-moon-pnpm-monorepo": {
+      "nodeId": "create",
+      "role": "CLI that generates a clean starter workspace."
+    },
+    "flatten-workspace": {
+      "nodeId": "flatten",
+      "role": "CLI for flattening workspace package manifests."
+    },
+    "input-validation": {
+      "nodeId": "validation",
+      "role": "Sanitizer-backed input validation helpers."
+    },
+    "hono-base": {
+      "nodeId": "hono",
+      "role": "Runtime-neutral Hono app factory."
+    },
+    "measure-hook": {
+      "nodeId": "measure",
+      "role": "Small synchronous and asynchronous timing helper."
+    },
+    "eslint-config-react": {
+      "nodeId": "eslint",
+      "technology": "react",
+      "techName": "React",
+      "role": "Shared ESLint flat configuration for React."
+    },
+    "tsconfig": {
+      "subtag": "JSON config",
+      "role": "Shared TypeScript compiler configurations."
+    }
+  }
+}

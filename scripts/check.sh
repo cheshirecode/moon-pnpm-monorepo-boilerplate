@@ -11,6 +11,7 @@ Commands:
   setup                 Install dependencies with the pinned pnpm version.
   lint-fast             Run the fast Rust-based lint guard.
   package-drift         Check package metadata, dependency, coverage, and dogfood drift.
+  readme-map            Check that README workspace map matches package inventory (use --write to fix).
   lint                  Run package lint targets through moon.
   typecheck             Run package type checks through moon.
   build                 Run package builds through moon.
@@ -84,6 +85,9 @@ case "$command" in
   package-drift)
     run node scripts/package-drift.mjs
     ;;
+  readme-map)
+    run node scripts/readme-map.mjs "$@"
+    ;;
   lint)
     if has_git_head; then
       run pnpm exec moon run :lint
@@ -116,6 +120,7 @@ case "$command" in
   ci)
     "$repo_root/scripts/check.sh" lint-fast
     "$repo_root/scripts/check.sh" package-drift
+    "$repo_root/scripts/check.sh" readme-map
     "$repo_root/scripts/check.sh" renderer-showcase
     if has_git_head; then
       run pnpm exec moon ci :lint :typecheck :build :test
@@ -130,6 +135,7 @@ case "$command" in
   full)
     "$repo_root/scripts/check.sh" lint-fast
     "$repo_root/scripts/check.sh" package-drift
+    "$repo_root/scripts/check.sh" readme-map
     "$repo_root/scripts/check.sh" renderer-showcase
     run pnpm -r --if-present lint
     run pnpm -r --if-present typecheck

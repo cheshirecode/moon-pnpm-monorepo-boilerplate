@@ -29,6 +29,7 @@ Choose additional checks by change type:
 | Focused lint or package task validation | `scripts/check.sh lint-fast`, `scripts/check.sh lint`, `scripts/check.sh typecheck`, `scripts/check.sh build`, `scripts/check.sh test` |
 | Routine repository handoff | Step 2 in the agent flow below |
 | Package topology or metadata | `scripts/check.sh package-drift` |
+| README workspace map | `scripts/check.sh readme-map` (add `--write` to fix drift) |
 | Renderer app or host shell | `scripts/check.sh renderer-showcase` |
 | Package-facing | `scripts/check.sh pack`, `scripts/check.sh dogfood packages` |
 | Release or publishing | `scripts/check.sh dogfood all`, `scripts/check.sh publish-check`, `scripts/check.sh changeset-check` |
