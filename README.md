@@ -123,6 +123,12 @@ flowchart TB
   vue --> contract
   svelte --> contract
   solid --> contract
+  showcase --> react
+  showcase --> preact
+  showcase --> astro
+  showcase --> vue
+  showcase --> svelte
+  showcase --> solid
   showcase --> host
   showcase --> contract
   showcase --> clipboard
@@ -142,7 +148,25 @@ pnpm moon run pkce:test
 scripts/check.sh ci
 ```
 
-Broaden verification only for the surface changed: `package-drift` for topology or metadata, `renderer-showcase` for renderer or host-shell work, `dogfood packages` for package-facing changes, and `docker` for toolchain or workflow changes. The full agent verification contract lives in [AGENTS.md](AGENTS.md).
+Broaden verification only for the surface changed: `package-drift` for topology or metadata, `boundaries` for import boundary changes, `renderer-showcase` for renderer or host-shell work, `dogfood packages` for package-facing changes, and `docker` for toolchain or workflow changes. The full agent verification contract lives in [AGENTS.md](AGENTS.md).
+
+### Package import boundaries
+
+`scripts/check.sh boundaries` enforces declared deps, subpath exports, export target existence, main guard, no cross-package relative imports, no sibling config aliases (tsconfig parsed structurally, Vite config via TypeScript scanner), and layer rules (library→application rejected; application→application rejected except renderer-showcase→six renderer apps). Moon's native layer enforcement rejects app→app deps; `renderer-showcase` uses `stack: "backend"` as a metadata workaround. The custom checker provides the stricter policy.
+
+### Dev server (Vite SSR middleware mode)
+
+Renderer apps with an SSR server support a Vite-powered dev experience using `server.middlewareMode`. This provides React Fast Refresh / HMR, source-based SSR without a build step, and automatic HTML transformation:
+
+```sh
+pnpm dev app-react
+scripts/check.sh dev app-react
+pnpm moon run app-react:dev
+```
+
+The dev server starts on port 3000 (override with `PORT`). It loads server modules through Vite's `ssrLoadModule`, injects `/@vite/client` for HMR, and serves the hydration entry from source (`/src/entry-hydration.tsx`). Production behavior is preserved: `node build.js && node dist/server/node.js` remains the non-Vite path.
+
+Dev tasks are marked `runInCI: false` and uncached — they never execute in CI pipelines.
 
 ## Publishing
 

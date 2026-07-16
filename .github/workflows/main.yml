@@ -26,7 +26,7 @@ jobs:
       - name: Lint GitHub Actions workflows
         uses: suzuki-shunsuke/actionlint-action@v0.1.4
 
-  checks:
+  static-checks:
     needs: [workflow-lint]
     runs-on: ubuntu-latest
     steps:
@@ -36,10 +36,106 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - name: CI parity checks
-        run: scripts/check.sh ci
+      - name: Static checks (lint-fast, package-drift, boundaries, readme-map, generator-drift)
+        run: scripts/check.sh static-checks
       - name: Verify lint did not rewrite files
         run: git diff --exit-code
+
+  lint:
+    needs: [workflow-lint]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Lint (affected)
+        run: scripts/check.sh ci-target lint
+      - name: Verify lint did not rewrite files
+        run: git diff --exit-code
+
+  build:
+    needs: [workflow-lint]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Build all packages
+        run: scripts/check.sh build
+      - name: Create build manifest
+        run: node scripts/build-manifest.mjs create
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-dist
+          path: |
+            packages/*/dist
+            .moon/cache
+            .artifacts/build-manifest.json
+          retention-days: 1
+
+  typecheck:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-dist
+      - name: Verify build manifest
+        run: node scripts/build-manifest.mjs verify
+      - name: Typecheck (affected)
+        run: scripts/check.sh ci-target typecheck
+
+  test:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-dist
+      - name: Verify build manifest
+        run: node scripts/build-manifest.mjs verify
+      - name: Test (affected + root)
+        run: scripts/check.sh ci-target test
+
+  renderer-showcase:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-dist
+      - name: Verify build manifest
+        run: node scripts/build-manifest.mjs verify
+      - name: Renderer showcase
+        run: scripts/check.sh renderer-showcase --skip-build
 
   coverage-packages:
     needs: [workflow-lint]
@@ -70,8 +166,9 @@ jobs:
           CHANGESET_BASE_REF: origin/main
 
   coverage:
-    needs: [checks, coverage-packages]
+    needs: [build, coverage-packages]
     runs-on: ubuntu-latest
+    if: ${{ needs.coverage-packages.outputs.packages != '[]' && needs.coverage-packages.outputs.packages != '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -83,8 +180,14 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/setup
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-dist
+      - name: Verify build manifest
+        run: node scripts/build-manifest.mjs verify
       - name: Coverage for ${{ matrix.package }}
-        run: scripts/check.sh coverage-package ${{ matrix.package }}
+        run: scripts/check.sh coverage-package ${{ matrix.package }} --skip-build
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2.3.6
         with:
@@ -96,7 +199,7 @@ jobs:
           parallel: true
 
   package-dogfood:
-    needs: [checks]
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -105,11 +208,17 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/setup
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-dist
+      - name: Verify build manifest
+        run: node scripts/build-manifest.mjs verify
       - name: Dogfood packed packages
-        run: scripts/check.sh dogfood packages
+        run: scripts/check.sh dogfood packages --skip-build
 
   publish-check:
-    needs: [checks]
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -118,8 +227,14 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/setup
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-dist
+      - name: Verify build manifest
+        run: node scripts/build-manifest.mjs verify
       - name: Validate publishable tarballs
-        run: scripts/check.sh publish-check
+        run: scripts/check.sh publish-check --skip-build
 
   changeset-check:
     needs: [workflow-lint]
@@ -139,7 +254,7 @@ jobs:
 
   finish:
     needs: [coverage, coverage-packages]
-    if: ${{ always() && !cancelled() }}
+    if: ${{ always() && !cancelled() && needs.coverage-packages.outputs.packages != '[]' && needs.coverage-packages.outputs.packages != '' }}
     runs-on: ubuntu-latest
     steps:
       - name: Coveralls Finished

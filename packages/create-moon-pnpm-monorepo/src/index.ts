@@ -87,6 +87,7 @@ function templateFiles(repoName: string): Array<[string, string]> {
     ['.moon/toolchains.yml', moonToolchains()],
     ['.moon/tasks/node.yml', moonNodeTasks()],
     ['scripts/check.sh', checkScript()],
+    ['scripts/build-manifest.mjs', buildManifestScript()],
     ['scripts/pack-publishable.mjs', packScript()],
     ['scripts/dogfood.mjs', dogfoodScript(repoName)],
     ['tests/smoke.test.js', rootSmokeTest()],
@@ -1081,14 +1082,40 @@ case "\${1:-}" in
     fi
     run pnpm exec vitest run
     ;;
+  ci-target)
+    target="\${2:-}"
+    if [[ -z "$target" ]]; then
+      echo "ci-target requires one of: lint, typecheck, test" >&2
+      exit 2
+    fi
+    case "$target" in
+      lint|typecheck|test) ;;
+      *) echo "ci-target: unknown target '$target'. Use lint, typecheck, or test." >&2; exit 2 ;;
+    esac
+    if has_git_head; then
+      run pnpm exec moon ci ":$target"
+    else
+      run pnpm -r --if-present "$target"
+    fi
+    if [[ "$target" == "test" ]]; then
+      run pnpm exec vitest run
+    fi
+    ;;
   coverage)
     run pnpm exec moon run :coverage
     ;;
   coverage-package)
     package="\${2:-}"
+    skip_build=false
+    for arg in "$@"; do
+      if [[ "$arg" == "--skip-build" ]]; then skip_build=true; fi
+    done
     if [[ -z "$package" || ! -d "$repo_root/packages/$package" ]]; then
       echo "Unknown package: $package" >&2
       exit 2
+    fi
+    if [[ "$skip_build" == false ]]; then
+      run pnpm exec moon run "$package:build"
     fi
     run pnpm exec moon run "$package:coverage"
     ;;
@@ -1105,13 +1132,85 @@ case "\${1:-}" in
     run node scripts/dogfood.mjs "$mode" "$@"
     ;;
   -h|--help|help|"")
-    echo "Usage: scripts/check.sh setup|lint-fast|lint|typecheck|build|test|ci|coverage|coverage-package|pack|dogfood"
+    echo "Usage: scripts/check.sh setup|lint-fast|lint|typecheck|build|test|ci|ci-target|coverage|coverage-package|pack|dogfood"
     ;;
   *)
     echo "Unknown command: $1" >&2
     exit 2
     ;;
 esac
+`;
+}
+
+function buildManifestScript(): string {
+  return `import { createHash } from 'node:crypto';
+import { readFile, readdir, writeFile, mkdir } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { join, resolve, relative } from 'node:path';
+
+const root = resolve(import.meta.dirname, '..');
+const packagesDir = join(root, 'packages');
+const args = process.argv.slice(2);
+const command = args[0];
+
+async function collectDistFiles(dir) {
+  const files = [];
+  if (!existsSync(dir)) return files;
+  for (const entry of await readdir(dir, { withFileTypes: true })) {
+    const p = join(dir, entry.name);
+    if (entry.isDirectory()) files.push(...await collectDistFiles(p));
+    else files.push(p);
+  }
+  return files;
+}
+
+async function collectAllDistFiles() {
+  const allFiles = [];
+  for (const entry of await readdir(packagesDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    allFiles.push(...await collectDistFiles(join(packagesDir, entry.name, 'dist')));
+  }
+  return allFiles;
+}
+
+async function createManifest() {
+  const entries = [];
+  for (const file of await collectAllDistFiles()) {
+    const rel = relative(root, file);
+    const content = await readFile(file);
+    entries.push({ path: rel, sha256: createHash('sha256').update(content).digest('hex'), size: content.length });
+  }
+  entries.sort((a, b) => a.path.localeCompare(b.path));
+  const manifestPath = join(root, '.artifacts', 'build-manifest.json');
+  await mkdir(join(root, '.artifacts'), { recursive: true });
+  await writeFile(manifestPath, JSON.stringify({ generatedAt: new Date().toISOString(), entries }, null, 2) + '\\n');
+  console.log(\`Build manifest: \${entries.length} files at \${manifestPath}\`);
+}
+
+async function verifyManifest() {
+  const manifestPath = join(root, '.artifacts', 'build-manifest.json');
+  if (!existsSync(manifestPath)) { console.error('Build manifest not found'); process.exit(1); }
+  const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+  const errors = [];
+  if (!manifest.entries || manifest.entries.length === 0) { console.error('Build manifest is empty'); process.exit(1); }
+  const manifestPaths = new Set(manifest.entries.map((e) => e.path));
+  for (const entry of manifest.entries) {
+    const filePath = join(root, entry.path);
+    if (!existsSync(filePath)) { errors.push(\`missing: \${entry.path}\`); continue; }
+    const hash = createHash('sha256').update(await readFile(filePath)).digest('hex');
+    if (hash !== entry.sha256) errors.push(\`tampered: \${entry.path}\`);
+  }
+  for (const file of await collectAllDistFiles()) {
+    const rel = relative(root, file);
+    if (!manifestPaths.has(rel)) errors.push(\`extra: \${rel}\`);
+  }
+  if (errors.length > 0) { console.error('Build manifest verification failed:'); for (const e of errors) console.error(\`- \${e}\`); process.exit(1); }
+  console.log(\`Build manifest verified: \${manifest.entries.length} files OK.\`);
+}
+
+if (command === 'create') await createManifest();
+else if (command === 'verify') await verifyManifest();
+else { console.log('Usage: node scripts/build-manifest.mjs create|verify'); process.exit(2); }
 `;
 }
 
@@ -1171,6 +1270,8 @@ const skipBuild = args.includes('--skip-build');
 
 if (!skipBuild) {
   await run('scripts/check.sh', ['build'], root);
+} else {
+  await run('node', ['scripts/build-manifest.mjs', 'verify'], root);
 }
 await run('scripts/check.sh', ['pack'], root);
 
@@ -1310,26 +1411,98 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: \${{ github.workflow }}-\${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  checks:
+  static-checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
+          fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - run: scripts/check.sh ci
+      - run: scripts/check.sh lint-fast
       - run: git diff --exit-code
 
-  package-dogfood:
-    needs: [checks]
+  build:
+    needs: [static-checks]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
+          fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - run: scripts/check.sh dogfood packages
+      - run: scripts/check.sh build
+      - run: node scripts/build-manifest.mjs create
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-dist
+          path: |
+            packages/*/dist
+            .moon/cache
+            .artifacts/build-manifest.json
+          retention-days: 1
+
+  lint:
+    needs: [static-checks]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - run: scripts/check.sh ci-target lint
+      - run: git diff --exit-code
+
+  typecheck:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-dist
+      - run: node scripts/build-manifest.mjs verify
+      - run: scripts/check.sh ci-target typecheck
+
+  test:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-dist
+      - run: node scripts/build-manifest.mjs verify
+      - run: scripts/check.sh ci-target test
+
+  package-dogfood:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-dist
+      - run: node scripts/build-manifest.mjs verify
+      - run: scripts/check.sh dogfood packages --skip-build
 `;
 }
 

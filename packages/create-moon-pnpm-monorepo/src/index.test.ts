@@ -107,5 +107,31 @@ describe('createMonorepo', () => {
     expect(setup).toContain('if [[ -f "$repo_root/pnpm-lock.yaml" ]]');
     expect(setup).toContain('pnpm install --frozen-lockfile');
     expect(setup).toContain('pnpm install --no-frozen-lockfile');
+    expect(check).toContain('ci-target');
+
+    const mainWorkflow = await readFile(
+      join(target, '.github', 'workflows', 'main.yml'),
+      'utf8'
+    );
+    expect(mainWorkflow).toContain('static-checks:');
+    expect(mainWorkflow).toContain('build:');
+    expect(mainWorkflow).toContain('needs: [build]');
+    expect(mainWorkflow).toContain('actions/upload-artifact@v4');
+    expect(mainWorkflow).toContain('actions/download-artifact@v4');
+    expect(mainWorkflow).toContain('build-manifest.mjs create');
+    expect(mainWorkflow).toContain('build-manifest.mjs verify');
+    expect(mainWorkflow).toContain('ci-target lint');
+    expect(mainWorkflow).toContain('ci-target typecheck');
+    expect(mainWorkflow).toContain('ci-target test');
+    expect(mainWorkflow).toContain('dogfood packages --skip-build');
+    expect(mainWorkflow).toContain('.moon/cache');
+
+    const buildManifest = await readFile(
+      join(target, 'scripts', 'build-manifest.mjs'),
+      'utf8'
+    );
+    expect(buildManifest).toContain('createManifest');
+    expect(buildManifest).toContain('verifyManifest');
+    expect(buildManifest).toContain('extra:');
   });
 });
