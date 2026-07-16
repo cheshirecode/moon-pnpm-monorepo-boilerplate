@@ -88,6 +88,7 @@ function templateFiles(repoName: string): Array<[string, string]> {
     ['.moon/tasks/node.yml', moonNodeTasks()],
     ['scripts/check.sh', checkScript()],
     ['scripts/build-manifest.mjs', buildManifestScript()],
+    ['scripts/generator-drift.mjs', generatorDriftScript()],
     ['scripts/pack-publishable.mjs', packScript()],
     ['scripts/dogfood.mjs', dogfoodScript(repoName)],
     ['tests/smoke.test.js', rootSmokeTest()],
@@ -158,11 +159,15 @@ function rootPackageJson(repoName: string): Record<string, unknown> {
       build: 'scripts/check.sh build',
       test: 'scripts/check.sh test',
       coverage: 'scripts/check.sh coverage',
+      'static-checks': 'scripts/check.sh static-checks',
+      'renderer-showcase': 'scripts/check.sh renderer-showcase',
       ci: 'scripts/check.sh ci',
+      full: 'scripts/check.sh full',
       dogfood: 'scripts/check.sh dogfood',
       changeset: 'changeset',
       'version-packages': 'changeset version',
       pack: 'scripts/check.sh pack',
+      'publish-check': 'scripts/check.sh publish-check',
       'publish-packages': 'changeset publish'
     },
     devDependencies: {
@@ -402,6 +407,16 @@ tasks:
     outputs:
       - "dist/client/**/*"
       - "dist/server/**/*"
+  dev:
+    command: "node dev.ts"
+    options:
+      cache: false
+      runInCI: false
+      persistent: true
+    inputs:
+      - "src/**/*"
+      - "*.config.*"
+      - "index.html"
 `;
 }
 
@@ -1041,6 +1056,25 @@ case "\${1:-}" in
   lint-fast)
     run pnpm exec oxlint packages tests --ignore-path .gitignore --quiet
     ;;
+  package-drift)
+    run node scripts/package-drift.mjs
+    ;;
+  boundaries)
+    run node scripts/check-boundaries.mjs
+    ;;
+  readme-map)
+    run node scripts/readme-map.mjs "\$@"
+    ;;
+  static-checks)
+    "\$repo_root/scripts/check.sh" lint-fast
+    "\$repo_root/scripts/check.sh" package-drift
+    "\$repo_root/scripts/check.sh" boundaries
+    "\$repo_root/scripts/check.sh" readme-map
+    "\$repo_root/scripts/check.sh" generator-drift
+    ;;
+  generator-drift)
+    run node scripts/generator-drift.mjs
+    ;;
   lint)
     if has_git_head; then
       run pnpm exec moon run :lint
@@ -1071,14 +1105,11 @@ case "\${1:-}" in
     run pnpm exec vitest run
     ;;
   ci)
-    "$repo_root/scripts/check.sh" lint-fast
+    "\$repo_root/scripts/check.sh" static-checks
     if has_git_head; then
       run pnpm exec moon ci :lint :typecheck :build :test
     else
-      run pnpm -r --if-present lint
-      run pnpm -r --if-present build
-      run pnpm -r --if-present typecheck
-      run pnpm -r --if-present test
+      run pnpm exec moon run :lint :typecheck :build :test
     fi
     run pnpm exec vitest run
     ;;
@@ -1131,8 +1162,40 @@ case "\${1:-}" in
     fi
     run node scripts/dogfood.mjs "$mode" "$@"
     ;;
+  renderer-showcase)
+    skip_build=false
+    for arg in "\$@"; do
+      if [[ "$arg" == "--skip-build" ]]; then skip_build=true; fi
+    done
+    if [[ "$skip_build" == false ]]; then
+      if has_git_head; then
+        run pnpm exec moon run app-react:build renderer-showcase:build
+      else
+        run pnpm --dir "packages/app-react" build
+        run pnpm --dir "packages/renderer-showcase" build
+      fi
+    fi
+    run node scripts/verify-renderer-showcase.mjs --dist
+    ;;
+  build-manifest)
+    run node scripts/build-manifest.mjs "\${2:-}"
+    ;;
+  publish-check)
+    run node scripts/check-publishable.mjs "\$@"
+    ;;
+  full)
+    "\$repo_root/scripts/check.sh" static-checks
+    if has_git_head; then
+      run pnpm exec moon ci :lint :typecheck :build :test
+    else
+      run pnpm exec moon run :lint :typecheck :build :test
+    fi
+    run pnpm exec vitest run
+    "\$repo_root/scripts/check.sh" dogfood packages --skip-build
+    ;;
   -h|--help|help|"")
-    echo "Usage: scripts/check.sh setup|lint-fast|lint|typecheck|build|test|ci|ci-target|coverage|coverage-package|pack|dogfood"
+    echo "Usage: scripts/check.sh <command> [args]"
+    echo "Commands: setup lint-fast package-drift boundaries readme-map static-checks generator-drift lint typecheck build test ci ci-target coverage coverage-package pack dogfood renderer-showcase build-manifest publish-check full"
     ;;
   *)
     echo "Unknown command: $1" >&2
@@ -1173,9 +1236,25 @@ async function collectAllDistFiles() {
   return allFiles;
 }
 
+async function collectSourceFiles() {
+  const files = [];
+  for (const entry of await readdir(packagesDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const pkgDir = join(packagesDir, entry.name);
+    for (const name of ['package.json', 'moon.yml', 'tsconfig.json', 'tsconfig.node.json', 'vite.config.ts', 'vite.client.config.ts', 'vite.config.server.ts']) {
+      const p = join(pkgDir, name);
+      if (existsSync(p)) files.push(p);
+    }
+  }
+  const lockfile = join(root, 'pnpm-lock.yaml');
+  if (existsSync(lockfile)) files.push(lockfile);
+  return files;
+}
+
 async function createManifest() {
   const entries = [];
-  for (const file of await collectAllDistFiles()) {
+  const allFiles = [...await collectAllDistFiles(), ...await collectSourceFiles()];
+  for (const file of allFiles) {
     const rel = relative(root, file);
     const content = await readFile(file);
     entries.push({ path: rel, sha256: createHash('sha256').update(content).digest('hex'), size: content.length });
@@ -1189,20 +1268,21 @@ async function createManifest() {
 
 async function verifyManifest() {
   const manifestPath = join(root, '.artifacts', 'build-manifest.json');
-  if (!existsSync(manifestPath)) { console.error('Build manifest not found'); process.exit(1); }
+  if (!existsSync(manifestPath)) { console.error('Build manifest not found at .artifacts/build-manifest.json'); process.exit(1); }
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
   const errors = [];
-  if (!manifest.entries || manifest.entries.length === 0) { console.error('Build manifest is empty'); process.exit(1); }
+  if (!manifest.entries || manifest.entries.length === 0) { console.error('Build manifest is empty — no dist files recorded.'); process.exit(1); }
   const manifestPaths = new Set(manifest.entries.map((e) => e.path));
   for (const entry of manifest.entries) {
     const filePath = join(root, entry.path);
     if (!existsSync(filePath)) { errors.push(\`missing: \${entry.path}\`); continue; }
     const hash = createHash('sha256').update(await readFile(filePath)).digest('hex');
-    if (hash !== entry.sha256) errors.push(\`tampered: \${entry.path}\`);
+    if (hash !== entry.sha256) errors.push(\`tampered: \${entry.path} (expected \${entry.sha256.slice(0, 12)}, got \${hash.slice(0, 12)})\`);
   }
-  for (const file of await collectAllDistFiles()) {
+  const actualFiles = [...await collectAllDistFiles(), ...await collectSourceFiles()];
+  for (const file of actualFiles) {
     const rel = relative(root, file);
-    if (!manifestPaths.has(rel)) errors.push(\`extra: \${rel}\`);
+    if (!manifestPaths.has(rel)) errors.push(\`extra: \${rel} (not in manifest)\`);
   }
   if (errors.length > 0) { console.error('Build manifest verification failed:'); for (const e of errors) console.error(\`- \${e}\`); process.exit(1); }
   console.log(\`Build manifest verified: \${manifest.entries.length} files OK.\`);
@@ -1211,6 +1291,68 @@ async function verifyManifest() {
 if (command === 'create') await createManifest();
 else if (command === 'verify') await verifyManifest();
 else { console.log('Usage: node scripts/build-manifest.mjs create|verify'); process.exit(2); }
+`;
+}
+
+function generatorDriftScript(): string {
+  return `import { mkdtemp, readdir, rm, stat } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { join, relative, sep } from 'node:path';
+import { tmpdir } from 'node:os';
+import { spawn } from 'node:child_process';
+import { resolve } from 'node:path';
+
+const root = resolve(import.meta.dirname, '..');
+const generatorDir = join(root, 'packages', 'create-moon-pnpm-monorepo');
+const errors = [];
+
+async function run(cmd, args, cwd) {
+  return new Promise((resolveRun, reject) => {
+    const child = spawn(cmd, args, { cwd, stdio: 'pipe', shell: false, env: { ...process.env } });
+    let stdout = '', stderr = '';
+    child.stdout.on('data', (d) => stdout += d);
+    child.stderr.on('data', (d) => stderr += d);
+    child.on('error', reject);
+    child.on('exit', (code) => code === 0 ? resolveRun(stdout) : reject(new Error(\`\${cmd} \${args.join(' ')} exited \${code}: \${stderr}\`)));
+  });
+}
+
+async function collectFiles(dir, base = dir) {
+  const files = [];
+  if (!existsSync(dir)) return files;
+  for (const entry of await readdir(dir, { withFileTypes: true })) {
+    if (entry.name === 'node_modules' || entry.name === '.git') continue;
+    if (entry.name === 'cache' && dir.endsWith('.moon')) continue;
+    const p = join(dir, entry.name);
+    if (entry.isDirectory()) files.push(...await collectFiles(p, base));
+    else files.push(relative(base, p).split(sep).join('/'));
+  }
+  return files;
+}
+
+const tmpDir = await mkdtemp(join(tmpdir(), 'generator-drift-'));
+try {
+  await run('node', [join(generatorDir, 'dist', 'index.js'), '--name', 'drift-test', '--directory', tmpDir], root);
+  const generatedFiles = new Set(await collectFiles(tmpDir));
+  const sourceFiles = new Set((await collectFiles(root)).filter((f) => !f.startsWith('packages/create-moon-pnpm-monorepo/')));
+  const expectedFiles = new Set([
+    ...Array.from(sourceFiles).filter((f) => !f.startsWith('.git/') && !f.startsWith('node_modules/') && !f.startsWith('.moon/cache/') && !f.startsWith('packages/*/dist/') && !f.startsWith('.artifacts/')),
+  ]);
+  for (const file of generatedFiles) {
+    if (!expectedFiles.has(file) && !file.startsWith('dist/') && !file.startsWith('coverage/')) {
+      errors.push(\`unexpected generated file: \${file}\`);
+    }
+  }
+} finally {
+  await rm(tmpDir, { recursive: true, force: true });
+}
+
+if (errors.length > 0) {
+  console.error('Generator drift check failed:');
+  for (const e of errors) console.error(\`- \${e}\`);
+  process.exit(1);
+}
+console.log('Generator drift check passed.');
 `;
 }
 
@@ -1416,7 +1558,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  workflow-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: suzuki-shunsuke/actionlint-action@v0.1.4
+
   static-checks:
+    needs: [workflow-lint]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -1424,11 +1576,11 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - run: scripts/check.sh lint-fast
+      - run: scripts/check.sh static-checks
       - run: git diff --exit-code
 
   build:
-    needs: [static-checks]
+    needs: [workflow-lint]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -1446,18 +1598,6 @@ jobs:
             .moon/cache
             .artifacts/build-manifest.json
           retention-days: 1
-
-  lint:
-    needs: [static-checks]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - run: scripts/check.sh ci-target lint
-      - run: git diff --exit-code
 
   typecheck:
     needs: [build]
@@ -1489,6 +1629,21 @@ jobs:
       - run: node scripts/build-manifest.mjs verify
       - run: scripts/check.sh ci-target test
 
+  renderer-showcase:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-dist
+      - run: node scripts/build-manifest.mjs verify
+      - run: scripts/check.sh renderer-showcase --skip-build
+
   package-dogfood:
     needs: [build]
     runs-on: ubuntu-latest
@@ -1503,6 +1658,21 @@ jobs:
           name: build-dist
       - run: node scripts/build-manifest.mjs verify
       - run: scripts/check.sh dogfood packages --skip-build
+
+  publish-check:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-dist
+      - run: node scripts/build-manifest.mjs verify
+      - run: scripts/check.sh publish-check --skip-build
 `;
 }
 

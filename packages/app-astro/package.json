@@ -4,7 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "exports": {
-    "./demo": "./src/demo.ts"
+    "./demo": {
+      "types": "./src/demo.d.ts",
+      "import": "./src/demo.ts"
+    }
   },
   "scripts": {
     "dev": "astro dev --host 0.0.0.0",

@@ -120,11 +120,18 @@ describe('createMonorepo', () => {
     expect(mainWorkflow).toContain('actions/download-artifact@v4');
     expect(mainWorkflow).toContain('build-manifest.mjs create');
     expect(mainWorkflow).toContain('build-manifest.mjs verify');
-    expect(mainWorkflow).toContain('ci-target lint');
     expect(mainWorkflow).toContain('ci-target typecheck');
     expect(mainWorkflow).toContain('ci-target test');
     expect(mainWorkflow).toContain('dogfood packages --skip-build');
     expect(mainWorkflow).toContain('.moon/cache');
+    expect(mainWorkflow).toContain('workflow-lint:');
+    expect(mainWorkflow).toContain('renderer-showcase:');
+    expect(mainWorkflow).toContain('publish-check:');
+    expect(mainWorkflow).toContain('scripts/check.sh static-checks');
+    expect(mainWorkflow).toContain('scripts/check.sh renderer-showcase --skip-build');
+    expect(mainWorkflow).toContain('scripts/check.sh publish-check --skip-build');
+    expect(mainWorkflow).toContain('cancel-in-progress: true');
+    expect(mainWorkflow).toContain('concurrency:');
 
     const buildManifest = await readFile(
       join(target, 'scripts', 'build-manifest.mjs'),
@@ -133,5 +140,24 @@ describe('createMonorepo', () => {
     expect(buildManifest).toContain('createManifest');
     expect(buildManifest).toContain('verifyManifest');
     expect(buildManifest).toContain('extra:');
+    expect(buildManifest).toContain('collectSourceFiles');
+    expect(buildManifest).toContain('pnpm-lock.yaml');
+
+    const generatorDrift = await readFile(
+      join(target, 'scripts', 'generator-drift.mjs'),
+      'utf8'
+    );
+    expect(generatorDrift).toContain('generator-drift');
+    expect(generatorDrift).toContain('collectFiles');
+
+    const checkScript = await readFile(
+      join(target, 'scripts', 'check.sh'),
+      'utf8'
+    );
+    expect(checkScript).toContain('static-checks)');
+    expect(checkScript).toContain('generator-drift)');
+    expect(checkScript).toContain('renderer-showcase)');
+    expect(checkScript).toContain('full)');
+    expect(checkScript).toContain('publish-check)');
   });
 });
