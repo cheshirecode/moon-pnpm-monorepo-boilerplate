@@ -91,6 +91,25 @@ async function checkSpecificFiles(dir) {
   }
 }
 
+// Guard the drift class where a generated file (check.sh, a workflow, package.json,
+// another script) references scripts/<name> that templateFiles() never emits — which
+// fails at generated-repo runtime with MODULE_NOT_FOUND. The source-vs-CLI diff above
+// can't catch it (both paths agree on the same dangling reference), and dogfood catches
+// it only slowly, buried in subprocess output. This is a fast, explicit fail.
+async function checkReferencedScriptsExist(dir) {
+  const files = await collectFiles(dir);
+  const present = new Set(files.map((f) => f.rel.replaceAll(sep, '/')));
+  const scriptRef = /scripts\/[\w.-]+\.(?:mjs|sh)/g;
+  for (const f of files) {
+    const rel = f.rel.replaceAll(sep, '/');
+    const scannable = /^scripts\/.+\.(?:mjs|sh)$/.test(rel) || /\.ya?ml$/.test(rel) || rel.endsWith('package.json');
+    if (!scannable) continue;
+    for (const ref of f.content.toString('utf8').match(scriptRef) ?? []) {
+      if (!present.has(ref)) errors.push(`generated ${rel} references ${ref}, which is not scaffolded`);
+    }
+  }
+}
+
 async function checkNoNewRepoChanges(beforeStatus) {
   const afterStatus = await run('git', ['status', '--porcelain'], root);
   const before = new Set(beforeStatus.trim().split('\n').filter((l) => l.trim()));
@@ -110,6 +129,7 @@ try {
   const cliResult = await generateViaCli(parentDir, name);
   await compareDirs(sourceResult.target, cliResult.target);
   await checkSpecificFiles(sourceResult.target);
+  await checkReferencedScriptsExist(sourceResult.target);
   await checkNoNewRepoChanges(beforeStatus);
 } finally {
   await rm(parentDir, { recursive: true, force: true });
