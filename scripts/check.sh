@@ -11,21 +11,29 @@ Commands:
   setup                 Install dependencies with the pinned pnpm version.
   lint-fast             Run the fast Rust-based lint guard.
   package-drift         Check package metadata, dependency, coverage, and dogfood drift.
+  boundaries [--metadata-only|--artifacts-only]
+                        Check workspace import boundaries (declared deps, layer rules, subpaths).
   readme-map            Check that README workspace map matches package inventory (use --write to fix).
+  static-checks         Run lint-fast, package-drift, boundaries, and readme-map exactly once.
+  generator-drift       Verify source API and built CLI produce identical repo output.
   lint                  Run package lint targets through moon.
   typecheck             Run package type checks through moon.
   build                 Run package builds through moon.
   test                  Run package tests through moon and root smoke tests.
+  dev <package>         Start dev server for a package (Vite SSR middleware mode).
   ci                    Run the local CI parity path.
-  full                  Run the full non-affected package and dogfood path.
+  full                  Run the full non-affected package, renderer, publish, and dogfood path.
   dogfood [MODE] [--skip-build]
                         Dogfood packed packages in an external consumer.
   coverage              Run all package coverage targets through moon.
   coverage-packages     List package directories that define coverage scripts.
-  coverage-package NAME Run coverage for one package through moon.
-  renderer-showcase     Build and smoke-check the renderer microfrontend showcase.
+  coverage-package NAME [--skip-build]
+                        Run coverage for one package through moon. With --skip-build, assume dist artifacts are already restored.
+  renderer-showcase [--skip-build]
+                        Build and smoke-check the renderer microfrontend showcase. With --skip-build, verify dist only.
   pack                  Pack publishable packages into .artifacts/release.
-  publish-check         Pack and validate publishable tarballs (README, LICENSE, exports).
+  publish-check [--skip-build]
+                        Pack and validate publishable tarballs (README, LICENSE, exports).
   changeset-check       Verify changeset presence when publishable packages change.
   workflow-lint         Lint GitHub Actions workflows with actionlint in Docker.
   docker                Build the repo verification Docker image.
@@ -85,8 +93,21 @@ case "$command" in
   package-drift)
     run node scripts/package-drift.mjs
     ;;
+  boundaries)
+    run node scripts/check-boundaries.mjs "$@"
+    ;;
   readme-map)
     run node scripts/readme-map.mjs "$@"
+    ;;
+  static-checks)
+    "$repo_root/scripts/check.sh" lint-fast
+    "$repo_root/scripts/check.sh" package-drift
+    "$repo_root/scripts/check.sh" boundaries --metadata-only
+    "$repo_root/scripts/check.sh" readme-map
+    "$repo_root/scripts/check.sh" generator-drift
+    ;;
+  generator-drift)
+    run node scripts/generator-drift.mjs
     ;;
   lint)
     if has_git_head; then
@@ -108,6 +129,7 @@ case "$command" in
     else
       run pnpm -r --if-present build
     fi
+    "$repo_root/scripts/check.sh" boundaries --artifacts-only
     ;;
   test)
     if has_git_head; then
@@ -117,31 +139,39 @@ case "$command" in
     fi
     run pnpm exec vitest run
     ;;
+  dev)
+    package="${1:-}"
+    if [[ -z "$package" ]]; then
+      echo "dev requires a package directory name (e.g., app-react)." >&2
+      exit 2
+    fi
+    if [[ ! -d "$repo_root/packages/$package" ]]; then
+      echo "Unknown package: $package" >&2
+      exit 2
+    fi
+    if has_git_head; then
+      run pnpm exec moon run "$package:dev"
+    else
+      run pnpm --dir "packages/$package" dev
+    fi
+    ;;
   ci)
-    "$repo_root/scripts/check.sh" lint-fast
-    "$repo_root/scripts/check.sh" package-drift
-    "$repo_root/scripts/check.sh" readme-map
-    "$repo_root/scripts/check.sh" renderer-showcase
+    "$repo_root/scripts/check.sh" static-checks
     if has_git_head; then
       run pnpm exec moon ci :lint :typecheck :build :test
     else
-      run pnpm -r --if-present lint
-      run pnpm -r --if-present typecheck
-      run pnpm -r --if-present build
-      run pnpm -r --if-present test
+      run pnpm exec moon run :lint :typecheck :build :test
     fi
+    "$repo_root/scripts/check.sh" boundaries --artifacts-only
     run pnpm exec vitest run
     ;;
   full)
-    "$repo_root/scripts/check.sh" lint-fast
-    "$repo_root/scripts/check.sh" package-drift
-    "$repo_root/scripts/check.sh" readme-map
-    "$repo_root/scripts/check.sh" renderer-showcase
-    run pnpm -r --if-present lint
-    run pnpm -r --if-present typecheck
-    run pnpm -r --if-present build
-    run pnpm -r --if-present test
+    "$repo_root/scripts/check.sh" static-checks
+    run pnpm exec moon run :lint :typecheck :build :test
+    "$repo_root/scripts/check.sh" boundaries --artifacts-only
     run pnpm exec vitest run
+    "$repo_root/scripts/check.sh" renderer-showcase --skip-build
+    "$repo_root/scripts/check.sh" publish-check --skip-build
     "$repo_root/scripts/check.sh" dogfood packages --skip-build
     ;;
   dogfood)
@@ -159,6 +189,10 @@ case "$command" in
     ;;
   coverage-package)
     package="${1:-}"
+    skip_build=false
+    for arg in "$@"; do
+      if [[ "$arg" == "--skip-build" ]]; then skip_build=true; fi
+    done
     if [[ -z "$package" ]]; then
       echo "coverage-package requires a package directory name." >&2
       exit 2
@@ -167,27 +201,36 @@ case "$command" in
       echo "Unknown package: $package" >&2
       exit 2
     fi
+    if [[ "$skip_build" == false ]]; then
+      run pnpm exec moon run "$package:build"
+    fi
     run pnpm exec moon run "$package:coverage"
     ;;
   renderer-showcase)
-    if has_git_head; then
-      run pnpm exec moon run app-react:build app-preact:build app-astro:build app-vue:build app-svelte:build app-solidjs:build renderer-showcase:build
-    else
-      for package in \
-        microfrontend-host \
-        browser-utils \
-        demo-contract \
-        browser-clipboard \
-        app-react \
-        app-preact \
-        app-astro \
-        app-vue \
-        app-svelte \
-        app-solidjs \
-        renderer-showcase
-      do
-        run pnpm --dir "packages/$package" build
-      done
+    skip_build=false
+    for arg in "$@"; do
+      if [[ "$arg" == "--skip-build" ]]; then skip_build=true; fi
+    done
+    if [[ "$skip_build" == false ]]; then
+      if has_git_head; then
+        run pnpm exec moon run app-react:build app-preact:build app-astro:build app-vue:build app-svelte:build app-solidjs:build renderer-showcase:build
+      else
+        for package in \
+          microfrontend-host \
+          browser-utils \
+          demo-contract \
+          browser-clipboard \
+          app-react \
+          app-preact \
+          app-astro \
+          app-vue \
+          app-svelte \
+          app-solidjs \
+          renderer-showcase
+        do
+          run pnpm --dir "packages/$package" build
+        done
+      fi
     fi
     run node scripts/verify-renderer-showcase.mjs --dist
     ;;
@@ -195,7 +238,7 @@ case "$command" in
     run node scripts/pack-publishable.mjs
     ;;
   publish-check)
-    run node scripts/check-publishable.mjs
+    run node scripts/check-publishable.mjs "$@"
     ;;
   changeset-check)
     run node scripts/check-changeset.mjs

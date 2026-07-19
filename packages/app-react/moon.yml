@@ -12,3 +12,13 @@ tasks:
     outputs:
       - "dist/client/**/*"
       - "dist/server/**/*"
+  dev:
+    command: "node dev.ts"
+    options:
+      cache: false
+      runInCI: false
+      persistent: true
+    inputs:
+      - "src/**/*"
+      - "*.config.*"
+      - "index.html"

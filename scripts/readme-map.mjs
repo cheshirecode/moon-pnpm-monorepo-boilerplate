@@ -147,7 +147,8 @@ function yamlField(content, field) {
   return m ? m[1] : null;
 }
 
-function isRenderer(info) {
+function isRenderer(info, dir) {
+  if (dir === 'renderer-showcase') return info.layer === 'application';
   return info.layer === 'application' && info.stack === 'frontend';
 }
 
@@ -155,7 +156,7 @@ function classify(meta, inv) {
   const rendererApps = [];
   const host = [];
   for (const dir of inv.dirs) {
-    if (!isRenderer(inv.packages.get(dir))) continue;
+    if (!isRenderer(inv.packages.get(dir), dir)) continue;
     (dir === 'renderer-showcase' ? host : rendererApps).push(dir);
   }
   rendererApps.sort((a, b) => {

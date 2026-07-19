@@ -4,6 +4,7 @@ import { createBaseApp } from '@cheshirecode/hono-base';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { Hono } from 'hono';
 import { renderToString } from 'react-dom/server';
+import type { ViteDevServer } from 'vite';
 
 import AppTree from '../shared/AppTree';
 import { serializeBootstrap } from '../shared/bootstrap';
@@ -19,17 +20,10 @@ export interface ResolvedAssets {
   css: string[];
 }
 
-/** Vite manifest shape emitted by vite.client.config.ts (manifest: true). */
 export interface ViteManifest {
   [key: string]: ManifestEntry;
 }
 
-/**
- * Read and parse the Vite client manifest from `clientDir`.
- * Checks both the standard location (manifest.json) and the .vite/
- * subdirectory which some Vite versions use in production builds.
- * Returns null when the manifest is missing (dev / not-yet-built).
- */
 async function loadManifest(clientDir: string): Promise<ViteManifest | null> {
   const candidates = [
     resolve(clientDir, 'manifest.json'),
@@ -40,17 +34,11 @@ async function loadManifest(clientDir: string): Promise<ViteManifest | null> {
       const raw = await readFile(p, 'utf-8');
       return JSON.parse(raw) as ViteManifest;
     } catch {
-      // Try next candidate
     }
   }
   return null;
 }
 
-/**
- * Resolve the entry-hydration JS path and its CSS dependencies
- * from the Vite manifest. Falls back to unhashed paths when
- * the manifest is unavailable (local dev).
- */
 export function resolveAssets(manifest: ViteManifest | null): ResolvedAssets {
   if (!manifest) {
     return { js: '/client/entry-hydration.js', css: [] };
@@ -67,30 +55,28 @@ export function resolveAssets(manifest: ViteManifest | null): ResolvedAssets {
   };
 }
 
-/** Minimal generic HTML 500 — safe to inject into any document shell. */
 const HTML_500 = `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><title>500 Internal Server Error</title></head>
 <body><h1>500 Internal Server Error</h1></body>
 </html>`;
 
-export function createServerApp(options: {
+export interface ServerAppOptions {
   version: string;
   serviceName?: string;
   clientDir?: string;
-}): Hono {
+  devVite?: ViteDevServer;
+}
+
+export function createServerApp(options: ServerAppOptions): Hono {
+  const isDev = !!options.devVite;
   const app = createBaseApp(options);
 
-  // Serve production-built client assets from dist/client/.
-  // The runtime entry (node.ts) resolves clientDir relative to itself
-  // so this works regardless of CWD when running `node dist/server/index.js`.
   if (options.clientDir) {
     app.use('/client/*', serveStatic({ root: options.clientDir, rewriteRequestPath: (path) => path.replace(/^\/client\//, '') }));
     app.use('/static/*', serveStatic({ root: options.clientDir }));
   }
 
-  // Load manifest once at startup; resolveAssets falls back gracefully
-  // when clientDir is unset or manifest.json does not yet exist.
   let assetsPromise: Promise<ResolvedAssets> | null = null;
   function getAssets(): Promise<ResolvedAssets> {
     if (!assetsPromise) {
@@ -102,28 +88,36 @@ export function createServerApp(options: {
     return assetsPromise;
   }
 
-  // Override hono-base JSON onError for document (HTML) routes.
-  // API routes that accept JSON still get the inherited JSON response.
   app.onError((err, c) => {
     const acceptsHtml = c.req.header('accept')?.includes('text/html');
     if (acceptsHtml) {
       return c.html(HTML_500, 500);
     }
-    // Delegate to hono-base default (JSON) for API callers.
     return c.json({ error: 'Internal Server Error' }, 500);
   });
 
-  app.get('/', async (c) => {
-    try {
-      const html = renderToString(<AppTree />);
-      const bootstrap = serializeBootstrap({ version: options.version });
-      const assets = await getAssets();
+  async function renderDocument(url: string): Promise<string> {
+    let html: string;
 
-      const cssLinks = assets.css
-        .map((href) => `  <link rel="stylesheet" href="${href}" />`)
-        .join('\n');
+    if (isDev && options.devVite) {
+      const { renderAppTree } = await options.devVite.ssrLoadModule(
+        resolve(import.meta.dirname ?? process.cwd(), 'render-app.tsx')
+      );
+      html = renderAppTree();
+    } else {
+      html = renderToString(<AppTree />);
+    }
 
-      return c.html(`<!DOCTYPE html>
+    const bootstrap = serializeBootstrap({ version: options.version });
+    const assets = await getAssets();
+
+    const cssLinks = assets.css
+      .map((href) => `  <link rel="stylesheet" href="${href}" />`)
+      .join('\n');
+
+    const hydrationSrc = isDev ? '/src/entry-hydration.tsx' : assets.js;
+
+    let document = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -133,13 +127,34 @@ ${cssLinks}
 <body>
   <div id="root">${html}</div>
   <script type="application/json" id="bootstrap">${bootstrap}</script>
-  <script type="module" src="${assets.js}"></script>
+  <script type="module" src="${hydrationSrc}"></script>
 </body>
-</html>`);
+</html>`;
+
+    if (isDev && options.devVite) {
+      document = await options.devVite.transformIndexHtml(url, document);
+    }
+
+    return document;
+  }
+
+  app.get('/', async (c) => {
+    try {
+      const document = await renderDocument(c.req.url);
+      return c.html(document);
     } catch {
       return c.html(HTML_500, 500);
     }
   });
 
   return app;
+}
+
+export function createDevApp(devVite: ViteDevServer) {
+  const app = createServerApp({
+    version: '0.0.0',
+    serviceName: 'app-react',
+    devVite
+  });
+  return { app };
 }

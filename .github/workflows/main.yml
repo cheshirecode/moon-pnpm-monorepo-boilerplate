@@ -26,7 +26,12 @@ jobs:
       - name: Lint GitHub Actions workflows
         uses: suzuki-shunsuke/actionlint-action@v0.1.4
 
-  checks:
+  # Single consolidated job. moon parallelizes lint/typecheck/build/test internally,
+  # so dist for the downstream renderer/publish/dogfood checks exists in-process — no
+  # cross-job artifact hand-off is needed. This replaces the former
+  # static-checks/lint/build/typecheck/test/renderer-showcase/package-dogfood/publish-check
+  # fan-out (and the build-manifest artifact plumbing that only existed to bridge it).
+  ci:
     needs: [workflow-lint]
     runs-on: ubuntu-latest
     steps:
@@ -36,9 +41,9 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - name: CI parity checks
-        run: scripts/check.sh ci
-      - name: Verify lint did not rewrite files
+      - name: Full check (static-checks, lint, typecheck, build, test, renderer, publish, dogfood)
+        run: scripts/check.sh full
+      - name: Verify checks did not rewrite files
         run: git diff --exit-code
 
   coverage-packages:
@@ -70,8 +75,9 @@ jobs:
           CHANGESET_BASE_REF: origin/main
 
   coverage:
-    needs: [checks, coverage-packages]
+    needs: [coverage-packages]
     runs-on: ubuntu-latest
+    if: ${{ needs.coverage-packages.outputs.packages != '[]' && needs.coverage-packages.outputs.packages != '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -95,32 +101,6 @@ jobs:
           flag-name: ${{ matrix.package }}
           parallel: true
 
-  package-dogfood:
-    needs: [checks]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - name: Dogfood packed packages
-        run: scripts/check.sh dogfood packages
-
-  publish-check:
-    needs: [checks]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - name: Validate publishable tarballs
-        run: scripts/check.sh publish-check
-
   changeset-check:
     needs: [workflow-lint]
     runs-on: ubuntu-latest
@@ -139,7 +119,7 @@ jobs:
 
   finish:
     needs: [coverage, coverage-packages]
-    if: ${{ always() && !cancelled() }}
+    if: ${{ always() && !cancelled() && needs.coverage-packages.outputs.packages != '[]' && needs.coverage-packages.outputs.packages != '' }}
     runs-on: ubuntu-latest
     steps:
       - name: Coveralls Finished

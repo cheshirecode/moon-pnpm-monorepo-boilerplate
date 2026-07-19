@@ -28,7 +28,11 @@ Choose additional checks by change type:
 | --- | --- |
 | Focused lint or package task validation | `scripts/check.sh lint-fast`, `scripts/check.sh lint`, `scripts/check.sh typecheck`, `scripts/check.sh build`, `scripts/check.sh test` |
 | Routine repository handoff | Step 2 in the agent flow below |
+| Static checks (lint-fast + package-drift + boundaries + readme-map + generator-drift) | `scripts/check.sh static-checks` |
 | Package topology or metadata | `scripts/check.sh package-drift` |
+| Workspace import boundaries | `scripts/check.sh boundaries` |
+| Generator source/CLI drift | `scripts/check.sh generator-drift` |
+| Dev server (Vite SSR middleware) | `scripts/check.sh dev <package>` |
 | README workspace map | `scripts/check.sh readme-map` (add `--write` to fix drift) |
 | Renderer app or host shell | `scripts/check.sh renderer-showcase` |
 | Package-facing | `scripts/check.sh pack`, `scripts/check.sh dogfood packages` |
@@ -115,6 +119,10 @@ pnpm moon ci :lint :typecheck :build :test
 - Keep root package scripts as thin wrappers over `scripts/check.sh`.
 - If changing `.moon/tasks/node.yml`, verify at least one package target and one all-packages target.
 - Before `git reset`, `git clean`, `git checkout --`, or `git restore`, inspect `git status`; never run them on a dirty tree unless explicitly authorized and the changes are secured.
+
+## Package Import Boundaries
+
+`scripts/check.sh boundaries` enforces: declared internal imports, subpath exports, export target existence (types + import), main/module/types/browser field existence, no cross-package relative imports, no sibling-package config aliases (tsconfig parsed structurally via JSON.parse with comment stripping; Vite config string literals extracted via TypeScript scanner), library→application rejection, and application→application rejection except `renderer-showcase`→six renderer apps. Import parsing uses the TypeScript compiler scanner via the public `typescript/unstable/ast` API; Vue/Svelte/Astro script blocks are extracted first. Moon's native layer enforcement rejects app→app deps; `renderer-showcase` uses `stack: "backend"` as a metadata workaround to allow its cross-stack app→app deps. The custom checker provides the stricter policy (only renderer-showcase→six renderer apps, not arbitrary app→app).
 
 ## Common Failure Modes
 

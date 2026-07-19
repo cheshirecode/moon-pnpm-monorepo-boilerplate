@@ -157,11 +157,14 @@ function rootPackageJson(repoName: string): Record<string, unknown> {
       build: 'scripts/check.sh build',
       test: 'scripts/check.sh test',
       coverage: 'scripts/check.sh coverage',
+      'static-checks': 'scripts/check.sh static-checks',
       ci: 'scripts/check.sh ci',
+      full: 'scripts/check.sh full',
       dogfood: 'scripts/check.sh dogfood',
       changeset: 'changeset',
       'version-packages': 'changeset version',
       pack: 'scripts/check.sh pack',
+      'publish-check': 'scripts/check.sh publish-check',
       'publish-packages': 'changeset publish'
     },
     devDependencies: {
@@ -401,6 +404,16 @@ tasks:
     outputs:
       - "dist/client/**/*"
       - "dist/server/**/*"
+  dev:
+    command: "node dev.ts"
+    options:
+      cache: false
+      runInCI: false
+      persistent: true
+    inputs:
+      - "src/**/*"
+      - "*.config.*"
+      - "index.html"
 `;
 }
 
@@ -891,6 +904,11 @@ function moonWorkspace(): string {
 pipeline:
   installDependencies: false
 
+# Enforce moon's native layer hierarchy from each project's \`layer\` (in moon.yml).
+# This natively rejects library -> application dependencies at graph-build time.
+constraints:
+  enforceLayerRelationships: true
+
 vcs:
   defaultBranch: "main"
   provider: "github"
@@ -1040,6 +1058,9 @@ case "\${1:-}" in
   lint-fast)
     run pnpm exec oxlint packages tests --ignore-path .gitignore --quiet
     ;;
+  static-checks)
+    "\$repo_root/scripts/check.sh" lint-fast
+    ;;
   lint)
     if has_git_head; then
       run pnpm exec moon run :lint
@@ -1070,14 +1091,11 @@ case "\${1:-}" in
     run pnpm exec vitest run
     ;;
   ci)
-    "$repo_root/scripts/check.sh" lint-fast
+    "\$repo_root/scripts/check.sh" static-checks
     if has_git_head; then
       run pnpm exec moon ci :lint :typecheck :build :test
     else
-      run pnpm -r --if-present lint
-      run pnpm -r --if-present build
-      run pnpm -r --if-present typecheck
-      run pnpm -r --if-present test
+      run pnpm exec moon run :lint :typecheck :build :test
     fi
     run pnpm exec vitest run
     ;;
@@ -1086,9 +1104,16 @@ case "\${1:-}" in
     ;;
   coverage-package)
     package="\${2:-}"
+    skip_build=false
+    for arg in "$@"; do
+      if [[ "$arg" == "--skip-build" ]]; then skip_build=true; fi
+    done
     if [[ -z "$package" || ! -d "$repo_root/packages/$package" ]]; then
       echo "Unknown package: $package" >&2
       exit 2
+    fi
+    if [[ "$skip_build" == false ]]; then
+      run pnpm exec moon run "$package:build"
     fi
     run pnpm exec moon run "$package:coverage"
     ;;
@@ -1104,8 +1129,23 @@ case "\${1:-}" in
     fi
     run node scripts/dogfood.mjs "$mode" "$@"
     ;;
+  publish-check)
+    run node scripts/pack-publishable.mjs "\$@"
+    ;;
+  full)
+    "\$repo_root/scripts/check.sh" static-checks
+    if has_git_head; then
+      run pnpm exec moon run :lint :typecheck :build :test
+    else
+      run pnpm exec moon run :lint :typecheck :build :test
+    fi
+    run pnpm exec vitest run
+    "\$repo_root/scripts/check.sh" publish-check --skip-build
+    "\$repo_root/scripts/check.sh" dogfood packages --skip-build
+    ;;
   -h|--help|help|"")
-    echo "Usage: scripts/check.sh setup|lint-fast|lint|typecheck|build|test|ci|coverage|coverage-package|pack|dogfood"
+    echo "Usage: scripts/check.sh <command> [args]"
+    echo "Commands: setup lint-fast static-checks lint typecheck build test ci coverage coverage-package pack dogfood publish-check full"
     ;;
   *)
     echo "Unknown command: $1" >&2
@@ -1169,6 +1209,8 @@ const args = process.argv.slice(2);
 const mode = args.find((arg) => !arg.startsWith('-')) ?? 'packages';
 const skipBuild = args.includes('--skip-build');
 
+// With --skip-build the caller (the consolidated \`ci\` job via \`check.sh full\`)
+// has already built every package in-process, so dist is present.
 if (!skipBuild) {
   await run('scripts/check.sh', ['build'], root);
 }
@@ -1310,26 +1352,34 @@ on:
 permissions:
   contents: read
 
-jobs:
-  checks:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - run: scripts/check.sh ci
-      - run: git diff --exit-code
+concurrency:
+  group: \${{ github.workflow }}-\${{ github.ref }}
+  cancel-in-progress: true
 
-  package-dogfood:
-    needs: [checks]
+jobs:
+  workflow-lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: suzuki-shunsuke/actionlint-action@v0.1.4
+
+  # Single consolidated job. moon parallelizes lint/typecheck/build/test internally,
+  # so dist for the downstream publish/dogfood checks exists in-process — no
+  # cross-job artifact hand-off is needed.
+  ci:
+    needs: [workflow-lint]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - run: scripts/check.sh dogfood packages
+      - run: scripts/check.sh full
+      - run: git diff --exit-code
 `;
 }
 

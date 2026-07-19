@@ -17,6 +17,7 @@
     "moon": "moon",
     "lint:fast": "scripts/check.sh lint-fast",
     "lint": "scripts/check.sh lint",
+    "static-checks": "scripts/check.sh static-checks",
     "typecheck": "scripts/check.sh typecheck",
     "build": "scripts/check.sh build",
     "test": "scripts/check.sh test",
@@ -28,7 +29,8 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "pack": "scripts/check.sh pack",
-    "publish-packages": "changeset publish"
+    "publish-packages": "changeset publish",
+    "dev": "scripts/check.sh dev"
   },
   "packageManager": "pnpm@11.10.0",
   "workspaces": [

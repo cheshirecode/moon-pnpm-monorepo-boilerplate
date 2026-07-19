@@ -27,6 +27,9 @@ if (!validModes.has(mode) || process.argv.includes('-h') || process.argv.include
   process.exit(validModes.has(mode) ? 0 : 2);
 }
 
+// With --skip-build the caller (e.g. the consolidated `ci` job via `check.sh full`)
+// has already built every package in-process, so dist is present and no build-manifest
+// verification is needed.
 if (!skipBuild) {
   await run('scripts/check.sh', ['build'], root);
 }
@@ -396,7 +399,7 @@ assert.equal(bootstrapResult.name, 'generated-monorepo');
 assert.ok(bootstrapResult.files.includes('packages/hono-base/src/index.ts'));
 await execFileAsync('corepack', ['enable'], { cwd: bootstrapDir });
 await execFileAsync('pnpm', ['install'], { cwd: bootstrapDir });
-await execFileAsync('scripts/check.sh', ['ci'], { cwd: bootstrapDir });
+await execFileAsync('scripts/check.sh', ['full'], { cwd: bootstrapDir });
 await execFileAsync('scripts/check.sh', ['dogfood', 'all'], { cwd: bootstrapDir });
 
 const binBootstrapParent = await mkdtemp(join(tmpdir(), 'moon-pnpm-bin-dogfood-'));
@@ -416,7 +419,7 @@ assert.ok(
 );
 await execFileAsync('corepack', ['enable'], { cwd: binBootstrapDir });
 await execFileAsync('pnpm', ['install'], { cwd: binBootstrapDir });
-await execFileAsync('scripts/check.sh', ['ci'], { cwd: binBootstrapDir });
+await execFileAsync('scripts/check.sh', ['full'], { cwd: binBootstrapDir });
 await execFileAsync('scripts/check.sh', ['dogfood', 'all'], { cwd: binBootstrapDir });
 
 console.log('External package consumption dogfood passed.');

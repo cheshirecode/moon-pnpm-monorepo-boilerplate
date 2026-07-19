@@ -7,9 +7,6 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "noEmit": true,
-    "paths": {
-      "@/*": ["../app-react/src/*"]
-    },
     "resolveJsonModule": true,
     "types": ["vite/client"]
   },

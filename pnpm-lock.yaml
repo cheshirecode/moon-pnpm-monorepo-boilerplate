@@ -633,6 +633,24 @@ importers:
       '@cheshirecode/microfrontend-host':
         specifier: workspace:^
         version: link:../microfrontend-host
+      app-astro:
+        specifier: workspace:^
+        version: link:../app-astro
+      app-preact:
+        specifier: workspace:^
+        version: link:../app-preact
+      app-react:
+        specifier: workspace:^
+        version: link:../app-react
+      app-solidjs:
+        specifier: workspace:^
+        version: link:../app-solidjs
+      app-svelte:
+        specifier: workspace:^
+        version: link:../app-svelte
+      app-vue:
+        specifier: workspace:^
+        version: link:../app-vue
       preact:
         specifier: ^10.29.3
         version: 10.29.3

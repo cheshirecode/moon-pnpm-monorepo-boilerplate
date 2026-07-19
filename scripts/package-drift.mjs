@@ -1,7 +1,6 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { verifyRendererShowcase } from './verify-renderer-showcase.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 const packagesDir = join(root, 'packages');
@@ -136,8 +135,6 @@ for (const relativePath of browserSources) {
     }
   }
 }
-
-errors.push(...(await verifyRendererShowcase()));
 
 if (errors.length > 0) {
   console.error('Package drift check failed:');

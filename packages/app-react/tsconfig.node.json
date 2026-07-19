@@ -6,6 +6,7 @@
     "noEmit": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions": true,
     "skipLibCheck": true,
     "types": [
       "vite/client",
@@ -14,9 +15,11 @@
   },
   "include": [
     "src/server",
+    "dev.ts",
     "unocss.config.ts",
     "src/styles/grid.ts",
     "vite.config.ts",
+    "vite.config.dev.ts",
     "vite.client.config.ts",
     "vite.config.server.ts",
     "build.js",
