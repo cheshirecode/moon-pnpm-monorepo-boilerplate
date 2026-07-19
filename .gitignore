@@ -118,3 +118,9 @@ docs/design
 temp
 storybook-static
 rush-logs/
+
+# Netlify combined-site build output
+dist-site/
+.netlify/
+# Generated at build time by scripts/build-site.mjs
+netlify/functions/app-react-assets.mjs
