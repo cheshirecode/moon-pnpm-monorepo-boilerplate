@@ -399,7 +399,7 @@ assert.equal(bootstrapResult.name, 'generated-monorepo');
 assert.ok(bootstrapResult.files.includes('packages/hono-base/src/index.ts'));
 await execFileAsync('corepack', ['enable'], { cwd: bootstrapDir });
 await execFileAsync('pnpm', ['install'], { cwd: bootstrapDir });
-await execFileAsync('scripts/check.sh', ['ci'], { cwd: bootstrapDir });
+await execFileAsync('scripts/check.sh', ['full'], { cwd: bootstrapDir });
 await execFileAsync('scripts/check.sh', ['dogfood', 'all'], { cwd: bootstrapDir });
 
 const binBootstrapParent = await mkdtemp(join(tmpdir(), 'moon-pnpm-bin-dogfood-'));
@@ -419,7 +419,7 @@ assert.ok(
 );
 await execFileAsync('corepack', ['enable'], { cwd: binBootstrapDir });
 await execFileAsync('pnpm', ['install'], { cwd: binBootstrapDir });
-await execFileAsync('scripts/check.sh', ['ci'], { cwd: binBootstrapDir });
+await execFileAsync('scripts/check.sh', ['full'], { cwd: binBootstrapDir });
 await execFileAsync('scripts/check.sh', ['dogfood', 'all'], { cwd: binBootstrapDir });
 
 console.log('External package consumption dogfood passed.');
