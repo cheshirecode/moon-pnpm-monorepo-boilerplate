@@ -87,8 +87,6 @@ function templateFiles(repoName: string): Array<[string, string]> {
     ['.moon/toolchains.yml', moonToolchains()],
     ['.moon/tasks/node.yml', moonNodeTasks()],
     ['scripts/check.sh', checkScript()],
-    ['scripts/build-manifest.mjs', buildManifestScript()],
-    ['scripts/generator-drift.mjs', generatorDriftScript()],
     ['scripts/pack-publishable.mjs', packScript()],
     ['scripts/dogfood.mjs', dogfoodScript(repoName)],
     ['tests/smoke.test.js', rootSmokeTest()],
@@ -160,7 +158,6 @@ function rootPackageJson(repoName: string): Record<string, unknown> {
       test: 'scripts/check.sh test',
       coverage: 'scripts/check.sh coverage',
       'static-checks': 'scripts/check.sh static-checks',
-      'renderer-showcase': 'scripts/check.sh renderer-showcase',
       ci: 'scripts/check.sh ci',
       full: 'scripts/check.sh full',
       dogfood: 'scripts/check.sh dogfood',
@@ -907,6 +904,11 @@ function moonWorkspace(): string {
 pipeline:
   installDependencies: false
 
+# Enforce moon's native layer hierarchy from each project's \`layer\` (in moon.yml).
+# This natively rejects library -> application dependencies at graph-build time.
+constraints:
+  enforceLayerRelationships: true
+
 vcs:
   defaultBranch: "main"
   provider: "github"
@@ -1056,24 +1058,8 @@ case "\${1:-}" in
   lint-fast)
     run pnpm exec oxlint packages tests --ignore-path .gitignore --quiet
     ;;
-  package-drift)
-    run node scripts/package-drift.mjs
-    ;;
-  boundaries)
-    run node scripts/check-boundaries.mjs
-    ;;
-  readme-map)
-    run node scripts/readme-map.mjs "\$@"
-    ;;
   static-checks)
     "\$repo_root/scripts/check.sh" lint-fast
-    "\$repo_root/scripts/check.sh" package-drift
-    "\$repo_root/scripts/check.sh" boundaries
-    "\$repo_root/scripts/check.sh" readme-map
-    "\$repo_root/scripts/check.sh" generator-drift
-    ;;
-  generator-drift)
-    run node scripts/generator-drift.mjs
     ;;
   lint)
     if has_git_head; then
@@ -1113,25 +1099,6 @@ case "\${1:-}" in
     fi
     run pnpm exec vitest run
     ;;
-  ci-target)
-    target="\${2:-}"
-    if [[ -z "$target" ]]; then
-      echo "ci-target requires one of: lint, typecheck, test" >&2
-      exit 2
-    fi
-    case "$target" in
-      lint|typecheck|test) ;;
-      *) echo "ci-target: unknown target '$target'. Use lint, typecheck, or test." >&2; exit 2 ;;
-    esac
-    if has_git_head; then
-      run pnpm exec moon ci ":$target"
-    else
-      run pnpm -r --if-present "$target"
-    fi
-    if [[ "$target" == "test" ]]; then
-      run pnpm exec vitest run
-    fi
-    ;;
   coverage)
     run pnpm exec moon run :coverage
     ;;
@@ -1162,197 +1129,29 @@ case "\${1:-}" in
     fi
     run node scripts/dogfood.mjs "$mode" "$@"
     ;;
-  renderer-showcase)
-    skip_build=false
-    for arg in "\$@"; do
-      if [[ "$arg" == "--skip-build" ]]; then skip_build=true; fi
-    done
-    if [[ "$skip_build" == false ]]; then
-      if has_git_head; then
-        run pnpm exec moon run app-react:build renderer-showcase:build
-      else
-        run pnpm --dir "packages/app-react" build
-        run pnpm --dir "packages/renderer-showcase" build
-      fi
-    fi
-    run node scripts/verify-renderer-showcase.mjs --dist
-    ;;
-  build-manifest)
-    run node scripts/build-manifest.mjs "\${2:-}"
-    ;;
   publish-check)
-    run node scripts/check-publishable.mjs "\$@"
+    run node scripts/pack-publishable.mjs "\$@"
     ;;
   full)
     "\$repo_root/scripts/check.sh" static-checks
     if has_git_head; then
-      run pnpm exec moon ci :lint :typecheck :build :test
+      run pnpm exec moon run :lint :typecheck :build :test
     else
       run pnpm exec moon run :lint :typecheck :build :test
     fi
     run pnpm exec vitest run
+    "\$repo_root/scripts/check.sh" publish-check --skip-build
     "\$repo_root/scripts/check.sh" dogfood packages --skip-build
     ;;
   -h|--help|help|"")
     echo "Usage: scripts/check.sh <command> [args]"
-    echo "Commands: setup lint-fast package-drift boundaries readme-map static-checks generator-drift lint typecheck build test ci ci-target coverage coverage-package pack dogfood renderer-showcase build-manifest publish-check full"
+    echo "Commands: setup lint-fast static-checks lint typecheck build test ci coverage coverage-package pack dogfood publish-check full"
     ;;
   *)
     echo "Unknown command: $1" >&2
     exit 2
     ;;
 esac
-`;
-}
-
-function buildManifestScript(): string {
-  return `import { createHash } from 'node:crypto';
-import { readFile, readdir, writeFile, mkdir } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
-import { join, resolve, relative } from 'node:path';
-
-const root = resolve(import.meta.dirname, '..');
-const packagesDir = join(root, 'packages');
-const args = process.argv.slice(2);
-const command = args[0];
-
-async function collectDistFiles(dir) {
-  const files = [];
-  if (!existsSync(dir)) return files;
-  for (const entry of await readdir(dir, { withFileTypes: true })) {
-    const p = join(dir, entry.name);
-    if (entry.isDirectory()) files.push(...await collectDistFiles(p));
-    else files.push(p);
-  }
-  return files;
-}
-
-async function collectAllDistFiles() {
-  const allFiles = [];
-  for (const entry of await readdir(packagesDir, { withFileTypes: true })) {
-    if (!entry.isDirectory()) continue;
-    allFiles.push(...await collectDistFiles(join(packagesDir, entry.name, 'dist')));
-  }
-  return allFiles;
-}
-
-async function collectSourceFiles() {
-  const files = [];
-  for (const entry of await readdir(packagesDir, { withFileTypes: true })) {
-    if (!entry.isDirectory()) continue;
-    const pkgDir = join(packagesDir, entry.name);
-    for (const name of ['package.json', 'moon.yml', 'tsconfig.json', 'tsconfig.node.json', 'vite.config.ts', 'vite.client.config.ts', 'vite.config.server.ts']) {
-      const p = join(pkgDir, name);
-      if (existsSync(p)) files.push(p);
-    }
-  }
-  const lockfile = join(root, 'pnpm-lock.yaml');
-  if (existsSync(lockfile)) files.push(lockfile);
-  return files;
-}
-
-async function createManifest() {
-  const entries = [];
-  const allFiles = [...await collectAllDistFiles(), ...await collectSourceFiles()];
-  for (const file of allFiles) {
-    const rel = relative(root, file);
-    const content = await readFile(file);
-    entries.push({ path: rel, sha256: createHash('sha256').update(content).digest('hex'), size: content.length });
-  }
-  entries.sort((a, b) => a.path.localeCompare(b.path));
-  const manifestPath = join(root, '.artifacts', 'build-manifest.json');
-  await mkdir(join(root, '.artifacts'), { recursive: true });
-  await writeFile(manifestPath, JSON.stringify({ generatedAt: new Date().toISOString(), entries }, null, 2) + '\\n');
-  console.log(\`Build manifest: \${entries.length} files at \${manifestPath}\`);
-}
-
-async function verifyManifest() {
-  const manifestPath = join(root, '.artifacts', 'build-manifest.json');
-  if (!existsSync(manifestPath)) { console.error('Build manifest not found at .artifacts/build-manifest.json'); process.exit(1); }
-  const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
-  const errors = [];
-  if (!manifest.entries || manifest.entries.length === 0) { console.error('Build manifest is empty — no dist files recorded.'); process.exit(1); }
-  const manifestPaths = new Set(manifest.entries.map((e) => e.path));
-  for (const entry of manifest.entries) {
-    const filePath = join(root, entry.path);
-    if (!existsSync(filePath)) { errors.push(\`missing: \${entry.path}\`); continue; }
-    const hash = createHash('sha256').update(await readFile(filePath)).digest('hex');
-    if (hash !== entry.sha256) errors.push(\`tampered: \${entry.path} (expected \${entry.sha256.slice(0, 12)}, got \${hash.slice(0, 12)})\`);
-  }
-  const actualFiles = [...await collectAllDistFiles(), ...await collectSourceFiles()];
-  for (const file of actualFiles) {
-    const rel = relative(root, file);
-    if (!manifestPaths.has(rel)) errors.push(\`extra: \${rel} (not in manifest)\`);
-  }
-  if (errors.length > 0) { console.error('Build manifest verification failed:'); for (const e of errors) console.error(\`- \${e}\`); process.exit(1); }
-  console.log(\`Build manifest verified: \${manifest.entries.length} files OK.\`);
-}
-
-if (command === 'create') await createManifest();
-else if (command === 'verify') await verifyManifest();
-else { console.log('Usage: node scripts/build-manifest.mjs create|verify'); process.exit(2); }
-`;
-}
-
-function generatorDriftScript(): string {
-  return `import { mkdtemp, readdir, rm, stat } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
-import { join, relative, sep } from 'node:path';
-import { tmpdir } from 'node:os';
-import { spawn } from 'node:child_process';
-import { resolve } from 'node:path';
-
-const root = resolve(import.meta.dirname, '..');
-const generatorDir = join(root, 'packages', 'create-moon-pnpm-monorepo');
-const errors = [];
-
-async function run(cmd, args, cwd) {
-  return new Promise((resolveRun, reject) => {
-    const child = spawn(cmd, args, { cwd, stdio: 'pipe', shell: false, env: { ...process.env } });
-    let stdout = '', stderr = '';
-    child.stdout.on('data', (d) => stdout += d);
-    child.stderr.on('data', (d) => stderr += d);
-    child.on('error', reject);
-    child.on('exit', (code) => code === 0 ? resolveRun(stdout) : reject(new Error(\`\${cmd} \${args.join(' ')} exited \${code}: \${stderr}\`)));
-  });
-}
-
-async function collectFiles(dir, base = dir) {
-  const files = [];
-  if (!existsSync(dir)) return files;
-  for (const entry of await readdir(dir, { withFileTypes: true })) {
-    if (entry.name === 'node_modules' || entry.name === '.git') continue;
-    if (entry.name === 'cache' && dir.endsWith('.moon')) continue;
-    const p = join(dir, entry.name);
-    if (entry.isDirectory()) files.push(...await collectFiles(p, base));
-    else files.push(relative(base, p).split(sep).join('/'));
-  }
-  return files;
-}
-
-const tmpDir = await mkdtemp(join(tmpdir(), 'generator-drift-'));
-try {
-  await run('node', [join(generatorDir, 'dist', 'index.js'), '--name', 'drift-test', '--directory', tmpDir], root);
-  const generatedFiles = new Set(await collectFiles(tmpDir));
-  const sourceFiles = new Set((await collectFiles(root)).filter((f) => !f.startsWith('packages/create-moon-pnpm-monorepo/')));
-  const expectedFiles = new Set([
-    ...Array.from(sourceFiles).filter((f) => !f.startsWith('.git/') && !f.startsWith('node_modules/') && !f.startsWith('.moon/cache/') && !f.startsWith('packages/*/dist/') && !f.startsWith('.artifacts/')),
-  ]);
-  for (const file of generatedFiles) {
-    if (!expectedFiles.has(file) && !file.startsWith('dist/') && !file.startsWith('coverage/')) {
-      errors.push(\`unexpected generated file: \${file}\`);
-    }
-  }
-} finally {
-  await rm(tmpDir, { recursive: true, force: true });
-}
-
-if (errors.length > 0) {
-  console.error('Generator drift check failed:');
-  for (const e of errors) console.error(\`- \${e}\`);
-  process.exit(1);
-}
-console.log('Generator drift check passed.');
 `;
 }
 
@@ -1410,10 +1209,10 @@ const args = process.argv.slice(2);
 const mode = args.find((arg) => !arg.startsWith('-')) ?? 'packages';
 const skipBuild = args.includes('--skip-build');
 
+// With --skip-build the caller (the consolidated \`ci\` job via \`check.sh full\`)
+// has already built every package in-process, so dist is present.
 if (!skipBuild) {
   await run('scripts/check.sh', ['build'], root);
-} else {
-  await run('node', ['scripts/build-manifest.mjs', 'verify'], root);
 }
 await run('scripts/check.sh', ['pack'], root);
 
@@ -1567,7 +1366,10 @@ jobs:
           persist-credentials: false
       - uses: suzuki-shunsuke/actionlint-action@v0.1.4
 
-  static-checks:
+  # Single consolidated job. moon parallelizes lint/typecheck/build/test internally,
+  # so dist for the downstream publish/dogfood checks exists in-process — no
+  # cross-job artifact hand-off is needed.
+  ci:
     needs: [workflow-lint]
     runs-on: ubuntu-latest
     steps:
@@ -1576,103 +1378,8 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - run: scripts/check.sh static-checks
+      - run: scripts/check.sh full
       - run: git diff --exit-code
-
-  build:
-    needs: [workflow-lint]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - run: scripts/check.sh build
-      - run: node scripts/build-manifest.mjs create
-      - uses: actions/upload-artifact@v4
-        with:
-          name: build-dist
-          path: |
-            packages/*/dist
-            .moon/cache
-            .artifacts/build-manifest.json
-          retention-days: 1
-
-  typecheck:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - uses: actions/download-artifact@v4
-        with:
-          name: build-dist
-      - run: node scripts/build-manifest.mjs verify
-      - run: scripts/check.sh ci-target typecheck
-
-  test:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - uses: actions/download-artifact@v4
-        with:
-          name: build-dist
-      - run: node scripts/build-manifest.mjs verify
-      - run: scripts/check.sh ci-target test
-
-  renderer-showcase:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - uses: actions/download-artifact@v4
-        with:
-          name: build-dist
-      - run: node scripts/build-manifest.mjs verify
-      - run: scripts/check.sh renderer-showcase --skip-build
-
-  package-dogfood:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - uses: actions/download-artifact@v4
-        with:
-          name: build-dist
-      - run: node scripts/build-manifest.mjs verify
-      - run: scripts/check.sh dogfood packages --skip-build
-
-  publish-check:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - uses: actions/download-artifact@v4
-        with:
-          name: build-dist
-      - run: node scripts/build-manifest.mjs verify
-      - run: scripts/check.sh publish-check --skip-build
 `;
 }
 

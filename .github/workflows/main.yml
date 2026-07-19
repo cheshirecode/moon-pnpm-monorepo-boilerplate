@@ -26,7 +26,12 @@ jobs:
       - name: Lint GitHub Actions workflows
         uses: suzuki-shunsuke/actionlint-action@v0.1.4
 
-  static-checks:
+  # Single consolidated job. moon parallelizes lint/typecheck/build/test internally,
+  # so dist for the downstream renderer/publish/dogfood checks exists in-process — no
+  # cross-job artifact hand-off is needed. This replaces the former
+  # static-checks/lint/build/typecheck/test/renderer-showcase/package-dogfood/publish-check
+  # fan-out (and the build-manifest artifact plumbing that only existed to bridge it).
+  ci:
     needs: [workflow-lint]
     runs-on: ubuntu-latest
     steps:
@@ -36,106 +41,10 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - name: Static checks (lint-fast, package-drift, boundaries, readme-map, generator-drift)
-        run: scripts/check.sh static-checks
-      - name: Verify lint did not rewrite files
+      - name: Full check (static-checks, lint, typecheck, build, test, renderer, publish, dogfood)
+        run: scripts/check.sh full
+      - name: Verify checks did not rewrite files
         run: git diff --exit-code
-
-  lint:
-    needs: [workflow-lint]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - name: Lint (affected)
-        run: scripts/check.sh ci-target lint
-      - name: Verify lint did not rewrite files
-        run: git diff --exit-code
-
-  build:
-    needs: [workflow-lint]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - name: Build all packages
-        run: scripts/check.sh build
-      - name: Create build manifest
-        run: node scripts/build-manifest.mjs create
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-dist
-          path: |
-            packages/*/dist
-            .moon/cache
-            .artifacts/build-manifest.json
-          retention-days: 1
-
-  typecheck:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-dist
-      - name: Verify build manifest
-        run: node scripts/build-manifest.mjs verify
-      - name: Typecheck (affected)
-        run: scripts/check.sh ci-target typecheck
-
-  test:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-dist
-      - name: Verify build manifest
-        run: node scripts/build-manifest.mjs verify
-      - name: Test (affected + root)
-        run: scripts/check.sh ci-target test
-
-  renderer-showcase:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-dist
-      - name: Verify build manifest
-        run: node scripts/build-manifest.mjs verify
-      - name: Renderer showcase
-        run: scripts/check.sh renderer-showcase --skip-build
 
   coverage-packages:
     needs: [workflow-lint]
@@ -166,7 +75,7 @@ jobs:
           CHANGESET_BASE_REF: origin/main
 
   coverage:
-    needs: [build, coverage-packages]
+    needs: [coverage-packages]
     runs-on: ubuntu-latest
     if: ${{ needs.coverage-packages.outputs.packages != '[]' && needs.coverage-packages.outputs.packages != '' }}
     strategy:
@@ -180,14 +89,8 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-dist
-      - name: Verify build manifest
-        run: node scripts/build-manifest.mjs verify
       - name: Coverage for ${{ matrix.package }}
-        run: scripts/check.sh coverage-package ${{ matrix.package }} --skip-build
+        run: scripts/check.sh coverage-package ${{ matrix.package }}
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2.3.6
         with:
@@ -197,44 +100,6 @@ jobs:
           base-path: ${{ github.workspace }}/packages/${{ matrix.package }}
           flag-name: ${{ matrix.package }}
           parallel: true
-
-  package-dogfood:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-dist
-      - name: Verify build manifest
-        run: node scripts/build-manifest.mjs verify
-      - name: Dogfood packed packages
-        run: scripts/check.sh dogfood packages --skip-build
-
-  publish-check:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-dist
-      - name: Verify build manifest
-        run: node scripts/build-manifest.mjs verify
-      - name: Validate publishable tarballs
-        run: scripts/check.sh publish-check --skip-build
 
   changeset-check:
     needs: [workflow-lint]

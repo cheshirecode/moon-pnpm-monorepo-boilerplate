@@ -4,10 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "exports": {
-    "./microfrontend": "./src/entry-microfrontend.tsx"
+    "./microfrontend": {
+      "types": "./src/entry-microfrontend.d.ts",
+      "import": "./src/entry-microfrontend.tsx"
+    }
   },
   "scripts": {
-    "dev": "node build.js && node dist/server/node.js",
+    "dev": "node dev.ts",
+    "dev:prod": "node build.js && node dist/server/node.js",
     "start": "node dist/server/node.js",
     "preview": "node dist/server/node.js",
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.node.json",

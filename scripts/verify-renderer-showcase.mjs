@@ -15,6 +15,14 @@ const clientPackageIds = new Set([
   'app-solidjs'
 ]);
 const staticPackageIds = new Set(['app-astro']);
+const expectedRendererApps = [
+  'app-react',
+  'app-preact',
+  'app-astro',
+  'app-vue',
+  'app-svelte',
+  'app-solidjs'
+];
 
 export async function verifyRendererShowcase(options = {}) {
   const errors = [];
@@ -41,6 +49,21 @@ export async function verifyRendererShowcase(options = {}) {
   };
   if (showcaseDeps['@cheshirecode/microfrontend-host'] !== 'workspace:^') {
     errors.push('renderer-showcase must depend on @cheshirecode/microfrontend-host via workspace:^');
+  }
+
+  for (const id of expectedRendererApps) {
+    if (showcaseDeps[id] !== 'workspace:^') {
+      errors.push(`renderer-showcase must declare ${id} as workspace:^ dependency`);
+    }
+  }
+
+  const declaredAppDeps = expectedRendererApps.filter(
+    (id) => showcaseDeps[id] === 'workspace:^'
+  );
+  if (declaredAppDeps.length !== expectedRendererApps.length) {
+    errors.push(
+      `renderer-showcase must declare exactly ${expectedRendererApps.length} renderer app workspace deps; found ${declaredAppDeps.length}`
+    );
   }
 
   for (const id of expectedIds) {

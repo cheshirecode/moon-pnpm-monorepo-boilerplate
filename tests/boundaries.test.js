@@ -113,7 +113,10 @@ describe('checkBoundaries fixtures', () => {
     expect((await checkBoundaries(tmp)).errors).toEqual(expect.arrayContaining([expect.stringContaining('cross-package')]));
   });
 
-  it('rejects library depending on application', async () => {
+  it('delegates library-depending-on-application to moon (not flagged by this checker)', async () => {
+    // library -> application is enforced natively by moon's
+    // constraints.enforceLayerRelationships (see .moon/workspace.yml), so the
+    // checker must NOT re-flag it. This guards against re-introducing the duplicate rule.
     await fixture({
       'app-react': appPkg('app-react', './microfrontend', 'microfrontend.tsx'),
       'my-lib': {
@@ -122,7 +125,7 @@ describe('checkBoundaries fixtures', () => {
         src: { 'index.ts': "import { x } from 'app-react/microfrontend';" }
       }
     });
-    expect((await checkBoundaries(tmp)).errors).toEqual(expect.arrayContaining([expect.stringContaining('library cannot depend')]));
+    expect((await checkBoundaries(tmp)).errors).not.toEqual(expect.arrayContaining([expect.stringContaining('library cannot depend')]));
   });
 
   it('rejects application-to-application (non-showcase host)', async () => {
@@ -167,20 +170,18 @@ describe('checkBoundaries fixtures', () => {
     expect(errs.filter((e) => e.includes('config')).length).toBe(1);
   });
 
-  it('rejects cross-package path in tsconfig but not comments', async () => {
+  it('splits metadata-only and artifacts-only modes', async () => {
     await fixture({
-      'app-react': appPkg('app-react', './microfrontend', 'microfrontend.tsx'),
-      'renderer-showcase': {
-        packageJson: { name: 'renderer-showcase', private: true, dependencies: { 'app-react': 'workspace:^' } },
-        moonYml: 'language: "typescript"\nlayer: "application"\nstack: "backend"',
-        src: {},
-        configs: {
-          'tsconfig.json': '{\n// comment with "../app-react/src"\n/* block "../app-react/src" */\n"compilerOptions": { "paths": { "@/*": ["../app-react/src/*"] } }\n}'
-        }
+      'my-lib': {
+        packageJson: { name: '@scope/my-lib', private: false, main: './dist/index.js' },
+        moonYml: 'language: "typescript"\nlayer: "library"\nstack: "frontend"',
+        src: { 'index.ts': 'export const x = 1;' }
       }
     });
-    const errs = (await checkBoundaries(tmp)).errors;
-    expect(errs).toEqual(expect.arrayContaining([expect.stringContaining('config')]));
-    expect(errs.filter((e) => e.includes('config')).length).toBe(1);
+
+    expect((await checkBoundaries(tmp, { metadata: true, artifacts: false })).errors).toEqual([]);
+    expect((await checkBoundaries(tmp, { metadata: false, artifacts: true })).errors).toEqual(
+      expect.arrayContaining([expect.stringContaining('main "./dist/index.js" does not exist')])
+    );
   });
 });

@@ -4,7 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "exports": {
-    "./microfrontend": "./src/microfrontend.ts"
+    "./microfrontend": {
+      "types": "./src/microfrontend.d.ts",
+      "import": "./src/microfrontend.ts"
+    }
   },
   "scripts": {
     "dev": "vite --host",

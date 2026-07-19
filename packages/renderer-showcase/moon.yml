@@ -1,6 +1,6 @@
 language: "typescript"
 layer: "application"
-stack: "frontend"
+stack: "backend"
 tags:
   - "showcase"
   - "vite"

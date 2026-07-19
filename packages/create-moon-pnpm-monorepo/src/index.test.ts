@@ -107,57 +107,35 @@ describe('createMonorepo', () => {
     expect(setup).toContain('if [[ -f "$repo_root/pnpm-lock.yaml" ]]');
     expect(setup).toContain('pnpm install --frozen-lockfile');
     expect(setup).toContain('pnpm install --no-frozen-lockfile');
-    expect(check).toContain('ci-target');
+    // Generated check.sh references only shipped scripts — no parent-only checks.
+    expect(check).toContain('static-checks)');
+    expect(check).toContain('full)');
+    expect(check).toContain('publish-check)');
+    expect(check).not.toContain('ci-target');
+    expect(check).not.toContain('check-boundaries');
+    expect(check).not.toContain('package-drift');
+    expect(check).not.toContain('readme-map');
+    expect(check).not.toContain('generator-drift');
+    expect(check).not.toContain('renderer-showcase)');
 
     const mainWorkflow = await readFile(
       join(target, '.github', 'workflows', 'main.yml'),
       'utf8'
     );
-    expect(mainWorkflow).toContain('static-checks:');
-    expect(mainWorkflow).toContain('build:');
-    expect(mainWorkflow).toContain('needs: [build]');
-    expect(mainWorkflow).toContain('actions/upload-artifact@v4');
-    expect(mainWorkflow).toContain('actions/download-artifact@v4');
-    expect(mainWorkflow).toContain('build-manifest.mjs create');
-    expect(mainWorkflow).toContain('build-manifest.mjs verify');
-    expect(mainWorkflow).toContain('ci-target typecheck');
-    expect(mainWorkflow).toContain('ci-target test');
-    expect(mainWorkflow).toContain('dogfood packages --skip-build');
-    expect(mainWorkflow).toContain('.moon/cache');
+    // Consolidated adopter-facing CI: workflow-lint + a single ci job, no artifact plumbing.
     expect(mainWorkflow).toContain('workflow-lint:');
-    expect(mainWorkflow).toContain('renderer-showcase:');
-    expect(mainWorkflow).toContain('publish-check:');
-    expect(mainWorkflow).toContain('scripts/check.sh static-checks');
-    expect(mainWorkflow).toContain('scripts/check.sh renderer-showcase --skip-build');
-    expect(mainWorkflow).toContain('scripts/check.sh publish-check --skip-build');
-    expect(mainWorkflow).toContain('cancel-in-progress: true');
+    expect(mainWorkflow).toContain('ci:');
+    expect(mainWorkflow).toContain('scripts/check.sh full');
     expect(mainWorkflow).toContain('concurrency:');
+    expect(mainWorkflow).toContain('cancel-in-progress: true');
+    expect(mainWorkflow).not.toContain('upload-artifact');
+    expect(mainWorkflow).not.toContain('download-artifact');
+    expect(mainWorkflow).not.toContain('build-manifest');
+    expect(mainWorkflow).not.toContain('ci-target');
+    expect(mainWorkflow).not.toContain('renderer-showcase');
 
-    const buildManifest = await readFile(
-      join(target, 'scripts', 'build-manifest.mjs'),
-      'utf8'
-    );
-    expect(buildManifest).toContain('createManifest');
-    expect(buildManifest).toContain('verifyManifest');
-    expect(buildManifest).toContain('extra:');
-    expect(buildManifest).toContain('collectSourceFiles');
-    expect(buildManifest).toContain('pnpm-lock.yaml');
-
-    const generatorDrift = await readFile(
-      join(target, 'scripts', 'generator-drift.mjs'),
-      'utf8'
-    );
-    expect(generatorDrift).toContain('generator-drift');
-    expect(generatorDrift).toContain('collectFiles');
-
-    const checkScript = await readFile(
-      join(target, 'scripts', 'check.sh'),
-      'utf8'
-    );
-    expect(checkScript).toContain('static-checks)');
-    expect(checkScript).toContain('generator-drift)');
-    expect(checkScript).toContain('renderer-showcase)');
-    expect(checkScript).toContain('full)');
-    expect(checkScript).toContain('publish-check)');
+    // Parent-only scripts must not be scaffolded into a generated repo.
+    await expect(readFile(join(target, 'scripts', 'build-manifest.mjs'), 'utf8')).rejects.toThrow();
+    await expect(readFile(join(target, 'scripts', 'generator-drift.mjs'), 'utf8')).rejects.toThrow();
   });
 });

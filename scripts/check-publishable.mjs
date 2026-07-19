@@ -8,6 +8,9 @@ const outDir = join(root, '.artifacts', 'release');
 const args = process.argv.slice(2);
 const skipBuild = args.includes('--skip-build');
 
+// With --skip-build the caller (e.g. the consolidated `ci` job via `check.sh full`)
+// has already built every package in-process, so dist is present and no cross-job
+// build-manifest verification is needed.
 if (!skipBuild) {
   await run('scripts/check.sh', ['build'], root);
 }

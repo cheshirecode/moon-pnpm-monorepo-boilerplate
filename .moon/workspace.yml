@@ -4,6 +4,13 @@ projects:
 pipeline:
   installDependencies: false
 
+# Enforce moon's native layer hierarchy from each project's `layer` (in moon.yml).
+# This natively rejects library -> application dependencies at graph-build time.
+# The application -> application rule (forbidden except the renderer-showcase host)
+# is NOT expressible here and stays in scripts/check-boundaries.mjs.
+constraints:
+  enforceLayerRelationships: true
+
 vcs:
   defaultBranch: "main"
   provider: "github"

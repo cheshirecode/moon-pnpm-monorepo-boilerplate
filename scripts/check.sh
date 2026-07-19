@@ -11,7 +11,8 @@ Commands:
   setup                 Install dependencies with the pinned pnpm version.
   lint-fast             Run the fast Rust-based lint guard.
   package-drift         Check package metadata, dependency, coverage, and dogfood drift.
-  boundaries            Check workspace import boundaries (declared deps, layer rules, subpaths).
+  boundaries [--metadata-only|--artifacts-only]
+                        Check workspace import boundaries (declared deps, layer rules, subpaths).
   readme-map            Check that README workspace map matches package inventory (use --write to fix).
   static-checks         Run lint-fast, package-drift, boundaries, and readme-map exactly once.
   generator-drift       Verify source API and built CLI produce identical repo output.
@@ -21,9 +22,7 @@ Commands:
   test                  Run package tests through moon and root smoke tests.
   dev <package>         Start dev server for a package (Vite SSR middleware mode).
   ci                    Run the local CI parity path.
-  ci-target <lint|typecheck|test>
-                        Run a single moon ci target with affected semantics.
-  full                  Run the full non-affected package and dogfood path.
+  full                  Run the full non-affected package, renderer, publish, and dogfood path.
   dogfood [MODE] [--skip-build]
                         Dogfood packed packages in an external consumer.
   coverage              Run all package coverage targets through moon.
@@ -95,7 +94,7 @@ case "$command" in
     run node scripts/package-drift.mjs
     ;;
   boundaries)
-    run node scripts/check-boundaries.mjs
+    run node scripts/check-boundaries.mjs "$@"
     ;;
   readme-map)
     run node scripts/readme-map.mjs "$@"
@@ -103,7 +102,7 @@ case "$command" in
   static-checks)
     "$repo_root/scripts/check.sh" lint-fast
     "$repo_root/scripts/check.sh" package-drift
-    "$repo_root/scripts/check.sh" boundaries
+    "$repo_root/scripts/check.sh" boundaries --metadata-only
     "$repo_root/scripts/check.sh" readme-map
     "$repo_root/scripts/check.sh" generator-drift
     ;;
@@ -130,6 +129,7 @@ case "$command" in
     else
       run pnpm -r --if-present build
     fi
+    "$repo_root/scripts/check.sh" boundaries --artifacts-only
     ;;
   test)
     if has_git_head; then
@@ -157,48 +157,21 @@ case "$command" in
     ;;
   ci)
     "$repo_root/scripts/check.sh" static-checks
-    "$repo_root/scripts/check.sh" renderer-showcase
     if has_git_head; then
       run pnpm exec moon ci :lint :typecheck :build :test
     else
-      run pnpm -r --if-present lint
-      run pnpm -r --if-present typecheck
-      run pnpm -r --if-present build
-      run pnpm -r --if-present test
+      run pnpm exec moon run :lint :typecheck :build :test
     fi
+    "$repo_root/scripts/check.sh" boundaries --artifacts-only
     run pnpm exec vitest run
-    ;;
-  ci-target)
-    target="${1:-}"
-    if [[ -z "$target" ]]; then
-      echo "ci-target requires one of: lint, typecheck, test" >&2
-      exit 2
-    fi
-    case "$target" in
-      lint|typecheck|test) ;;
-      *) echo "ci-target: unknown target '$target'. Use lint, typecheck, or test." >&2; exit 2 ;;
-    esac
-    if has_git_head; then
-      run pnpm exec moon ci ":$target"
-    else
-      run pnpm -r --if-present "$target"
-    fi
-    if [[ "$target" == "test" ]]; then
-      run pnpm exec vitest run
-    fi
     ;;
   full)
     "$repo_root/scripts/check.sh" static-checks
-    "$repo_root/scripts/check.sh" renderer-showcase
-    if has_git_head; then
-      run pnpm exec moon run :lint :typecheck :build :test
-    else
-      run pnpm -r --if-present lint
-      run pnpm -r --if-present typecheck
-      run pnpm -r --if-present build
-      run pnpm -r --if-present test
-    fi
+    run pnpm exec moon run :lint :typecheck :build :test
+    "$repo_root/scripts/check.sh" boundaries --artifacts-only
     run pnpm exec vitest run
+    "$repo_root/scripts/check.sh" renderer-showcase --skip-build
+    "$repo_root/scripts/check.sh" publish-check --skip-build
     "$repo_root/scripts/check.sh" dogfood packages --skip-build
     ;;
   dogfood)

@@ -216,7 +216,9 @@ function resolveRelative(fromFile, spec, pkgDir, registry) {
   return null;
 }
 
-export async function checkBoundaries(rootDir = root) {
+export async function checkBoundaries(rootDir = root, options = {}) {
+  const includeMetadata = options.metadata ?? true;
+  const includeArtifacts = options.artifacts ?? true;
   const pkgsDir = join(rootDir, 'packages');
   const registry = await buildWorkspaceRegistry(pkgsDir);
   const errors = [];
@@ -233,36 +235,37 @@ export async function checkBoundaries(rootDir = root) {
 
       if (isCfg) {
         for (const ref of findConfigRefs(content, filePath, registry, info.dirName))
-          errors.push(`${pkgName}: config ${rel} references sibling ${ref.name} via ${ref.pattern}`);
+          if (includeMetadata) errors.push(`${pkgName}: config ${rel} references sibling ${ref.name} via ${ref.pattern}`);
       }
 
       for (const spec of parseImports(content, filePath)) {
         if (isBuiltin(spec)) continue;
         if (isRelative(spec)) {
-          if (resolveRelative(filePath, spec, info.dir, registry))
-            errors.push(`${pkgName}: cross-package relative import "${spec}" in ${rel}`);
-          continue;
+          if (resolveRelative(filePath, spec, info.dir, registry)) {
+            if (includeMetadata) errors.push(`${pkgName}: cross-package relative import "${spec}" in ${rel}`);
+            continue;
+          }
         }
         const { name: dep, subpath } = extractPackageSpec(spec);
         if (!registry.has(dep)) continue;
         const target = registry.get(dep);
 
-        if (!(dep in info.deps))
+        if (!(dep in info.deps) && includeMetadata)
           errors.push(`${pkgName}: undeclared import "${spec}" in ${rel} (${dep} not in dependencies)`);
 
-        if (subpath && target.exports && Object.keys(target.exports).length > 0 && !subpathExists(target.exports, subpath))
+        if (includeMetadata && subpath && target.exports && Object.keys(target.exports).length > 0 && !subpathExists(target.exports, subpath))
           errors.push(`${pkgName}: subpath "${subpath}" not exported by ${dep} (in ${rel})`);
 
-        if (target.exports && Object.keys(target.exports).length > 0) {
+        if (includeArtifacts && target.exports && Object.keys(target.exports).length > 0) {
           for (const t of resolveExportTargets(target.exports, subpath))
             if (!existsSync(join(target.dir, t)))
               errors.push(`${pkgName}: export target "${t}" for "${spec}" missing in ${dep}`);
         }
 
-        if (info.layer === 'library' && target.layer === 'application')
-          errors.push(`${pkgName}: library cannot depend on application ${dep} (in ${rel})`);
-
-        if (info.layer === 'application' && target.layer === 'application') {
+        // library -> application is enforced natively by moon's
+        // constraints.enforceLayerRelationships (see .moon/workspace.yml).
+        // Only the application -> application rule, which moon permits, stays here.
+        if (includeMetadata && info.layer === 'application' && target.layer === 'application') {
           const isHost = pkgName === 'renderer-showcase';
           const isRenderer = RENDERER_APPS.includes(dep);
           if (!isHost || !isRenderer)
@@ -271,10 +274,12 @@ export async function checkBoundaries(rootDir = root) {
       }
     }
 
-    for (const field of ['main', 'module', 'types', 'browser']) {
-      const val = info.packageJson[field];
-      if (typeof val === 'string' && !existsSync(join(info.dir, val)))
-        errors.push(`${pkgName}: ${field} "${val}" does not exist`);
+    if (includeArtifacts) {
+      for (const field of ['main', 'module', 'types', 'browser']) {
+        const val = info.packageJson[field];
+        if (typeof val === 'string' && !existsSync(join(info.dir, val)))
+          errors.push(`${pkgName}: ${field} "${val}" does not exist`);
+      }
     }
   }
 
@@ -282,7 +287,17 @@ export async function checkBoundaries(rootDir = root) {
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const result = await checkBoundaries();
+  const args = new Set(process.argv.slice(2));
+  const metadataOnly = args.has('--metadata-only');
+  const artifactsOnly = args.has('--artifacts-only');
+  if (metadataOnly && artifactsOnly) {
+    console.error('Use only one of --metadata-only or --artifacts-only.');
+    process.exit(2);
+  }
+  const result = await checkBoundaries(root, {
+    metadata: !artifactsOnly,
+    artifacts: !metadataOnly
+  });
   if (result.errors.length > 0) {
     console.error('Boundary check failed:');
     for (const e of result.errors) console.error(`- ${e}`);

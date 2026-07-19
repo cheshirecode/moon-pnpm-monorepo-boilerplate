@@ -29,6 +29,8 @@ if (!validModes.has(mode) || process.argv.includes('-h') || process.argv.include
 
 if (!skipBuild) {
   await run('scripts/check.sh', ['build'], root);
+} else {
+  await run('node', ['scripts/build-manifest.mjs', 'verify'], root);
 }
 await run('scripts/check.sh', ['pack'], root);
 
