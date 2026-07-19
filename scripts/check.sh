@@ -237,9 +237,6 @@ case "$command" in
   pack)
     run node scripts/pack-publishable.mjs
     ;;
-  build-manifest)
-    run node scripts/build-manifest.mjs "${1:-}"
-    ;;
   publish-check)
     run node scripts/check-publishable.mjs "$@"
     ;;

@@ -35,7 +35,6 @@ Choose additional checks by change type:
 | Dev server (Vite SSR middleware) | `scripts/check.sh dev <package>` |
 | README workspace map | `scripts/check.sh readme-map` (add `--write` to fix drift) |
 | Renderer app or host shell | `scripts/check.sh renderer-showcase` |
-| Build artifact manifest | `scripts/check.sh build-manifest create`, `scripts/check.sh build-manifest verify` |
 | Package-facing | `scripts/check.sh pack`, `scripts/check.sh dogfood packages` |
 | Release or publishing | `scripts/check.sh dogfood all`, `scripts/check.sh publish-check`, `scripts/check.sh changeset-check` |
 | GitHub workflow | `scripts/check.sh workflow-lint` |

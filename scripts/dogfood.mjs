@@ -27,10 +27,11 @@ if (!validModes.has(mode) || process.argv.includes('-h') || process.argv.include
   process.exit(validModes.has(mode) ? 0 : 2);
 }
 
+// With --skip-build the caller (e.g. the consolidated `ci` job via `check.sh full`)
+// has already built every package in-process, so dist is present and no build-manifest
+// verification is needed.
 if (!skipBuild) {
   await run('scripts/check.sh', ['build'], root);
-} else {
-  await run('node', ['scripts/build-manifest.mjs', 'verify'], root);
 }
 await run('scripts/check.sh', ['pack'], root);
 
