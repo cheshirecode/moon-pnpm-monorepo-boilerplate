@@ -60,6 +60,9 @@ await mkdir(publishDir, { recursive: true });
 // renderer-showcase at the root
 await cp(join(root, 'packages/renderer-showcase/dist'), publishDir, { recursive: true });
 
+// root favicon so browsers' implicit /favicon.ico request resolves across the whole site
+await cp(join(root, 'public/favicon.ico'), join(publishDir, 'favicon.ico'));
+
 // static apps + astro at /apps/<name>/
 for (const [dir, name] of [...STATIC_APPS, ['app-astro', 'astro']]) {
   await cp(join(root, `packages/${dir}/dist`), join(publishDir, 'apps', name), { recursive: true });
