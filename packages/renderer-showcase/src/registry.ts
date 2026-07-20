@@ -72,3 +72,69 @@ export const rendererShowcaseEntries = createMicrofrontendRegistry([
     mount: mountSolidJS
   }
 ] satisfies readonly MicrofrontendEntry[]);
+
+/** Presentation metadata for each card, keyed by microfrontend id. */
+export interface AppCardMeta {
+  /** Short framework label shown as the card heading. */
+  framework: string;
+  /** Key into the injected framework-version map; omitted for the static tile. */
+  versionKey?: string;
+  /** How the standalone app renders in production. */
+  renderMode: string;
+  /** Standalone route on the combined Netlify site. */
+  href: string;
+  /** Per-framework accent (OKLCH), used as the card's top keyline. */
+  accent: string;
+  /** One-line description shown under the live preview. */
+  tagline: string;
+}
+
+export const appCardMeta: Record<string, AppCardMeta> = {
+  'app-react': {
+    framework: 'React',
+    versionKey: 'react',
+    renderMode: 'SSR + hydration',
+    href: '/apps/react/',
+    accent: 'oklch(0.82 0.11 218)',
+    tagline: 'Server-rendered through a Hono function, then hydrated in the browser.'
+  },
+  'app-preact': {
+    framework: 'Preact',
+    versionKey: 'preact',
+    renderMode: 'Client SPA',
+    href: '/apps/preact/',
+    accent: 'oklch(0.52 0.18 300)',
+    tagline: 'A 3 kB React-compatible renderer mounted client-side.'
+  },
+  'app-astro': {
+    framework: 'Astro',
+    renderMode: 'Static (SSG)',
+    href: '/apps/astro/',
+    accent: 'oklch(0.62 0.2 25)',
+    tagline: 'A zero-JavaScript static tile built from the shared demo contract.'
+  },
+  'app-vue': {
+    framework: 'Vue',
+    versionKey: 'vue',
+    renderMode: 'Client SPA',
+    href: '/apps/vue/',
+    accent: 'oklch(0.72 0.15 158)',
+    tagline: 'Single-file components mounted through the package adapter.'
+  },
+  'app-svelte': {
+    framework: 'Svelte',
+    versionKey: 'svelte',
+    renderMode: 'Client SPA',
+    href: '/apps/svelte/',
+    accent: 'oklch(0.64 0.23 32)',
+    tagline: 'Compiled components with no runtime framework overhead.'
+  },
+  'app-solidjs': {
+    framework: 'SolidJS',
+    versionKey: 'solid-js',
+    renderMode: 'Client SPA',
+    href: '/apps/solidjs/',
+    accent: 'oklch(0.55 0.11 255)',
+    tagline: 'Fine-grained reactivity compiled to real DOM updates.'
+  }
+};
