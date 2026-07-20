@@ -1,6 +1,7 @@
-// Netlify Function (Node runtime) that server-renders app-react under /apps/react.
-// Static client assets live at /apps/react/client/* and are served by Netlify's CDN;
-// this function only renders the HTML document (which then hydrates client-side).
+// Source for the app-react SSR Netlify Function. build-site.mjs esbuild-bundles this
+// into netlify/functions/app-react.mjs (self-contained — workspace deps like
+// @cheshirecode/hono-base are inlined, so nothing is imported at runtime). Static client
+// assets live at /apps/react/client/* and are served by the CDN (excludedPath below).
 import { createServerApp } from '../../packages/app-react/src/server/app';
 import assets from './app-react-assets.mjs';
 
@@ -14,5 +15,6 @@ export default async function handler(request: Request): Promise<Response> {
 }
 
 export const config = {
-  path: ['/apps/react', '/apps/react/*']
+  path: ['/apps/react', '/apps/react/*'],
+  excludedPath: '/apps/react/client/*'
 };
