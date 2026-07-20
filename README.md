@@ -1,5 +1,11 @@
 # moon-pnpm-monorepo-boilerplate
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/YOUR-NETLIFY-SITE-ID/deploy-status)](https://app.netlify.com/sites/YOUR-NETLIFY-SITE-NAME/deploys)
+
+<!-- Replace YOUR-NETLIFY-SITE-ID / YOUR-NETLIFY-SITE-NAME after connecting the repo in Netlify
+     (Site configuration → General → Site details for the ID; badge markdown is under
+     Site configuration → Status badges). See "Deployment (Netlify)" below. -->
+
 A framework-neutral JavaScript monorepo starter with package development, verification, and publishing wired together.
 
 ## Stack and requirements
@@ -202,6 +208,8 @@ The whole demo deploys as one Netlify site, driven by [`netlify.toml`](netlify.t
 3. Deploy. Netlify then rebuilds and deploys on every push to `main`, and creates a **deploy preview for each pull request**.
 
 No secrets or CI changes are required — the build runs on Netlify's infrastructure from the committed `netlify.toml`, so the app-react SSR Function is exercised for real on the first deploy/preview.
+
+Once connected, Netlify posts a **deploy status check** on every commit and PR automatically (no repo config), and the deploy-status **badge** at the top of this README goes live after you replace `YOUR-NETLIFY-SITE-ID` / `YOUR-NETLIFY-SITE-NAME` with the values from the site's settings.
 
 ## Agents
 
