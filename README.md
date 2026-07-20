@@ -185,6 +185,24 @@ The six renderer apps and `renderer-showcase` are private and excluded from Chan
 scripts/check.sh renderer-showcase
 ```
 
+## Deployment (Netlify)
+
+The whole demo deploys as one Netlify site, driven by [`netlify.toml`](netlify.toml):
+
+- `/` — `renderer-showcase` (static)
+- `/apps/<name>/` — each framework app (`preact`, `vue`, `svelte`, `solidjs`, `astro`), static
+- `/apps/react/*` — `app-react` server-rendered by a Netlify Function (Node), with its client bundle served statically from `/apps/react/client/*`
+
+`scripts/build-site.mjs` assembles the combined `dist-site/` publish directory, rebuilding each app with its subpath as the public base.
+
+### Deploy on push (Netlify Git integration)
+
+1. In the Netlify UI: **Add new site → Import an existing project**, authorize GitHub, and pick this repository.
+2. Netlify reads `netlify.toml` automatically — build command `node scripts/build-site.mjs`, publish directory `dist-site`, Node 24. Keep the detected settings.
+3. Deploy. Netlify then rebuilds and deploys on every push to `main`, and creates a **deploy preview for each pull request**.
+
+No secrets or CI changes are required — the build runs on Netlify's infrastructure from the committed `netlify.toml`, so the app-react SSR Function is exercised for real on the first deploy/preview.
+
 ## Agents
 
 Read [AGENTS.md](AGENTS.md) before making changes. It defines the repository's editing invariants and verification matrix.
