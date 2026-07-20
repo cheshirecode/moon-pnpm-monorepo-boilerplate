@@ -39,19 +39,19 @@ async function loadManifest(clientDir: string): Promise<ViteManifest | null> {
   return null;
 }
 
-export function resolveAssets(manifest: ViteManifest | null): ResolvedAssets {
+export function resolveAssets(manifest: ViteManifest | null, assetBase = ''): ResolvedAssets {
   if (!manifest) {
-    return { js: '/client/entry-hydration.js', css: [] };
+    return { js: `${assetBase}/client/entry-hydration.js`, css: [] };
   }
 
   const entry = manifest['src/entry-hydration.tsx'];
   if (!entry) {
-    return { js: '/client/entry-hydration.js', css: [] };
+    return { js: `${assetBase}/client/entry-hydration.js`, css: [] };
   }
 
   return {
-    js: `/client/${entry.file}`,
-    css: (entry.css ?? []).map((c) => `/client/${c}`)
+    js: `${assetBase}/client/${entry.file}`,
+    css: (entry.css ?? []).map((c) => `${assetBase}/client/${c}`)
   };
 }
 
@@ -66,6 +66,10 @@ export interface ServerAppOptions {
   serviceName?: string;
   clientDir?: string;
   devVite?: ViteDevServer;
+  /** Prefix for emitted client asset URLs (e.g. "/apps/react" when hosted under a subpath). */
+  assetBase?: string;
+  /** Pre-resolved client assets, bypassing manifest lookup (used by the Netlify function). */
+  assets?: ResolvedAssets;
 }
 
 export function createServerApp(options: ServerAppOptions): Hono {
@@ -79,11 +83,14 @@ export function createServerApp(options: ServerAppOptions): Hono {
 
   let assetsPromise: Promise<ResolvedAssets> | null = null;
   function getAssets(): Promise<ResolvedAssets> {
+    if (options.assets) {
+      return Promise.resolve(options.assets);
+    }
     if (!assetsPromise) {
       assetsPromise = (options.clientDir
         ? loadManifest(options.clientDir)
         : Promise.resolve(null)
-      ).then(resolveAssets);
+      ).then((manifest) => resolveAssets(manifest, options.assetBase ?? ''));
     }
     return assetsPromise;
   }

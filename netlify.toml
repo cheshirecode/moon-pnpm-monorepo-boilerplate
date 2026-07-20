@@ -1,0 +1,15 @@
+# Netlify hosting for the combined demo site.
+#   /              -> renderer-showcase (static)
+#   /apps/<name>/  -> each framework app (static)
+#   /apps/react/*  -> app-react SSR via the Node function; its client assets
+#                     (/apps/react/client/*) are served statically by the CDN.
+[build]
+  command = "node scripts/build-site.mjs"
+  publish = "dist-site"
+
+[build.environment]
+  NODE_VERSION = "24.11.0"
+  # pnpm is provided via corepack from the root package.json "packageManager" field.
+
+[functions]
+  node_bundler = "esbuild"
