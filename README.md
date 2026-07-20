@@ -211,6 +211,8 @@ No secrets or CI changes are required — the build runs on Netlify's infrastruc
 
 Once connected, Netlify posts a **deploy status check** on every commit and PR automatically (no repo config), and the deploy-status **badge** at the top of this README goes live after you replace `YOUR-NETLIFY-SITE-ID` / `YOUR-NETLIFY-SITE-NAME` with the values from the site's settings.
 
+> **Deploying via CLI in this monorepo:** `netlify deploy` triggers Netlify's monorepo detection and prompts to pick a workspace package, which conflicts with this repo's single root build. Prefer the Git integration above. For a UI-free CI deploy, use GitHub Actions running `netlify deploy --dir dist-site` with `NETLIFY_AUTH_TOKEN` / `NETLIFY_SITE_ID` secrets.
+
 ## Agents
 
 Read [AGENTS.md](AGENTS.md) before making changes. It defines the repository's editing invariants and verification matrix.
