@@ -123,4 +123,6 @@ rush-logs/
 dist-site/
 .netlify/
 # Generated at build time by scripts/build-site.mjs
-netlify/functions/app-react-assets.mjs
+# Generated at build time by scripts/build-site.mjs
+netlify/functions/app-react.mjs
+netlify/functions-src/app-react-assets.mjs
