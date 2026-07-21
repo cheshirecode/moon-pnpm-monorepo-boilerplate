@@ -1,11 +1,7 @@
 # moon-pnpm-monorepo-boilerplate
 
-<!-- Netlify deploy-status badge. Uncomment and replace YOUR-NETLIFY-SITE-ID /
-     YOUR-NETLIFY-SITE-NAME after connecting the repo in Netlify (Site configuration →
-     Status badges). Kept commented so it doesn't render broken before a site exists.
-     See "Deployment (Netlify)" below.
-[![Netlify Status](https://api.netlify.com/api/v1/badges/YOUR-NETLIFY-SITE-ID/deploy-status)](https://app.netlify.com/sites/YOUR-NETLIFY-SITE-NAME/deploys)
--->
+<!-- Badge site id/name are updated by scripts/update-netlify-badge.mjs (see "Deployment"). -->
+[![Netlify Status](https://api.netlify.com/api/v1/badges/1f6fd9c8-f9e6-4ed0-8c1e-de2096c63d45/deploy-status)](https://app.netlify.com/sites/spectacular-profiterole-93cb46/deploys)
 
 A framework-neutral JavaScript monorepo starter with package development, verification, and publishing wired together.
 
@@ -210,7 +206,14 @@ The whole demo deploys as one Netlify site, driven by [`netlify.toml`](netlify.t
 
 No secrets or CI changes are required — the build runs on Netlify's infrastructure from the committed `netlify.toml`, so the app-react SSR Function is exercised for real on the first deploy/preview.
 
-Once connected, Netlify posts a **deploy status check** on every commit and PR automatically (no repo config), and the deploy-status **badge** template at the top of this README goes live once you uncomment it and replace `YOUR-NETLIFY-SITE-ID` / `YOUR-NETLIFY-SITE-NAME` with the values from the site's settings.
+Once connected, Netlify posts a **deploy status check** on every commit and PR automatically (no repo config). The deploy-status **badge** at the top of this README points at the live site; if the site is renamed or re-created, update it programmatically rather than by hand:
+
+```sh
+# from an env / flags
+node scripts/update-netlify-badge.mjs --site-id <uuid> --site-name <name>
+# or, in a linked checkout, it reads .netlify/state.json / NETLIFY_SITE_ID automatically
+node scripts/update-netlify-badge.mjs
+```
 
 > **Deploying via CLI in this monorepo:** `netlify deploy` triggers Netlify's monorepo detection and prompts to pick a workspace package, which conflicts with this repo's single root build. Prefer the Git integration above. For a UI-free CI deploy, use GitHub Actions running `netlify deploy --dir dist-site` with `NETLIFY_AUTH_TOKEN` / `NETLIFY_SITE_ID` secrets.
 
