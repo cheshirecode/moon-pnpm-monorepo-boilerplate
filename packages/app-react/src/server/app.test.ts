@@ -73,7 +73,7 @@ describe('app-react server', () => {
     const html = await res.text();
     expect(html).toContain('<div id="root">');
     expect(html).toContain('<script type="application/json" id="bootstrap">');
-    expect(html).toContain('@moon-pnpm-monorepo-boilerplate/app-react');
+    expect(html).toContain('React renderer');
   });
 
   it('bootstrap data is escaped (no raw </script>)', async () => {
