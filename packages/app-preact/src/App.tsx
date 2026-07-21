@@ -9,14 +9,17 @@ const CompatBadge = memo(() => <span data-testid="compat">preact-compat</span>);
 
 export function App() {
   return (
-    <main>
-      <h1>{contract.title}</h1>
-      <p>{formatRendererDemo(contract)}</p>
-      <p>{contract.url}</p>
-      <CompatBadge />
-      <button type="button" onClick={() => copyToClipboard(contract.slug)}>
-        copy
-      </button>
-    </main>
+    <>
+      <a href="/" className="back-link" style={{ color: 'inherit', textDecoration: 'none', display: 'inline-block', marginBottom: 16, fontSize: 13 }}>← Back to showcase</a>
+      <main>
+        <h1>{contract.title}</h1>
+        <p>{formatRendererDemo(contract)}</p>
+        <p>{contract.url}</p>
+        <CompatBadge />
+        <button type="button" onClick={() => copyToClipboard(contract.slug)}>
+          copy
+        </button>
+      </main>
+    </>
   );
 }

@@ -118,6 +118,7 @@ flowchart TB
   showcase -. embeds .-> svelte
   showcase -. embeds .-> solid
 
+  react --> contract
   react --> clipboard
   react --> hono
   preact --> contract

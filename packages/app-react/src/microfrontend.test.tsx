@@ -11,7 +11,7 @@ describe('app-react microfrontend', () => {
     const unmount = mount(target);
 
     await waitFor(() =>
-      expect(target.textContent).toContain('@moon-pnpm-monorepo-boilerplate/app-react')
+      expect(target.textContent).toContain('React renderer')
     );
 
     unmount();

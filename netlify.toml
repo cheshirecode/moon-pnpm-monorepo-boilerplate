@@ -13,3 +13,11 @@
 
 [functions]
   node_bundler = "esbuild"
+
+# Deploy previews (auto-generated for every PR — including forks when enabled via
+# Site settings > Build & deploy > Deploy contexts > Deploy previews).
+[context.deploy-preview.environment]
+  NODE_VERSION = "24.11.0"
+
+[context.branch-deploy.environment]
+  NODE_VERSION = "24.11.0"

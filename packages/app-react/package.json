@@ -26,6 +26,7 @@
     "lint": "oxlint src --ignore-path ../../.gitignore --quiet"
   },
   "dependencies": {
+    "@cheshirecode/demo-contract": "workspace:^",
     "@cheshirecode/hono-base": "workspace:^",
     "@hono/node-server": "^1.14.0",
     "@emotion/react": "^11.14.0",

@@ -128,7 +128,7 @@ export function createServerApp(options: ServerAppOptions): Hono {
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>app-react</title>
+  <title>React renderer</title>
 ${cssLinks}
 </head>
 <body>

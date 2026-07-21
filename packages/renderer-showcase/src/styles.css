@@ -127,10 +127,29 @@ body {
   text-decoration: none;
   overflow: hidden;
   box-shadow: 0 1px 2px oklch(0.5 0.02 265 / 0.05);
+  animation: card-enter 420ms ease-out both;
   transition:
     transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
     border-color 200ms ease-out;
+}
+
+.card:nth-child(1) { animation-delay: 0ms; }
+.card:nth-child(2) { animation-delay: 60ms; }
+.card:nth-child(3) { animation-delay: 120ms; }
+.card:nth-child(4) { animation-delay: 180ms; }
+.card:nth-child(5) { animation-delay: 240ms; }
+.card:nth-child(6) { animation-delay: 300ms; }
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .card:hover {
@@ -190,11 +209,23 @@ body {
 }
 
 .card__mount {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   pointer-events: none;
   width: 100%;
   padding: 16px;
   font-size: 14px;
   line-height: 1.5;
+}
+
+.card__mount h1,
+.card__mount h2,
+.card__mount h3 {
+  font-size: clamp(15px, 2vw, 20px);
+  font-weight: 600;
+  margin: 0 0 8px;
+  line-height: 1.35;
 }
 
 .card__mount :first-child {
@@ -265,9 +296,84 @@ body {
   transform: translateX(4px);
 }
 
+/* Hide back-to-showcase links inside card previews, since the card itself
+   is already clickable as a stretched link to the standalone app. */
+.card__mount .back-link {
+  display: none;
+}
+
+/* Global back-link styling (applied inside standalone app pages, hidden in
+   card mounts via the rule above). */
+.back-link {
+  color: inherit;
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 16px;
+  font-size: 13px;
+  opacity: 0.65;
+  position: relative;
+  transition: opacity 150ms ease-out;
+}
+.back-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 200ms ease-out;
+}
+.back-link:hover {
+  opacity: 1;
+}
+.back-link:hover::after {
+  transform: scaleX(1);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .card,
   .card__cta::after {
     transition: none;
   }
+  .card {
+    animation: none;
+  }
+}
+
+/* Nav strip */
+.nav-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: clamp(20px, 2vw, 32px);
+}
+
+.nav-strip__link {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  background: var(--chip);
+  border-radius: 999px;
+  text-decoration: none;
+  outline: none;
+  transition:
+    background 200ms ease-out,
+    color 200ms ease-out,
+    outline-color 200ms ease-out;
+}
+
+.nav-strip__link:hover {
+  background: color-mix(in oklch, var(--accent, var(--line)) 18%, var(--surface));
+  color: color-mix(in oklch, var(--accent, var(--ink-soft)) 72%, var(--ink));
+}
+
+.nav-strip__link:focus-visible {
+  outline: 2px solid var(--accent, var(--ink));
+  outline-offset: 2px;
 }

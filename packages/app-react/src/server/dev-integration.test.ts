@@ -59,7 +59,7 @@ describe('app-react dev integration (real startDevServer on port 0)', () => {
     const html = await res.text();
     expect(html).toContain('<div id="root">');
     expect(html).toContain('<script type="application/json" id="bootstrap">');
-    expect(html).toContain('@moon-pnpm-monorepo-boilerplate/app-react');
+    expect(html).toContain('React renderer');
   });
 
   it('GET / returns HTML with Vite client script injected via transformIndexHtml', async () => {

@@ -128,8 +128,8 @@ async function verifyDist(expectedIds) {
   }
 
   const distText = await readAllText(distDir);
-  const expectedSnippets = [
-    'Renderer Showcase',
+const expectedSnippets = [
+    'Framework renderer showcase',
     'React renderer',
     'Preact renderer',
     'Astro is represented as a static tile',

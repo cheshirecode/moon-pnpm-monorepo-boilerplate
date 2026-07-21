@@ -1,9 +1,13 @@
+import { createRendererDemoContract } from '@cheshirecode/demo-contract';
 import ErrorBoundary from '../client/ErrorBoundary';
+
+const contract = createRendererDemoContract('React');
 
 export function AppTree() {
   return (
     <ErrorBoundary>
-      <h1>@moon-pnpm-monorepo-boilerplate/app-react</h1>
+      <a href="/" className="back-link">← Back to showcase</a>
+      <h1>{contract.title}</h1>
     </ErrorBoundary>
   );
 }
