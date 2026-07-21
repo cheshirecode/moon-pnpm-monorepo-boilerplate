@@ -377,3 +377,28 @@ body {
   outline: 2px solid var(--accent, var(--ink));
   outline-offset: 2px;
 }
+
+/* Mount error fallback — shown when a microfrontend fails to render */
+.microfrontend-error {
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--ink-soft);
+  background: color-mix(in oklch, oklch(0.15 0.04 30) 10%, var(--preview));
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.microfrontend-error strong {
+  font-weight: 600;
+  color: inherit;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.microfrontend-error span {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  word-break: break-word;
+  opacity: 0.7;
+}

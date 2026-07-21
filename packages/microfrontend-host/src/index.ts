@@ -97,21 +97,41 @@ export function mountMicrofrontends(
     }
 
     if (entry.kind === 'static') {
-      const rendered = entry.render();
-      mountPoint.replaceChildren(
-        typeof rendered === 'string' ? textFragment(rendered) : rendered
-      );
-      return {
-        id: entry.id,
-        unmount: () => mountPoint.replaceChildren()
-      };
+      return mountStatic(entry, mountPoint);
     }
 
-    return {
-      id: entry.id,
-      unmount: entry.mount(mountPoint)
-    };
+    return mountClient(entry, mountPoint);
   });
+}
+
+function mountStatic(
+  entry: StaticMicrofrontend,
+  mountPoint: Element
+): MountedMicrofrontend {
+  try {
+    const rendered = entry.render();
+    mountPoint.replaceChildren(
+      typeof rendered === 'string' ? textFragment(rendered) : rendered
+    );
+  } catch (error) {
+    mountPoint.replaceChildren(createMountError(entry.id, error));
+    reportError(error);
+  }
+  return { id: entry.id, unmount: () => mountPoint.replaceChildren() };
+}
+
+function mountClient(
+  entry: ClientMicrofrontend,
+  mountPoint: Element
+): MountedMicrofrontend {
+  try {
+    const unmount = entry.mount(mountPoint);
+    return { id: entry.id, unmount };
+  } catch (error) {
+    mountPoint.replaceChildren(createMountError(entry.id, error));
+    reportError(error);
+    return { id: entry.id, unmount: () => mountPoint.replaceChildren() };
+  }
 }
 
 export function microfrontendMountId(id: string): string {
@@ -122,4 +142,28 @@ function textFragment(value: string): DocumentFragment {
   const fragment = document.createDocumentFragment();
   fragment.textContent = value;
   return fragment;
+}
+
+function createMountError(id: string, error: unknown): DocumentFragment {
+  const div = document.createElement('div');
+  div.className = 'microfrontend-error';
+  div.setAttribute('role', 'alert');
+
+  const heading = document.createElement('strong');
+  heading.textContent = 'Mount failed';
+
+  const detail = document.createElement('span');
+  detail.textContent = error instanceof Error ? error.message : String(error);
+
+  div.append(heading, detail);
+
+  const fragment = document.createDocumentFragment();
+  fragment.append(div);
+  return fragment;
+}
+
+function reportError(error: unknown): void {
+  if (typeof console !== 'undefined' && console.error) {
+    console.error('[microfrontend-host] Mount error:', error);
+  }
 }
