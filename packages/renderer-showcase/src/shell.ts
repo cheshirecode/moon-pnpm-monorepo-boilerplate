@@ -119,6 +119,30 @@ export function renderShowcase(
     grid.append(card);
   }
 
-  page.append(masthead, nav, grid);
+page.append(masthead, nav, grid);
+  enableCardKeyboardNav(grid);
   root.append(page);
+}
+
+function enableCardKeyboardNav(grid: HTMLElement): void {
+  const links = Array.from(grid.querySelectorAll<HTMLAnchorElement>('.card__cta'));
+  if (links.length < 2) return;
+
+  grid.addEventListener('keydown', (e) => {
+    if (!e.key.startsWith('Arrow')) return;
+    if (!links.some((link) => link.contains(e.target as Node))) return;
+
+    const current = document.activeElement as HTMLElement | null;
+    const index = current ? links.indexOf(current as HTMLAnchorElement) : -1;
+
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      const next = index < links.length - 1 ? links[index + 1] : links[0];
+      next.focus();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prev = index > 0 ? links[index - 1] : links[links.length - 1];
+      prev.focus();
+    }
+  });
 }

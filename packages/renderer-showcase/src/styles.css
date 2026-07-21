@@ -161,6 +161,7 @@ body {
 .card:focus-within {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
+  transition: outline-offset 150ms ease-out;
 }
 
 .card__head {
@@ -229,6 +230,26 @@ body {
 
 .card__mount :first-child {
   margin-top: 0;
+}
+
+/* Placeholder spinner for empty mount points — auto-hides when the
+   microfrontend fills the container (CSS :empty check). */
+.card__mount:empty::after {
+  content: "";
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin: 16px auto;
+  border: 2px solid var(--line);
+  border-top-color: var(--ink-soft);
+  border-radius: 50%;
+  animation: mount-placeholder-spin 500ms linear infinite;
+}
+
+@keyframes mount-placeholder-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .card__foot {
