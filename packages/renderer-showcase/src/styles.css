@@ -142,6 +142,7 @@ body {
 .card:focus-within {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
+  transition: outline-offset 150ms ease-out;
 }
 
 .card__head {
