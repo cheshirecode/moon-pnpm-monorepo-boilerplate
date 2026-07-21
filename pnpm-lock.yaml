@@ -110,6 +110,9 @@ importers:
       '@cheshirecode/browser-clipboard':
         specifier: workspace:^
         version: link:../browser-clipboard
+      '@cheshirecode/demo-contract':
+        specifier: workspace:^
+        version: link:../demo-contract
       '@cheshirecode/hono-base':
         specifier: workspace:^
         version: link:../hono-base

@@ -74,6 +74,18 @@ export function renderShowcase(
   const grid = el('section', 'cards');
   grid.setAttribute('aria-label', 'Framework renderers');
 
+  const nav = el('nav', 'nav-strip');
+  nav.setAttribute('aria-label', 'Framework apps');
+  for (const entry of entries) {
+    const meta = appCardMeta[entry.id];
+    const link = document.createElement('a');
+    link.className = 'nav-strip__link';
+    link.href = meta?.href ?? '#';
+    link.textContent = meta?.framework ?? entry.title;
+    if (meta?.accent) link.style.setProperty('--accent', meta.accent);
+    nav.append(link);
+  }
+
   for (const entry of entries) {
     const meta = appCardMeta[entry.id];
     const card = el('article', 'card');
@@ -107,6 +119,6 @@ export function renderShowcase(
     grid.append(card);
   }
 
-  page.append(masthead, grid);
+  page.append(masthead, nav, grid);
   root.append(page);
 }
