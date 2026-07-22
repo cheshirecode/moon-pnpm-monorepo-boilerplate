@@ -1,6 +1,6 @@
 {
   "name": "@cheshirecode/eslint-config-react",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "common eslint + prettier config for React with workaround for its own dependencies",
   "keywords": [
     "eslint",
@@ -47,7 +47,6 @@
     "url": "https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate/issues"
   },
   "homepage": "https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate/tree/main/packages/eslint-config-react#readme",
-  "description": "common eslint + prettier config for React with workaround for its own dependencies",
   "engines": {
     "node": ">=24.11.0"
   }

@@ -1,6 +1,6 @@
 {
   "name": "@cheshirecode/browser-clipboard",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Browser clipboard helpers with textarea fallback",
   "type": "module",
   "keywords": [

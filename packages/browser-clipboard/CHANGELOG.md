@@ -1,4 +1,4 @@
-# Change Log - @cheshirecode/measure-hook
+# @cheshirecode/browser-clipboard
 
 ## 1.0.0
 
@@ -14,17 +14,4 @@
 ### Patch Changes
 
 - 87de3a1: Remove dead pnpm overrides (eslint-plugin-unused-imports, @typescript-eslint/* — eliminates duplicate 8.61.1/8.62.1 copies), remove unused devDependencies (eslint + eslint-config-react from browser-clipboard, vite from measure-hook), and fix eslint-config-react repository/homepage metadata.
-- 8ec3d01: Remove phantom `bin` field. `index.js` is a pure CJS function export (`module.exports = (timeout, cb) => {...}`) with no shebang, argv parsing, or CLI logic, so the advertised `measure-hook` binary crashed or no-op'd when invoked. Consumers should `require('@cheshirecode/measure-hook')` as a function instead.
 - eddd042: Add missing npm metadata (description, keywords, author, repository, bugs) to pkce, browser-clipboard, and eslint-config-react. Add `sideEffects: false` to 11 publishable packages that were missing it, enabling bundler tree-shaking. Fix pkce README usage example to match the actual `PKCEWrapper` constructor signature.
-- 8f577e9: Set `sideEffects: true` for CJS packages (measure-hook, eslint-config-react). Bundlers cannot reliably tree-shake CommonJS modules, so `false` was semantically incorrect — it gave bundlers a license they can't safely exercise on `module.exports`.
-- 0775597: Include the internal `getTsNow.js` helper in the published package so external consumers can require `@cheshirecode/measure-hook`.
-
-This log was last generated on Mon, 05 Dec 2022 21:13:32 GMT and should not be manually modified.
-
-## 1.0.3
-
-Mon, 05 Dec 2022 21:13:32 GMT
-
-### Patches
-
-- 1.0.2 with vitest
