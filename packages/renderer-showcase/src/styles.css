@@ -412,3 +412,16 @@ body {
   word-break: break-word;
   opacity: 0.7;
 }
+
+/* Loading indicator shown while a lazy framework chunk downloads */
+.mount-loading {
+  font-size: 12px;
+  color: var(--ink-soft);
+  text-align: center;
+  padding: 16px;
+  animation: mount-loading-fade 300ms ease-out both;
+}
+@keyframes mount-loading-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
