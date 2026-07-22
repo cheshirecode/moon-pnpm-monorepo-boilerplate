@@ -1,0 +1,1 @@
+{"content": "let unmount: (() => void) | null = null;\n      frameworkMounts['app-react']()\n        .then(mountFn => { unmount = mountFn(container); })\n        .catch(err => {\n          const msg = err instanceof Error ? err.message : String(err);\n          container.replaceChildren(createErrorFragment('Mount failed: ' + msg));\n        });\n      return () => unmount?.();"}
