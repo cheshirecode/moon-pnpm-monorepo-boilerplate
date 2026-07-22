@@ -1,8 +1,4 @@
-import {
-  microfrontendMountId,
-  type MicrofrontendDescriptor
-} from '@cheshirecode/microfrontend-host';
-
+import { microfrontendMountId, type MicrofrontendDescriptor } from '@cheshirecode/microfrontend-host';
 import { appCardMeta } from './registry';
 
 export type FrameworkVersions = Record<string, string | undefined>;
@@ -35,7 +31,6 @@ function buildBand(build: BuildInfo): HTMLElement | null {
     rows.push(['built', Number.isNaN(when.getTime()) ? build.builtAt : when.toISOString().replace('T', ' ').slice(0, 16) + ' UTC']);
   }
   if (rows.length === 0) return null;
-
   const dl = el('dl', 'masthead__build');
   for (const [term, value] of rows) {
     const wrap = el('div', 'masthead__build-item');
@@ -45,11 +40,6 @@ function buildBand(build: BuildInfo): HTMLElement | null {
   return dl;
 }
 
-/**
- * Renders the showcase shell: a masthead plus one clickable card per entry. Each
- * card carries a mount point (id from `microfrontendMountId`) so the existing
- * `mountMicrofrontends` still hydrates the live preview inside the card.
- */
 export function renderShowcase(
   root: Element,
   entries: readonly MicrofrontendDescriptor[],
@@ -57,17 +47,23 @@ export function renderShowcase(
 ): void {
   root.replaceChildren();
   const page = el('div', 'showcase');
+  applySavedTheme();
 
   const masthead = el('header', 'masthead');
-  masthead.append(
-    el('p', 'masthead__eyebrow', 'moon · pnpm · monorepo boilerplate'),
-    el('h1', 'masthead__title', 'Six renderers, one host'),
-    el(
-      'p',
-      'masthead__lede',
-      'Every card is a live microfrontend mounted into this page. Open any one to view it as a standalone app.'
-    )
-  );
+  const eyebrowRow = el('div', 'masthead__eyebrow-row');
+  const eyebrow = el('span', 'masthead__eyebrow', 'moon · pnpm · monorepo boilerplate');
+
+  const toggle = document.createElement('button');
+  toggle.className = 'theme-toggle';
+  toggle.setAttribute('aria-label', 'Toggle dark mode');
+  const toggleIcon = document.createElement('span');
+  toggleIcon.setAttribute('aria-hidden', 'true');
+  toggleIcon.textContent = getThemeIcon();
+  toggle.append(toggleIcon);
+  toggle.addEventListener('click', toggleTheme);
+  eyebrowRow.append(eyebrow, toggle);
+
+  masthead.append(eyebrowRow, el('h1', 'masthead__title', 'Six renderers, one host'), el('p', 'masthead__lede', 'Every card is a live microfrontend mounted into this page. Open any one to view it as a standalone app.'));
   const band = options.build ? buildBand(options.build) : null;
   if (band) masthead.append(band);
 
@@ -90,36 +86,28 @@ export function renderShowcase(
     const meta = appCardMeta[entry.id];
     const card = el('article', 'card');
     card.style.setProperty('--accent', meta?.accent ?? 'oklch(0.6 0.02 260)');
-
     const head = el('div', 'card__head');
     head.append(el('span', 'card__framework', meta?.framework ?? entry.title));
     const version = meta?.versionKey ? options.versions?.[meta.versionKey] : undefined;
     if (version) head.append(el('span', 'card__version', `v${version}`));
     head.append(el('span', 'card__mode', meta?.renderMode ?? entry.kind));
-
     const preview = el('div', 'card__preview');
     const mount = el('div', 'card__mount');
     mount.id = microfrontendMountId(entry.id);
-    // The mount is a non-interactive preview; clicks fall through to the card link.
     mount.setAttribute('aria-hidden', 'true');
     preview.append(mount);
-
-    // Stretched link: only the CTA is an anchor; its ::after overlay makes the whole
-    // card clickable without wrapping the (interactive) live demo in an <a>.
     const cta = document.createElement('a');
     cta.className = 'card__cta';
     cta.href = meta?.href ?? '#';
     cta.textContent = 'Open standalone';
     cta.setAttribute('aria-label', `Open the ${meta?.framework ?? entry.title} demo as a standalone page`);
-
     const foot = el('div', 'card__foot');
     foot.append(el('p', 'card__tagline', meta?.tagline ?? entry.description ?? ''), cta);
-
     card.append(head, preview, foot);
     grid.append(card);
   }
 
-page.append(masthead, nav, grid);
+  page.append(masthead, nav, grid);
   enableCardKeyboardNav(grid);
   root.append(page);
 }
@@ -127,14 +115,11 @@ page.append(masthead, nav, grid);
 function enableCardKeyboardNav(grid: HTMLElement): void {
   const links = Array.from(grid.querySelectorAll<HTMLAnchorElement>('.card__cta'));
   if (links.length < 2) return;
-
   grid.addEventListener('keydown', (e) => {
     if (!e.key.startsWith('Arrow')) return;
     if (!links.some((link) => link.contains(e.target as Node))) return;
-
     const current = document.activeElement as HTMLElement | null;
     const index = current ? links.indexOf(current as HTMLAnchorElement) : -1;
-
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
       e.preventDefault();
       const next = index < links.length - 1 ? links[index + 1] : links[0];
@@ -145,4 +130,28 @@ function enableCardKeyboardNav(grid: HTMLElement): void {
       prev.focus();
     }
   });
+}
+
+function toggleTheme(): void {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  const btn = document.querySelector('.theme-toggle');
+  if (btn) btn.setAttribute('aria-label', next === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  try { localStorage.setItem('showcase-theme', next); } catch {}
+}
+
+function applySavedTheme(): void {
+  try {
+    const saved = localStorage.getItem('showcase-theme');
+    if (saved === 'dark' || saved === 'light') {
+      document.documentElement.setAttribute('data-theme', saved);
+    }
+  } catch {}
+}
+
+function getThemeIcon(): string {
+  const saved = (() => { try { return localStorage.getItem('showcase-theme'); } catch { return null; } })();
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  return (saved ?? (prefersDark ? 'dark' : 'light')) === 'dark' ? '\u{1F319}' : '\u{2600}\u{FE0F}';
 }
