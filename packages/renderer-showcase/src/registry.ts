@@ -3,11 +3,14 @@ import {
   type MicrofrontendEntry
 } from '@cheshirecode/microfrontend-host';
 import { astroDemoContract, astroDemoText } from 'app-astro/demo';
-import { mount as mountPreact } from 'app-preact/microfrontend';
-import { mount as mountReact } from 'app-react/microfrontend';
-import { mount as mountSolidJS } from 'app-solidjs/microfrontend';
-import { mount as mountSvelte } from 'app-svelte/microfrontend';
-import { mount as mountVue } from 'app-vue/microfrontend';
+
+const frameworkMounts: Record<string, () => Promise<(container: Element) => () => void>> = {
+  'app-react': () => import('app-react/microfrontend').then(m => m.mount),
+  'app-preact': () => import('app-preact/microfrontend').then(m => m.mount),
+  'app-vue': () => import('app-vue/microfrontend').then(m => m.mount),
+  'app-svelte': () => import('app-svelte/microfrontend').then(m => m.mount),
+  'app-solidjs': () => import('app-solidjs/microfrontend').then(m => m.mount)
+};
 
 export const rendererShowcasePackageIds = [
   'app-react',
@@ -24,14 +27,32 @@ export const rendererShowcaseEntries = createMicrofrontendRegistry([
     title: 'React renderer',
     description: 'React package embedded through its package-local mount adapter.',
     kind: 'client',
-    mount: mountReact
+    mount: (container) => {
+      let unmount: (() => void) | null = null;
+      frameworkMounts['app-react']()
+        .then(mountFn => { unmount = mountFn(container); })
+        .catch(err => {
+          const msg = err instanceof Error ? err.message : String(err);
+          container.replaceChildren(createErrorFragment('Mount failed: ' + msg));
+        });
+      return () => unmount?.();
+    }
   },
   {
     id: 'app-preact',
     title: 'Preact renderer',
     description: 'Preact package embedded through its package-local mount adapter.',
     kind: 'client',
-    mount: mountPreact
+    mount: (container) => {
+      let unmount: (() => void) | null = null;
+      frameworkMounts['app-preact']()
+        .then(mountFn => { unmount = mountFn(container); })
+        .catch(err => {
+          const msg = err instanceof Error ? err.message : String(err);
+          container.replaceChildren(createErrorFragment('Mount failed: ' + msg));
+        });
+      return () => unmount?.();
+    }
   },
   {
     id: 'app-astro',
@@ -55,21 +76,48 @@ export const rendererShowcaseEntries = createMicrofrontendRegistry([
     title: 'Vue renderer',
     description: 'Vue package embedded through its package-local mount adapter.',
     kind: 'client',
-    mount: mountVue
+    mount: (container) => {
+      let unmount: (() => void) | null = null;
+      frameworkMounts['app-vue']()
+        .then(mountFn => { unmount = mountFn(container); })
+        .catch(err => {
+          const msg = err instanceof Error ? err.message : String(err);
+          container.replaceChildren(createErrorFragment('Mount failed: ' + msg));
+        });
+      return () => unmount?.();
+    }
   },
   {
     id: 'app-svelte',
     title: 'Svelte renderer',
     description: 'Svelte package embedded through its package-local mount adapter.',
     kind: 'client',
-    mount: mountSvelte
+    mount: (container) => {
+      let unmount: (() => void) | null = null;
+      frameworkMounts['app-svelte']()
+        .then(mountFn => { unmount = mountFn(container); })
+        .catch(err => {
+          const msg = err instanceof Error ? err.message : String(err);
+          container.replaceChildren(createErrorFragment('Mount failed: ' + msg));
+        });
+      return () => unmount?.();
+    }
   },
   {
     id: 'app-solidjs',
     title: 'SolidJS renderer',
     description: 'SolidJS package embedded through its package-local mount adapter.',
     kind: 'client',
-    mount: mountSolidJS
+    mount: (container) => {
+      let unmount: (() => void) | null = null;
+      frameworkMounts['app-solidjs']()
+        .then(mountFn => { unmount = mountFn(container); })
+        .catch(err => {
+          const msg = err instanceof Error ? err.message : String(err);
+          container.replaceChildren(createErrorFragment('Mount failed: ' + msg));
+        });
+      return () => unmount?.();
+    }
   }
 ] satisfies readonly MicrofrontendEntry[]);
 
@@ -87,6 +135,15 @@ export interface AppCardMeta {
   accent: string;
   /** One-line description shown under the live preview. */
   tagline: string;
+}
+
+function createErrorFragment(message: string): DocumentFragment {
+  const div = document.createElement('div');
+  div.className = 'mount-error';
+  div.textContent = message;
+  const fragment = document.createDocumentFragment();
+  fragment.append(div);
+  return fragment;
 }
 
 export const appCardMeta: Record<string, AppCardMeta> = {
