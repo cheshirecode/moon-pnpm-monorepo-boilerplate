@@ -23,6 +23,10 @@ const observer = new IntersectionObserver((changes) => {
     if (!id) continue;
     const entry = rendererShowcaseEntries.find(e => e.id === id);
     if (!entry || entry.kind === 'static') continue;
+    const loading = document.createElement('div');
+    loading.className = 'mount-loading';
+    loading.textContent = 'Loading framework\u2026';
+    change.target.append(loading);
     entry.mount(change.target);
     observer.unobserve(change.target);
   }
