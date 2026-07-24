@@ -22,7 +22,6 @@ tasks:
     command: "pnpm run --if-present lint"
     inputs:
       - "@group(sources)"
-      - "@group(tests)"
       - "@group(configs)"
     options:
       cache: true
@@ -68,8 +67,8 @@ tasks:
     outputs:
       - "coverage/**/*"
     options:
-      cache: false
-      runInCI: true
+      cache: true
+      runInCI: "affected"
 
   typecheck:
     command: "pnpm run --if-present typecheck"
