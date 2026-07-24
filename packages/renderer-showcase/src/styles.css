@@ -170,7 +170,7 @@ body {
   border-color: color-mix(in oklch, var(--accent) 45%, var(--line));
 }
 
-.card:focus-within {
+.card:has(:focus-visible) {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
   transition: outline-offset 150ms ease-out;
