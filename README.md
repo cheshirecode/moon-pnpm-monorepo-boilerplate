@@ -183,7 +183,22 @@ The six renderer apps and `renderer-showcase` are private and excluded from Chan
 
 ## Renderer showcase
 
-`packages/renderer-showcase` is a plain HTML/Vite host for all six renderer demos. Client-rendered apps expose package-local `mount(container): () => void` adapters; Astro provides a static tile through the shared demo contract. Reusable host logic stays in `@cheshirecode/microfrontend-host`.
+`packages/renderer-showcase` is the host shell for all six framework renderer demos. Visit the live site at [spectacular-profiterole-93cb46.netlify.app](https://spectacular-profiterole-93cb46.netlify.app).
+
+### Interactive features
+
+- **Live previews** — each card runs the corresponding framework in a microfrontend mount. Lazy-loaded: cards within viewport load automatically; scroll to trigger the rest.
+- **Nav strip** — pill links at the top jump directly to each standalone app. Hover reveals the framework accent color.
+- **Keyboard navigation** — Tab through cards, then use Arrow keys (→/↓ next, ←/↑ prev) for faster navigation.
+- **Theme toggle** — the 🌙/☀️ button in the masthead switches between light and dark mode. Choice persists in localStorage. First visit respects system `prefers-color-scheme`.
+- **Card animations** — cards fade and slide up on page load with staggered 60ms offsets. Respects `prefers-reduced-motion`.
+- **Mount placeholders** — empty mount points show a subtle spinning ring; lazy chunks show "Loading framework…" text while downloading. Failed mounts render a styled error fallback.
+
+### Technical architecture
+
+Each renderer app exports a `mount(container): () => void` adapter (or a `render()` for Astro's static tile). The showcase imports these lazily via dynamic `import()` — Vite code-splits each framework into its own chunk (10–190 kB), loaded on demand when its card enters the viewport via IntersectionObserver (100px rootMargin).
+
+The shared host logic lives in `@cheshirecode/microfrontend-host` and is published independently.
 
 ```sh
 scripts/check.sh renderer-showcase
