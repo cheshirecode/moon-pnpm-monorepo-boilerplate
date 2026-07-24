@@ -6,6 +6,11 @@
   ],
   "version": "0.0.0",
   "description": "Measure how long an op takes, then do a callback to post results, do something else etc",
+  "exports": {
+    ".": {
+      "import": "./index.js"
+    }
+  },
   "main": "index.js",
   "repository": {
     "type": "git",
