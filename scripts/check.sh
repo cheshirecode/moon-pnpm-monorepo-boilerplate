@@ -36,6 +36,7 @@ Commands:
                         Pack and validate publishable tarballs (README, LICENSE, exports).
   changeset-check       Verify changeset presence when publishable packages change.
   workflow-lint         Lint GitHub Actions workflows with actionlint in Docker.
+  lint-audit            Run pnpm audit for known vulnerabilities (high severity and above).
   docker                Build the repo verification Docker image.
   sandbox               Run the optional sandbox/Docker verification wrapper.
 
@@ -245,6 +246,9 @@ case "$command" in
     ;;
   workflow-lint)
     run docker run --rm -v "$repo_root:/repo" -w /repo rhysd/actionlint:1.7.7
+    ;;
+  lint-audit)
+    run pnpm audit --audit-level=high
     ;;
   docker)
     image_tag="${SANDBOX_VERIFY_IMAGE:-moon-pnpm-monorepo-boilerplate:verify}"
