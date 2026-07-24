@@ -1,0 +1,7 @@
+language: "typescript"
+layer: "library"
+stack: "frontend"
+
+tasks:
+  lint:
+    command: "oxlint . --ignore-path ../../.gitignore --quiet"
