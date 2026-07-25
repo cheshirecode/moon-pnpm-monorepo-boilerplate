@@ -345,7 +345,44 @@ body {
   transform: scaleX(1);
 }
 
-/* Theme toggle */\n.masthead__eyebrow-row {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-bottom: 14px;\n}\n\n.theme-toggle {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 28px;\n  height: 28px;\n  padding: 0;\n  border: 1px solid var(--line-soft);\n  border-radius: 999px;\n  background: var(--chip);\n  color: var(--ink-soft);\n  font-size: 14px;\n  line-height: 1;\n  cursor: pointer;\n  transition:\n    background 200ms ease-out,\n    border-color 200ms ease-out;\n}\n.theme-toggle:hover {\n  background: var(--line);\n  border-color: var(--line);\n}\n.theme-toggle:focus-visible {\n  outline: 2px solid var(--ink);\n  outline-offset: 2px;\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .card,\n  .card__cta::after {
+/* Theme toggle */
+.masthead__eyebrow-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+  background: var(--chip);
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 200ms ease-out,
+    border-color 200ms ease-out;
+}
+.theme-toggle:hover {
+  background: var(--line);
+  border-color: var(--line);
+}
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card__cta::after {
     transition: none;
   }
   .card {
