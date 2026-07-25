@@ -2,13 +2,30 @@
 // Smoke-tests a deployed combined site (Netlify deploy preview or production URL).
 // Usage: node scripts/smoke-site.mjs <base-url>
 //   e.g. node scripts/smoke-site.mjs https://deploy-preview-42--my-site.netlify.app
-const base = (process.argv[2] || '').replace(/\/$/, '');
-if (!base) {
+//
+// With --local, serves the local dist-site/ directory and tests against it.
+//   e.g. node scripts/smoke-site.mjs --local
+
+import { createServer } from 'node:http';
+import { readFile } from 'node:fs/promises';
+import { join, extname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = join(fileURLToPath(new URL('.', import.meta.url)), '..');
+const local = process.argv.includes('--local');
+let base = process.argv.find((a) => a.startsWith('http'));
+
+let server;
+if (local) {
+  base = await serveLocal();
+} else if (!base) {
   console.error('Usage: node scripts/smoke-site.mjs <base-url>');
+  console.error('       node scripts/smoke-site.mjs --local');
   process.exit(2);
 }
 
-// path -> expected content-type prefix
+base = base.replace(/\/$/, '');
+
 const routes = [
   ['/', 'text/html'],
   ['/favicon.ico', 'image/'],
@@ -35,7 +52,6 @@ for (const [path, ctPrefix] of routes) {
   }
 }
 
-// app-react must be genuinely server-rendered with subpath-prefixed assets.
 try {
   const html = await (await fetch(base + '/apps/react')).text();
   const ssrOk = /<div id="root">\s*<\S/.test(html) && html.includes('/apps/react/client/entry-hydration.js');
@@ -45,8 +61,34 @@ try {
   failures.push(`app-react SSR fetch: ${err.message}`);
 }
 
+if (server) server.close();
 if (failures.length) {
   console.error(`\n${failures.length} smoke check(s) failed.`);
   process.exit(1);
 }
 console.log('\nAll smoke checks passed.');
+
+async function serveLocal() {
+  const distDir = join(root, 'dist-site');
+  server = createServer(async (req, res) => {
+    const filePath = join(distDir, req.url === '/' ? 'index.html' : req.url);
+    try {
+      const content = await readFile(filePath);
+      const ext = extname(filePath);
+      const types = { '.html': 'text/html', '.js': 'application/javascript', '.css': 'text/css', '.ico': 'image/x-icon', '.svg': 'image/svg+xml' };
+      res.writeHead(200, { 'Content-Type': types[ext] || 'application/octet-stream' });
+      res.end(content);
+    } catch {
+      res.writeHead(404);
+      res.end('Not found');
+    }
+  });
+
+  return new Promise((resolve) => {
+    server.listen(0, () => {
+      const port = server.address().port;
+      console.log(`Local server at http://localhost:${port}`);
+      resolve(`http://localhost:${port}`);
+    });
+  });
+}

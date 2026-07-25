@@ -10,7 +10,6 @@
     "linting"
   ],
   "sideEffects": true,
-  "type": "module",
   "exports": {
     ".": {
       "import": "./index.js"
