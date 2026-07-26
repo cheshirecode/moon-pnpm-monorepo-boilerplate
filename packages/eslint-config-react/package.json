@@ -13,7 +13,8 @@
   "exports": {
     ".": {
       "require": "./index.js"
-    }
+    },
+    "./.prettierrc.js": "./.prettierrc.js"
   },
   "private": false,
   "main": "index.js",
