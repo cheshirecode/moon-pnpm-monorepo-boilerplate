@@ -13,6 +13,7 @@
 
 [functions]
   node_bundler = "esbuild"
+  directory = "netlify/functions"
 
 # Deploy previews (auto-generated for every PR — including forks when enabled via
 # Site settings > Build & deploy > Deploy contexts > Deploy previews).

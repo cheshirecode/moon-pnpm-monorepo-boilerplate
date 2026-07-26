@@ -8,7 +8,7 @@
   "description": "Measure how long an op takes, then do a callback to post results, do something else etc",
   "exports": {
     ".": {
-      "import": "./index.js"
+      "require": "./index.js"
     }
   },
   "main": "index.js",

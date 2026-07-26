@@ -118,6 +118,7 @@ docs/design
 temp
 storybook-static
 rush-logs/
+.rush/
 
 # Netlify combined-site build output
 dist-site/
