@@ -7,6 +7,7 @@
   --line: oklch(0.9 0.008 265);
   --line-soft: oklch(0.94 0.006 265);
   --chip: oklch(0.955 0.006 265);
+  --accent: oklch(0.6 0.02 260);
   --shadow: oklch(0.4 0.04 265 / 0.28);
 
   color: var(--ink);
