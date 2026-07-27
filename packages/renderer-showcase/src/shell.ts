@@ -26,6 +26,7 @@ function buildBand(build: BuildInfo): HTMLElement | null {
   const rows: Array<[string, string]> = [];
   if (build.commit) rows.push(['commit', build.commit.slice(0, 7)]);
   if (build.context) rows.push(['context', build.context]);
+  if (build.branch) rows.push(['branch', build.branch]);
   if (build.builtAt) {
     const when = new Date(build.builtAt);
     rows.push(['built', Number.isNaN(when.getTime()) ? build.builtAt : when.toISOString().replace('T', ' ').slice(0, 16) + ' UTC']);

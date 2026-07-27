@@ -87,7 +87,11 @@ if (existsSync(manifestPath)) {
       js: `/apps/react/client/${entry.file}`,
       css: (entry.css ?? []).map((c) => `/apps/react/client/${c}`)
     };
+  } else {
+    console.warn('[build-site] manifest entry "src/entry-hydration.tsx" not found, using fallback');
   }
+} else {
+  console.warn('[build-site] manifest.json not found at', manifestPath, 'using fallback');
 }
 await writeFile(
   join(root, 'netlify/functions-src/app-react-assets.mjs'),
