@@ -8,6 +8,8 @@ import {
 
 import { rendererShowcaseEntries } from './registry';
 
+const FRAMEWORK_SLUGS = ['preact-renderer', 'astro-renderer', 'vue-renderer', 'solid-js-renderer'];
+
 describe('renderer showcase host', () => {
   it('renders and mounts every renderer entry in a single document', async () => {
     const root = document.createElement('main');
@@ -21,20 +23,10 @@ describe('renderer showcase host', () => {
       });
     }
 
-    await waitFor(() => {
-      expect(root.textContent).toContain('preact-renderer');
-    });
-    await waitFor(() => {
-      expect(root.textContent).toContain('astro-renderer');
-    });
-    await waitFor(() => {
-      expect(root.textContent).toContain('vue-renderer');
-    });
-    await waitFor(() => {
-      expect(root.textContent).toContain('svelte-renderer');
-    });
-    await waitFor(() => {
-      expect(root.textContent).toContain('solid-js-renderer');
-    });
+    for (const slug of FRAMEWORK_SLUGS) {
+      await waitFor(() => {
+        expect(root.textContent).toContain(slug);
+      });
+    }
   });
 });
