@@ -5,6 +5,7 @@ import vue from '@vitejs/plugin-vue';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import solid from 'vite-plugin-solid';
 import { createRequire } from 'node:module';
+import { execSync } from 'node:child_process';
 import { defineConfig } from 'vitest/config';
 
 import { viteAppTestConfig } from '../../vitest.shared.mjs';
@@ -27,11 +28,11 @@ const frameworkVersions = {
   'solid-js': packageVersion('solid-js')
 };
 
-// Netlify exposes these during the build; absent locally.
+// Netlify exposes these during the build; absent locally — fall back to git for a richer local dev experience.
 const buildInfo = {
-  commit: process.env.COMMIT_REF,
-  context: process.env.CONTEXT,
-  branch: process.env.BRANCH,
+  commit: process.env.COMMIT_REF || (() => { try { return execSync('git rev-parse HEAD', { encoding: 'utf-8' }).trim(); } catch { return undefined; } })(),
+  context: process.env.CONTEXT || 'local',
+  branch: process.env.BRANCH || (() => { try { return execSync('git branch --show-current', { encoding: 'utf-8' }).trim(); } catch { return undefined; } })(),
   builtAt: new Date().toISOString()
 };
 

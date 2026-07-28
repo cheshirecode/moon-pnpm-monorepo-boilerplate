@@ -36,6 +36,7 @@ async function loadManifest(clientDir: string): Promise<ViteManifest | null> {
     } catch {
     }
   }
+  console.warn('[app-react] loadManifest: no manifest found in', clientDir, 'using fallback');
   return null;
 }
 
