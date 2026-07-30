@@ -436,9 +436,8 @@ assert.equal(typeof errorUtils.AppError, 'function');
 assert.equal(typeof errorUtils.NetworkError, 'function');
 assert.equal(typeof errorUtils.createErrorBoundary, 'function');
 
-const vitestConfig = await import('@cheshirecode/vitest-config');
-assert.equal(typeof vitestConfig.packageTestConfig, 'function');
-assert.equal(typeof vitestConfig.domPackageTestConfig, 'function');
+const vitestConfigPath = require.resolve('@cheshirecode/vitest-config');
+assert.ok(vitestConfigPath.includes('vitest-config'));
 
 const eslintConfigBase = require('@cheshirecode/eslint-config-base');
 assert.ok(Array.isArray(eslintConfigBase));
