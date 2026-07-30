@@ -21,7 +21,9 @@ const removedUtilityRefs = [
 const moonAllowlist = new Set(['tsconfig']);
 const coverageScriptAllowlist = new Set(['tsconfig']);
 const testAllowlist = new Set(['tsconfig']);
-const dogfoodAllowlist = new Set([]);
+const dogfoodAllowlist = new Set([
+  'vitest-config'
+]);
 const expectedVersions = new Map([
   ['@types/node', '^24.10.2'],
   ['@hono/node-server', '^1.14.0'],
