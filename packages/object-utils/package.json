@@ -1,0 +1,38 @@
+{
+  "name": "@cheshirecode/object-utils",
+  "version": "0.0.0",
+  "description": "Object manipulation utilities: deepMerge, deepClone, deepEqual, pick, omit.",
+  "type": "module",
+  "private": false,
+  "keywords": ["object", "deepMerge", "deepClone", "deepEqual", "pick", "omit", "utilities"],
+  "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
+  "license": "MIT",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate.git",
+    "directory": "packages/object-utils"
+  },
+  "bugs": {
+    "url": "https://github.com/cheshirecode/moon-pnpm-monorepo-boilerplate/issues"
+  },
+  "engines": {
+    "node": ">=24.11.0"
+  },
+  "files": ["index.js"],
+  "main": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js"
+    }
+  },
+  "scripts": {
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "lint": "oxlint . --ignore-path ../../.gitignore --quiet"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.9",
+    "vitest": "^4.1.9"
+  }
+}

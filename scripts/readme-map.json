@@ -4,7 +4,10 @@
     "demo-contract",
     "browser-clipboard",
     "browser-utils",
-    "pkce"
+    "pkce",
+    "async-utils",
+    "object-utils",
+    "error-utils"
   ],
   "tooling": [
     "create-moon-pnpm-monorepo",
@@ -13,6 +16,8 @@
     "hono-base",
     "measure-hook",
     "eslint-config-react",
+    "eslint-config-base",
+    "vitest-config",
     "tsconfig"
   ],
   "packages": {
@@ -110,6 +115,21 @@
     "tsconfig": {
       "subtag": "JSON config",
       "role": "Shared TypeScript compiler configurations."
+    },
+    "async-utils": {
+      "role": "Async utility helpers: timeout, retry, debounce, throttle, delay."
+    },
+    "object-utils": {
+      "role": "Object manipulation utilities: deepMerge, deepClone, deepEqual, pick, omit."
+    },
+    "error-utils": {
+      "role": "Framework-agnostic error types, boundaries, and error handling."
+    },
+    "vitest-config": {
+      "role": "Shared vitest configuration factory functions."
+    },
+    "eslint-config-base": {
+      "role": "Base (non-React) ESLint shareable config."
     }
   }
 }

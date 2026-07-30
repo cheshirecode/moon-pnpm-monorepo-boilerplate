@@ -21,7 +21,9 @@ const removedUtilityRefs = [
 const moonAllowlist = new Set(['tsconfig']);
 const coverageScriptAllowlist = new Set(['tsconfig']);
 const testAllowlist = new Set(['tsconfig']);
-const dogfoodAllowlist = new Set([]);
+const dogfoodAllowlist = new Set([
+  '@cheshirecode/vitest-config'
+]);
 const expectedVersions = new Map([
   ['@types/node', '^24.10.2'],
   ['@hono/node-server', '^1.14.0'],
@@ -38,7 +40,8 @@ const typescriptVersionExceptions = new Map([
   ['app-astro', '^6.0.3'],
   ['app-svelte', '^6.0.3'],
   ['app-vue', '^6.0.3'],
-  ['eslint-config-react', '^6.0.3']
+  ['eslint-config-react', '^6.0.3'],
+  ['eslint-config-base', '^6.0.3']
 ]);
 
 const dogfoodScript = await readFile(join(root, 'scripts', 'dogfood.mjs'), 'utf8');
