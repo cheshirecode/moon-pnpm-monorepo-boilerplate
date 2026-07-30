@@ -55,6 +55,9 @@ importers:
       '@cheshirecode/tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
+      '@cheshirecode/vitest-config':
+        specifier: workspace:^
+        version: link:../vitest-config
       '@vitest/coverage-v8':
         specifier: ^4.1.9
         version: 4.1.9(vitest@4.1.9)
@@ -357,6 +360,9 @@ importers:
       '@cheshirecode/tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
+      '@cheshirecode/vitest-config':
+        specifier: workspace:^
+        version: link:../vitest-config
       '@vitest/coverage-v8':
         specifier: ^4.1.9
         version: 4.1.9(vitest@4.1.9)
@@ -379,6 +385,9 @@ importers:
       '@cheshirecode/tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
+      '@cheshirecode/vitest-config':
+        specifier: workspace:^
+        version: link:../vitest-config
       '@vitest/coverage-v8':
         specifier: ^4.1.9
         version: 4.1.9(vitest@4.1.9)
@@ -397,6 +406,9 @@ importers:
       '@cheshirecode/tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
+      '@cheshirecode/vitest-config':
+        specifier: workspace:^
+        version: link:../vitest-config
       '@types/node':
         specifier: ^24.10.2
         version: 24.13.2
@@ -419,6 +431,9 @@ importers:
       '@cheshirecode/tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
+      '@cheshirecode/vitest-config':
+        specifier: workspace:^
+        version: link:../vitest-config
       '@vitest/coverage-v8':
         specifier: ^4.1.9
         version: 4.1.9(vitest@4.1.9)
@@ -508,6 +523,9 @@ importers:
       '@cheshirecode/tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
+      '@cheshirecode/vitest-config':
+        specifier: workspace:^
+        version: link:../vitest-config
       '@types/node':
         specifier: ^24.10.2
         version: 24.13.2
@@ -530,6 +548,9 @@ importers:
       '@cheshirecode/tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
+      '@cheshirecode/vitest-config':
+        specifier: workspace:^
+        version: link:../vitest-config
       '@types/node':
         specifier: ^24.10.2
         version: 24.13.2
@@ -552,6 +573,9 @@ importers:
       '@cheshirecode/tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
+      '@cheshirecode/vitest-config':
+        specifier: workspace:^
+        version: link:../vitest-config
       '@vitest/coverage-v8':
         specifier: ^4.1.9
         version: 4.1.9(vitest@4.1.9)
@@ -564,6 +588,9 @@ importers:
 
   packages/measure-hook:
     devDependencies:
+      '@cheshirecode/vitest-config':
+        specifier: workspace:^
+        version: link:../vitest-config
       '@vitest/coverage-v8':
         specifier: ^4.1.9
         version: 4.1.9(vitest@4.1.9)
@@ -576,6 +603,9 @@ importers:
       '@cheshirecode/tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
+      '@cheshirecode/vitest-config':
+        specifier: workspace:^
+        version: link:../vitest-config
       '@vitest/coverage-v8':
         specifier: ^4.1.9
         version: 4.1.9(vitest@4.1.9)
@@ -691,6 +721,9 @@ importers:
       '@cheshirecode/demo-contract':
         specifier: workspace:^
         version: link:../demo-contract
+      '@cheshirecode/error-utils':
+        specifier: workspace:^
+        version: link:../error-utils
       '@cheshirecode/microfrontend-host':
         specifier: workspace:^
         version: link:../microfrontend-host

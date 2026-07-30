@@ -1,8 +1,6 @@
-/// <reference types="vitest" />
-
 import { defineConfig } from 'vitest/config';
 
-import { configDefaults, packageTestConfig } from '../../vitest.shared.mjs';
+import { configDefaults, packageTestConfig } from '@cheshirecode/vitest-config';
 
 export default defineConfig(
   packageTestConfig({

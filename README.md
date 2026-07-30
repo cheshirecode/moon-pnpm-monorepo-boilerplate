@@ -146,6 +146,7 @@ flowchart TB
   showcase --> host
   showcase --> contract
   showcase --> clipboard
+  showcase --> error-utils
   contract --> utils
   pkce --> clipboard
 ```

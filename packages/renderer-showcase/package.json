@@ -15,6 +15,7 @@
     "@cheshirecode/demo-contract": "workspace:^",
     "@cheshirecode/microfrontend-host": "workspace:^",
     "@cheshirecode/browser-clipboard": "workspace:^",
+    "@cheshirecode/error-utils": "workspace:^",
     "app-astro": "workspace:^",
     "app-preact": "workspace:^",
     "app-react": "workspace:^",

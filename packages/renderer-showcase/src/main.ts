@@ -1,3 +1,4 @@
+import { AppError } from '@cheshirecode/error-utils';
 import { microfrontendMountId } from '@cheshirecode/microfrontend-host';
 
 import { rendererShowcaseEntries } from './registry';
@@ -7,7 +8,7 @@ import './styles.css';
 const root = document.getElementById('showcase');
 
 if (!root) {
-  throw new Error('Missing renderer showcase root element.');
+  throw new AppError('Missing renderer showcase root element.', { code: 'MISSING_ROOT' });
 }
 
 renderShowcase(root, rendererShowcaseEntries, {
