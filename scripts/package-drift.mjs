@@ -22,7 +22,7 @@ const moonAllowlist = new Set(['tsconfig']);
 const coverageScriptAllowlist = new Set(['tsconfig']);
 const testAllowlist = new Set(['tsconfig']);
 const dogfoodAllowlist = new Set([
-  'vitest-config'
+  '@cheshirecode/vitest-config'
 ]);
 const expectedVersions = new Map([
   ['@types/node', '^24.10.2'],
