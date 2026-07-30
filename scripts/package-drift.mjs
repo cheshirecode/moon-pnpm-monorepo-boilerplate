@@ -38,7 +38,8 @@ const typescriptVersionExceptions = new Map([
   ['app-astro', '^6.0.3'],
   ['app-svelte', '^6.0.3'],
   ['app-vue', '^6.0.3'],
-  ['eslint-config-react', '^6.0.3']
+  ['eslint-config-react', '^6.0.3'],
+  ['eslint-config-base', '^6.0.3']
 ]);
 
 const dogfoodScript = await readFile(join(root, 'scripts', 'dogfood.mjs'), 'utf8');

@@ -59,6 +59,9 @@ Publishable packages connected by internal runtime dependencies.
     <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/browser-clipboard/"><code>@cheshirecode/browser-clipboard</code></a><br><sub>TS</sub></td><td>Browser-safe clipboard access.</td></tr>
     <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/browser-utils/"><code>@cheshirecode/browser-utils</code></a><br><sub>TS</sub></td><td>Shared string, form, filtering, and URL helpers.</td></tr>
     <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/pkce/"><code>@cheshirecode/pkce</code></a><br><sub>TS</sub></td><td>PKCE library with a browser demo.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/javascript.svg" alt="" width="20" height="20"> JavaScript</td><td><a href="packages/async-utils/"><code>@cheshirecode/async-utils</code></a><br><sub>JS</sub></td><td>Async utility helpers: timeout, retry, debounce, throttle, delay.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/javascript.svg" alt="" width="20" height="20"> JavaScript</td><td><a href="packages/object-utils/"><code>@cheshirecode/object-utils</code></a><br><sub>JS</sub></td><td>Object manipulation utilities: deepMerge, deepClone, deepEqual, pick, omit.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/javascript.svg" alt="" width="20" height="20"> JavaScript</td><td><a href="packages/error-utils/"><code>@cheshirecode/error-utils</code></a><br><sub>JS</sub></td><td>Framework-agnostic error types, boundaries, and error handling.</td></tr>
   </tbody>
 </table>
 
@@ -77,6 +80,8 @@ CLIs, shared configuration, and packages without an internal runtime edge.
     <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/hono-base/"><code>@cheshirecode/hono-base</code></a><br><sub>TS</sub></td><td>Runtime-neutral Hono app factory.</td></tr>
     <tr><td><img src="docs/assets/package-icons/javascript.svg" alt="" width="20" height="20"> JavaScript</td><td><a href="packages/measure-hook/"><code>@cheshirecode/measure-hook</code></a><br><sub>JS</sub></td><td>Small synchronous and asynchronous timing helper.</td></tr>
     <tr><td><img src="docs/assets/package-icons/react.svg" alt="" width="20" height="20"> React</td><td><a href="packages/eslint-config-react/"><code>@cheshirecode/eslint-config-react</code></a><br><sub>JS</sub></td><td>Shared ESLint flat configuration for React.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/javascript.svg" alt="" width="20" height="20"> JavaScript</td><td><a href="packages/eslint-config-base/"><code>@cheshirecode/eslint-config-base</code></a><br><sub>JS</sub></td><td>Base (non-React) ESLint shareable config.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/javascript.svg" alt="" width="20" height="20"> JavaScript</td><td><a href="packages/vitest-config/"><code>@cheshirecode/vitest-config</code></a><br><sub>JS</sub></td><td>Shared vitest configuration factory functions.</td></tr>
     <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/tsconfig/"><code>@cheshirecode/tsconfig</code></a><br><sub>JSON config</sub></td><td>Shared TypeScript compiler configurations.</td></tr>
   </tbody>
 </table>
@@ -99,6 +104,9 @@ flowchart TB
     clipboard["@cheshirecode/browser-clipboard"]
     utils["@cheshirecode/browser-utils"]
     pkce["@cheshirecode/pkce"]
+    async-utils["@cheshirecode/async-utils"]
+    object-utils["@cheshirecode/object-utils"]
+    error-utils["@cheshirecode/error-utils"]
   end
 
   subgraph tooling[Tooling and standalone]
@@ -108,6 +116,8 @@ flowchart TB
     hono["@cheshirecode/hono-base"]
     measure["@cheshirecode/measure-hook"]
     eslint["@cheshirecode/eslint-config-react"]
+    eslint-config-base["@cheshirecode/eslint-config-base"]
+    vitest-config["@cheshirecode/vitest-config"]
     tsconfig["@cheshirecode/tsconfig"]
   end
 

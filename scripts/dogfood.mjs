@@ -422,6 +422,27 @@ await execFileAsync('pnpm', ['install'], { cwd: binBootstrapDir });
 await execFileAsync('scripts/check.sh', ['full'], { cwd: binBootstrapDir });
 await execFileAsync('scripts/check.sh', ['dogfood', 'all'], { cwd: binBootstrapDir });
 
+const asyncUtils = await import('@cheshirecode/async-utils');
+assert.equal(typeof asyncUtils.retry, 'function');
+assert.equal(typeof asyncUtils.debounce, 'function');
+assert.equal(typeof asyncUtils.throttle, 'function');
+
+const objectUtils = await import('@cheshirecode/object-utils');
+assert.equal(typeof objectUtils.deepMerge, 'function');
+assert.equal(typeof objectUtils.deepEqual, 'function');
+
+const errorUtils = await import('@cheshirecode/error-utils');
+assert.equal(typeof errorUtils.AppError, 'function');
+assert.equal(typeof errorUtils.NetworkError, 'function');
+assert.equal(typeof errorUtils.createErrorBoundary, 'function');
+
+const vitestConfig = await import('@cheshirecode/vitest-config');
+assert.equal(typeof vitestConfig.packageTestConfig, 'function');
+assert.equal(typeof vitestConfig.domPackageTestConfig, 'function');
+
+const eslintConfigBase = require('@cheshirecode/eslint-config-base');
+assert.ok(Array.isArray(eslintConfigBase));
+
 console.log('External package consumption dogfood passed.');
 `;
 }
