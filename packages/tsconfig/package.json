@@ -1,10 +1,14 @@
 {
   "name": "@cheshirecode/tsconfig",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Shared TypeScript configs for Cheshire Code packages.",
   "type": "module",
   "private": false,
-  "keywords": ["typescript", "tsconfig", "monorepo"],
+  "keywords": [
+    "typescript",
+    "tsconfig",
+    "monorepo"
+  ],
   "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
   "license": "MIT",
   "sideEffects": false,
@@ -19,7 +23,9 @@
   "engines": {
     "node": ">=24.11.0"
   },
-  "files": ["*.json"],
+  "files": [
+    "*.json"
+  ],
   "exports": {
     "./base.json": "./base.json",
     "./dom.json": "./dom.json",

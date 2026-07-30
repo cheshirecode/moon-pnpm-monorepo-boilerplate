@@ -1,10 +1,18 @@
 {
   "name": "@cheshirecode/async-utils",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Lightweight async utility helpers: timeout, retry, debounce, throttle, delay.",
   "type": "module",
   "private": false,
-  "keywords": ["async", "timeout", "retry", "debounce", "throttle", "delay", "utilities"],
+  "keywords": [
+    "async",
+    "timeout",
+    "retry",
+    "debounce",
+    "throttle",
+    "delay",
+    "utilities"
+  ],
   "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
   "license": "MIT",
   "sideEffects": false,
@@ -19,7 +27,9 @@
   "engines": {
     "node": ">=24.11.0"
   },
-  "files": ["index.js"],
+  "files": [
+    "index.js"
+  ],
   "main": "index.js",
   "exports": {
     ".": {
