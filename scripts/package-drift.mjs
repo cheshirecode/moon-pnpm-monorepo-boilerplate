@@ -22,7 +22,8 @@ const moonAllowlist = new Set(['tsconfig']);
 const coverageScriptAllowlist = new Set(['tsconfig']);
 const testAllowlist = new Set(['tsconfig']);
 const dogfoodAllowlist = new Set([
-  '@cheshirecode/vitest-config'
+  '@cheshirecode/vitest-config',
+  '@cheshirecode/microfrontend-adapters'
 ]);
 const expectedVersions = new Map([
   ['@types/node', '^24.10.2'],

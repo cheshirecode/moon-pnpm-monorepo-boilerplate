@@ -1,3 +1,4 @@
+import { getErrorMessage, NetworkError } from '@cheshirecode/error-utils';
 import stringify from 'fast-json-stable-stringify';
 import { isPlainObject, merge } from 'lodash-es';
 import type { BareFetcher, Key, Middleware, SWRConfiguration, SWRHook, SWRResponse } from 'swr';
@@ -220,38 +221,21 @@ export const validateResponse = <T>(
   isValid: (d: T) => boolean = _defaultIsValid<T>,
   sampleData?: T
 ) => {
-  // TODO - revise error handling logic to be cleaner
   const errorMessages: ErrorMessage[] = [];
 
   if (!isValid(data as T)) {
     const { status = '--', info } = (data ?? {}) as ErrorHttp;
-    const { message, error: responseError } = isPlainObject(info)
-      ? (info as { message?: unknown; error?: unknown })
-      : {};
-    const errorMsg = message ?? responseError;
-    if (errorMsg) {
-      errorMessages.push({
-        title: 'Unexpected error',
-        status,
-        message: errorMsg,
-        ...(!import.meta.env.PROD ? { objects: [data] } : {})
-      });
-    } else {
-      errorMessages.push({
-        title: 'Invalid data',
-        status,
-        ...(!import.meta.env.PROD
-          ? {
-              objects: [
-                {
-                  expected: sampleData,
-                  actual: data
-                }
-              ]
-            }
-          : {})
-      });
-    }
+    const errorMsg = getErrorMessage(
+      isPlainObject(info) ? (info as { message?: unknown }).message ?? info : info
+    );
+    errorMessages.push({
+      title: errorMsg ? 'Unexpected error' : 'Invalid data',
+      status,
+      ...(errorMsg ? { message: errorMsg } : {}),
+      ...(!import.meta.env.PROD
+        ? { objects: sampleData !== undefined ? [{ expected: sampleData, actual: data }] : [data] }
+        : {})
+    });
   }
 
   return errorMessages;

@@ -55,6 +55,7 @@ Publishable packages connected by internal runtime dependencies.
   </thead>
   <tbody>
     <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/microfrontend-host/"><code>@cheshirecode/microfrontend-host</code></a><br><sub>TS</sub></td><td>Framework-neutral microfrontend host shell.</td></tr>
+    <tr><td><img src="docs/assets/package-icons/javascript.svg" alt="" width="20" height="20"> JavaScript</td><td><a href="packages/microfrontend-adapters/"><code>@cheshirecode/microfrontend-adapters</code></a><br><sub>JS</sub></td><td>Microfrontend mount adapter factory.</td></tr>
     <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/demo-contract/"><code>@cheshirecode/demo-contract</code></a><br><sub>TS</sub></td><td>Shared renderer demo contract and helpers.</td></tr>
     <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/browser-clipboard/"><code>@cheshirecode/browser-clipboard</code></a><br><sub>TS</sub></td><td>Browser-safe clipboard access.</td></tr>
     <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/browser-utils/"><code>@cheshirecode/browser-utils</code></a><br><sub>TS</sub></td><td>Shared string, form, filtering, and URL helpers.</td></tr>
@@ -100,6 +101,7 @@ flowchart TB
 
   subgraph runtime[Shared runtime]
     host["@cheshirecode/microfrontend-host"]
+    microfrontend-adapters["@cheshirecode/microfrontend-adapters"]
     contract["@cheshirecode/demo-contract"]
     clipboard["@cheshirecode/browser-clipboard"]
     utils["@cheshirecode/browser-utils"]
@@ -130,6 +132,8 @@ flowchart TB
 
   react --> contract
   react --> clipboard
+  react --> async-utils
+  react --> error-utils
   react --> hono
   preact --> contract
   preact --> clipboard
