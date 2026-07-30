@@ -1,6 +1,6 @@
 {
   "name": "@cheshirecode/hono-base",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Runtime-neutral Hono app factory with health, version, and error middleware.",
   "type": "module",
   "private": false,

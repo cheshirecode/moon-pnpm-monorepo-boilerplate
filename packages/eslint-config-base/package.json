@@ -1,10 +1,16 @@
 {
   "name": "@cheshirecode/eslint-config-base",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Base (non-React) ESLint + Prettier shareable config for Cheshire Code packages.",
   "type": "commonjs",
   "private": false,
-  "keywords": ["eslint", "eslint-config", "prettier", "linting", "base"],
+  "keywords": [
+    "eslint",
+    "eslint-config",
+    "prettier",
+    "linting",
+    "base"
+  ],
   "sideEffects": true,
   "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
   "license": "MIT",
@@ -19,7 +25,9 @@
   "engines": {
     "node": ">=24.11.0"
   },
-  "files": ["index.js"],
+  "files": [
+    "index.js"
+  ],
   "main": "index.js",
   "exports": {
     ".": {

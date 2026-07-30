@@ -1,6 +1,6 @@
 {
   "name": "@cheshirecode/flatten-workspace",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Flatten dependency fields from workspace package manifests into one package manifest.",
   "type": "module",
   "private": false,
