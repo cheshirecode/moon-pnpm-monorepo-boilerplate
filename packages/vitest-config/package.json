@@ -22,7 +22,9 @@
   "files": ["index.mjs", "vitest.config.mjs"],
   "exports": {
     ".": {
-      "import": "./index.mjs"
+      "import": "./index.mjs",
+      "require": "./index.mjs",
+      "default": "./index.mjs"
     }
   },
   "scripts": {
