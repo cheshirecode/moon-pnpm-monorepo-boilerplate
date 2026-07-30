@@ -1,9 +1,8 @@
+import { delay } from '@cheshirecode/async-utils';
 import cx from 'classnames';
 import { isFunction, isNil } from 'lodash-es';
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
-
-import { timeout } from '@/utils';
 
 type TimeContentProps = BaseProps & {
   timings: {
@@ -25,17 +24,17 @@ const TimedContent = ({ className, timings, children }: TimeContentProps) => {
   const [c, setC] = useState(children);
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
+    let cancelled = false;
     timings?.forEach(async ({ time, content, cb }) => {
       const comp = isNil(content) ? children : isFunction(content) ? content() : content;
-      const t = await timeout(time, () => {
-        setC(comp);
-        isFunction(cb) && cb();
-      });
-      timers.push(t);
+      await delay(time);
+      if (cancelled) return;
+      setC(comp);
+      isFunction(cb) && cb();
     });
 
     return () => {
-      timers.forEach((x) => clearTimeout(x));
+      cancelled = true;
     };
   }, [children, timings]);
 

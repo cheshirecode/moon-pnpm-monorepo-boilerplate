@@ -181,20 +181,3 @@ export const isEmptyObject = (obj: unknown, emptyValues: unknown[] = [undefined,
   Object.keys(obj as Record<string, unknown>).every((x: string) =>
     emptyValues.includes((obj as Record<string, unknown>)[x] as typeof emptyValues[number])
   );
-
-const noOp = () => undefined;
-
-export async function timeout(ms = 1000, cb: () => void = noOp) {
-  return await new Promise<ReturnType<typeof setTimeout>>((resolve, reject) => {
-    const wait = setTimeout(() => {
-      cb();
-      clearTimeout(wait);
-    }, ms);
-
-    try {
-      resolve(wait);
-    } catch (e) {
-      reject(e);
-    }
-  });
-}

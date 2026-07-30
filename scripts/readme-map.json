@@ -1,6 +1,7 @@
 {
   "sharedRuntime": [
     "microfrontend-host",
+    "microfrontend-adapters",
     "demo-contract",
     "browser-clipboard",
     "browser-utils",
@@ -130,6 +131,9 @@
     },
     "eslint-config-base": {
       "role": "Base (non-React) ESLint shareable config."
+    },
+    "microfrontend-adapters": {
+      "role": "Microfrontend mount adapter factory."
     }
   }
 }
