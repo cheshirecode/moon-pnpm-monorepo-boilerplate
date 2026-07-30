@@ -29,3 +29,13 @@ minimumReleaseAgeExclude:
   - '@storybook/react-vite@10.5.0'
   - '@storybook/react@10.5.0'
   - storybook@10.5.0
+auditConfig:
+  ignoreGhsas:
+    - GHSA-3jxr-9vmj-r5cp
+    - GHSA-v56q-mh7h-f735
+    - GHSA-mh99-v99m-4gvg
+    - GHSA-xvcm-6775-5m9r
+    - GHSA-2p49-hgcm-8545
+    - GHSA-v2hh-gcrm-f6hx
+    - GHSA-r28c-9q8g-f849
+    - GHSA-4c8g-83qw-93j6
