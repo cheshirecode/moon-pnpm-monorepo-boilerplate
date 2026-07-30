@@ -2,7 +2,7 @@
   "name": "@cheshirecode/eslint-config-base",
   "version": "0.0.0",
   "description": "Base (non-React) ESLint + Prettier shareable config for Cheshire Code packages.",
-  "type": "module",
+  "type": "commonjs",
   "private": false,
   "keywords": ["eslint", "eslint-config", "prettier", "linting", "base"],
   "sideEffects": true,
