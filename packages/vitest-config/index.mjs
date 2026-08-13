@@ -3,10 +3,10 @@ import { configDefaults, coverageConfigDefaults } from 'vitest/config';
 const lcovTextCoverage = {
   reporter: ['text', 'lcov'],
   thresholds: {
-    lines: 50,
-    functions: 50,
-    branches: 40,
-    statements: 50
+    lines: 60,
+    functions: 60,
+    branches: 50,
+    statements: 60
   }
 };
 
@@ -14,10 +14,10 @@ const appCoverage = {
   reporter: ['text', 'lcov', 'html'],
   provider: 'v8',
   thresholds: {
-    lines: 40,
-    functions: 40,
-    branches: 30,
-    statements: 40
+    lines: 50,
+    functions: 50,
+    branches: 40,
+    statements: 50
   }
 };
 
