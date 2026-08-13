@@ -1,5 +1,7 @@
 # @cheshirecode/eslint-config-base
 
+> **Deprecated** — no consumers remain in the oxlint-native monorepo.
+
 Base (non-React) ESLint shareable config for Cheshire Code packages.
 
 ## Usage
