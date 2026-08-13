@@ -1,7 +1,8 @@
 /* eslint-disable no-useless-escape */
 import styled from '@emotion/styled';
 import cx from 'classnames';
-import { isFunction, isUndefined, noop, throttle } from 'lodash-es';
+import { isFunction, isUndefined, noop } from 'lodash-es';
+import { throttle } from '@cheshirecode/async-utils';
 import type { ChangeEvent, ComponentType, KeyboardEvent, MouseEvent, RefObject } from 'react';
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Props } from 'react-select';
@@ -88,16 +89,12 @@ const SearchBar = ({
   const updateValue = useMemo(
     () =>
       throttle(
-        (v) => {
+        (v: string) => {
           if (isFunction(update)) {
             update(v);
           }
         },
-        50,
-        {
-          trailing: true,
-          leading: true
-        }
+        50
       ),
     [update]
   );
