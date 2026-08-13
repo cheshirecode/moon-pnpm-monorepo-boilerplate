@@ -163,14 +163,14 @@ case "$command" in
     else
       run pnpm exec moon run :lint :typecheck :build :test
     fi
-    "$repo_root/scripts/check.sh" boundaries --artifacts-only
     run pnpm exec vitest run
+    "$repo_root/scripts/check.sh" lint-audit
     ;;
   full)
     "$repo_root/scripts/check.sh" static-checks
     run pnpm exec moon run :lint :typecheck :build :test
-    "$repo_root/scripts/check.sh" boundaries --artifacts-only
     run pnpm exec vitest run
+    "$repo_root/scripts/check.sh" lint-audit
     "$repo_root/scripts/check.sh" renderer-showcase --skip-build
     "$repo_root/scripts/check.sh" publish-check --skip-build
     "$repo_root/scripts/check.sh" dogfood packages --skip-build
