@@ -15,14 +15,14 @@ allowBuilds:
   '@parcel/watcher': true
   esbuild: true
 minimumReleaseAgeExclude:
-  - '@moonrepo/cli@2.3.5 || 2.4.2'
-  - '@moonrepo/core-linux-arm64-gnu@2.3.5 || 2.4.2'
-  - '@moonrepo/core-linux-arm64-musl@2.3.5 || 2.4.2'
-  - '@moonrepo/core-linux-x64-gnu@2.3.5 || 2.4.2'
-  - '@moonrepo/core-linux-x64-musl@2.3.5 || 2.4.2'
-  - '@moonrepo/core-macos-arm64@2.3.5 || 2.4.2'
-  - '@moonrepo/core-macos-x64@2.3.5 || 2.4.2'
-  - '@moonrepo/core-windows-x64-msvc@2.3.5 || 2.4.2'
+  - '@moonrepo/cli@2.3.5 || 2.4.2 || 2.5.1'
+  - '@moonrepo/core-linux-arm64-gnu@2.3.5 || 2.4.2 || 2.5.1'
+  - '@moonrepo/core-linux-arm64-musl@2.3.5 || 2.4.2 || 2.5.1'
+  - '@moonrepo/core-linux-x64-gnu@2.3.5 || 2.4.2 || 2.5.1'
+  - '@moonrepo/core-linux-x64-musl@2.3.5 || 2.4.2 || 2.5.1'
+  - '@moonrepo/core-macos-arm64@2.3.5 || 2.4.2 || 2.5.1'
+  - '@moonrepo/core-macos-x64@2.3.5 || 2.4.2 || 2.5.1'
+  - '@moonrepo/core-windows-x64-msvc@2.3.5 || 2.4.2 || 2.5.1'
   - '@storybook/builder-vite@10.5.0'
   - '@storybook/csf-plugin@10.5.0'
   - '@storybook/react-dom-shim@10.5.0'
