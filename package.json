@@ -34,8 +34,5 @@
     "dev": "scripts/check.sh dev",
     "lint:audit": "scripts/check.sh lint-audit"
   },
-  "packageManager": "pnpm@11.10.0",
-  "workspaces": [
-    "packages/*"
-  ]
+  "packageManager": "pnpm@11.10.0"
 }
