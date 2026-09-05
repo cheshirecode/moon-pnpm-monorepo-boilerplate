@@ -17,7 +17,6 @@
     "hono-base",
     "measure-hook",
     "eslint-config-react",
-    "eslint-config-base",
     "vitest-config",
     "tsconfig"
   ],
@@ -128,9 +127,6 @@
     },
     "vitest-config": {
       "role": "Shared vitest configuration factory functions."
-    },
-    "eslint-config-base": {
-      "role": "Base (non-React) ESLint shareable config."
     },
     "microfrontend-adapters": {
       "role": "Microfrontend mount adapter factory."
