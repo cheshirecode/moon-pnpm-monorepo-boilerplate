@@ -427,10 +427,6 @@ assert.equal(typeof asyncUtils.retry, 'function');
 assert.equal(typeof asyncUtils.debounce, 'function');
 assert.equal(typeof asyncUtils.throttle, 'function');
 
-const objectUtils = await import('@cheshirecode/object-utils');
-assert.equal(typeof objectUtils.deepMerge, 'function');
-assert.equal(typeof objectUtils.deepEqual, 'function');
-
 const errorUtils = await import('@cheshirecode/error-utils');
 assert.equal(typeof errorUtils.AppError, 'function');
 assert.equal(typeof errorUtils.NetworkError, 'function');

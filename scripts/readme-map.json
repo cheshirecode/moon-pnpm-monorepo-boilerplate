@@ -7,7 +7,6 @@
     "browser-utils",
     "pkce",
     "async-utils",
-    "object-utils",
     "error-utils"
   ],
   "tooling": [
@@ -118,9 +117,6 @@
     },
     "async-utils": {
       "role": "Async utility helpers: timeout, retry, debounce, throttle, delay."
-    },
-    "object-utils": {
-      "role": "Object manipulation utilities: deepMerge, deepClone, deepEqual, pick, omit."
     },
     "error-utils": {
       "role": "Framework-agnostic error types, boundaries, and error handling."
