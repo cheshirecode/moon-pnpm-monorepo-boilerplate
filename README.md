@@ -61,7 +61,6 @@ Publishable packages connected by internal runtime dependencies.
     <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/browser-utils/"><code>@cheshirecode/browser-utils</code></a><br><sub>TS</sub></td><td>Shared string, form, filtering, and URL helpers.</td></tr>
     <tr><td><img src="docs/assets/package-icons/typescript.svg" alt="" width="20" height="20"> TypeScript</td><td><a href="packages/pkce/"><code>@cheshirecode/pkce</code></a><br><sub>TS</sub></td><td>PKCE library with a browser demo.</td></tr>
     <tr><td><img src="docs/assets/package-icons/javascript.svg" alt="" width="20" height="20"> JavaScript</td><td><a href="packages/async-utils/"><code>@cheshirecode/async-utils</code></a><br><sub>JS</sub></td><td>Async utility helpers: timeout, retry, debounce, throttle, delay.</td></tr>
-    <tr><td><img src="docs/assets/package-icons/javascript.svg" alt="" width="20" height="20"> JavaScript</td><td><a href="packages/object-utils/"><code>@cheshirecode/object-utils</code></a><br><sub>JS</sub></td><td>Object manipulation utilities: deepMerge, deepClone, deepEqual, pick, omit.</td></tr>
     <tr><td><img src="docs/assets/package-icons/javascript.svg" alt="" width="20" height="20"> JavaScript</td><td><a href="packages/error-utils/"><code>@cheshirecode/error-utils</code></a><br><sub>JS</sub></td><td>Framework-agnostic error types, boundaries, and error handling.</td></tr>
   </tbody>
 </table>
@@ -106,7 +105,6 @@ flowchart TB
     utils["@cheshirecode/browser-utils"]
     pkce["@cheshirecode/pkce"]
     async-utils["@cheshirecode/async-utils"]
-    object-utils["@cheshirecode/object-utils"]
     error-utils["@cheshirecode/error-utils"]
   end
 
