@@ -159,7 +159,13 @@ case "$command" in
   ci)
     "$repo_root/scripts/check.sh" static-checks
     if has_git_head; then
-      run pnpm exec moon ci :lint :typecheck :build :test
+      affected="$(pnpm exec moon query affected)"
+      if [[ "$affected" == "{}" ]]; then
+        echo "No Moon projects affected; running all package tasks for artifact checks."
+        run pnpm exec moon run :lint :typecheck :build :test
+      else
+        run pnpm exec moon ci :lint :typecheck :build :test
+      fi
     else
       run pnpm exec moon run :lint :typecheck :build :test
     fi
@@ -168,8 +174,15 @@ case "$command" in
     ;;
   full)
     "$repo_root/scripts/check.sh" static-checks
-    run pnpm exec moon run :lint :typecheck :build :test
-    run pnpm exec vitest run
+    if has_git_head; then
+      run pnpm exec moon run :lint :typecheck :build :test
+      run pnpm exec vitest run
+    else
+      "$repo_root/scripts/check.sh" lint
+      "$repo_root/scripts/check.sh" typecheck
+      "$repo_root/scripts/check.sh" build
+      "$repo_root/scripts/check.sh" test
+    fi
     "$repo_root/scripts/check.sh" lint-audit
     "$repo_root/scripts/check.sh" renderer-showcase --skip-build
     "$repo_root/scripts/check.sh" publish-check --skip-build

@@ -8,6 +8,7 @@ import { resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const generatorDir = join(root, 'packages', 'create-moon-pnpm-monorepo');
+const hasGitMetadata = existsSync(join(root, '.git'));
 const errors = [];
 
 async function run(cmd, args, cwd) {
@@ -45,7 +46,11 @@ async function fileMap(dir) {
 }
 
 async function buildGenerator() {
-  await run('pnpm', ['exec', 'moon', 'run', 'create-moon-pnpm-monorepo:build'], root);
+  if (hasGitMetadata) {
+    await run('pnpm', ['exec', 'moon', 'run', 'create-moon-pnpm-monorepo:build'], root);
+  } else {
+    await run('pnpm', ['--dir', generatorDir, 'build'], root);
+  }
 }
 
 async function generateViaSource(parentDir, name) {
@@ -120,7 +125,9 @@ async function checkNoNewRepoChanges(beforeStatus) {
   }
 }
 
-const beforeStatus = await run('git', ['status', '--porcelain'], root);
+const beforeStatus = hasGitMetadata
+  ? await run('git', ['status', '--porcelain'], root)
+  : null;
 const parentDir = await mkdtemp(join(tmpdir(), 'generator-drift-'));
 try {
   await buildGenerator();
@@ -130,7 +137,7 @@ try {
   await compareDirs(sourceResult.target, cliResult.target);
   await checkSpecificFiles(sourceResult.target);
   await checkReferencedScriptsExist(sourceResult.target);
-  await checkNoNewRepoChanges(beforeStatus);
+  if (beforeStatus !== null) await checkNoNewRepoChanges(beforeStatus);
 } finally {
   await rm(parentDir, { recursive: true, force: true });
 }
@@ -141,4 +148,3 @@ if (errors.length > 0) {
   process.exit(1);
 }
 console.log('Generator drift check passed: source API and built CLI produce identical output.');
-

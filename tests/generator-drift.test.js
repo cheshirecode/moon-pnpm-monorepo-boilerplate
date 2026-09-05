@@ -1,8 +1,10 @@
 import { describe, it, expect } from 'vitest';
+import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { spawn } from 'node:child_process';
 
 const root = resolve(import.meta.dirname, '..');
+const hasGitMetadata = existsSync(resolve(root, '.git'));
 
 function runAsync(cmd, args, cwd) {
   return new Promise((resolveRun, reject) => {
@@ -21,7 +23,7 @@ describe('generator-drift', () => {
     expect(output).toContain('passed');
   }, 60000);
 
-  it('leaves no new git changes after run', async () => {
+  it.skipIf(!hasGitMetadata)('leaves no new git changes after run', async () => {
     const before = await runAsync('git', ['status', '--porcelain'], root);
     await runAsync('node', ['scripts/generator-drift.mjs'], root);
     const after = await runAsync('git', ['status', '--porcelain'], root);

@@ -96,6 +96,8 @@ pnpm moon ci :lint :typecheck :build :test
 - Renderer demo apps such as `app-react`, `app-preact`, `app-astro`,
   `app-vue`, `app-svelte`, `app-solidjs`, and `renderer-showcase` are private
   and ignored by Changesets.
+- Do not restore `@cheshirecode/eslint-config-base`: the oxlint-native repo had
+  no consumers for it. Add shared lint configuration only for a concrete consumer.
 - `renderer-showcase` embeds the renderer demo apps as microfrontends. Its
   registry must include exactly `app-react`, `app-preact`, `app-astro`,
   `app-vue`, `app-svelte`, and `app-solidjs`; do not use a raw `app-*` glob

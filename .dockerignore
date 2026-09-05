@@ -1,5 +1,4 @@
 .git
-.github
 .moon/cache/
 .moon/docker/
 .artifacts

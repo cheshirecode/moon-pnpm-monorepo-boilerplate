@@ -16,12 +16,14 @@ RUN apt-get update -qq \
     && corepack enable \
     && corepack prepare pnpm@11.10.0 --activate
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc .gitignore .oxlintrc.json ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc .gitignore .oxlintrc.json README.md ./
 COPY .moon ./.moon
 RUN rm -rf .moon/cache
+COPY docs/assets/package-icons ./docs/assets/package-icons
 COPY packages ./packages
 COPY scripts ./scripts
 COPY tests ./tests
+COPY .github ./.github
 COPY eslint.config.cjs vitest.config.js vitest.shared.d.mts vitest.shared.mjs ./
 
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
