@@ -1,6 +1,6 @@
 {
   "name": "@cheshirecode/input-validation",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Framework-neutral text input validation and sanitization helpers.",
   "type": "module",
   "private": false,

@@ -1,6 +1,6 @@
 {
   "name": "@cheshirecode/microfrontend-host",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Framework-neutral helpers for mounting microfrontend demos into a host shell.",
   "type": "module",
   "private": false,

@@ -1,6 +1,6 @@
 {
   "name": "@cheshirecode/browser-utils",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Framework-neutral string, form, URL, filtering, and browser utility helpers.",
   "type": "module",
   "private": false,

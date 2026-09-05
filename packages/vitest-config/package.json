@@ -1,10 +1,15 @@
 {
   "name": "@cheshirecode/vitest-config",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Shared vitest configuration factories for Cheshire Code packages.",
   "type": "module",
   "private": false,
-  "keywords": ["vitest", "config", "test", "monorepo"],
+  "keywords": [
+    "vitest",
+    "config",
+    "test",
+    "monorepo"
+  ],
   "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
   "license": "MIT",
   "sideEffects": false,
@@ -19,7 +24,10 @@
   "engines": {
     "node": ">=24.11.0"
   },
-  "files": ["index.mjs", "vitest.config.mjs"],
+  "files": [
+    "index.mjs",
+    "vitest.config.mjs"
+  ],
   "exports": {
     ".": {
       "import": "./index.mjs",
