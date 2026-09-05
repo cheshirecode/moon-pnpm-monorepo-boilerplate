@@ -18,7 +18,7 @@ const removedUtilityRefs = [
   '@fieryeagle/'
 ];
 
-const moonAllowlist = new Set(['tsconfig']);
+const moonAllowlist = new Set(['tsconfig', 'eslint-config-base']);
 const coverageScriptAllowlist = new Set(['tsconfig']);
 const testAllowlist = new Set(['tsconfig']);
 const dogfoodAllowlist = new Set([
