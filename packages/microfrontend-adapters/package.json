@@ -1,10 +1,14 @@
 {
   "name": "@cheshirecode/microfrontend-adapters",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Framework-agnostic microfrontend mount adapter factory.",
   "type": "module",
   "private": false,
-  "keywords": ["microfrontend", "mount", "adapter"],
+  "keywords": [
+    "microfrontend",
+    "mount",
+    "adapter"
+  ],
   "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
   "license": "MIT",
   "sideEffects": false,
@@ -19,7 +23,9 @@
   "engines": {
     "node": ">=24.11.0"
   },
-  "files": ["src/index.mjs"],
+  "files": [
+    "src/index.mjs"
+  ],
   "main": "src/index.mjs",
   "exports": {
     ".": {

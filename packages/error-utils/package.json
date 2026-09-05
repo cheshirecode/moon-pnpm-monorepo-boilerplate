@@ -1,10 +1,16 @@
 {
   "name": "@cheshirecode/error-utils",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Framework-agnostic error types, error boundary patterns, and error reporting helpers.",
   "type": "module",
   "private": false,
-  "keywords": ["error", "error-boundary", "exception", "error-handling", "utilities"],
+  "keywords": [
+    "error",
+    "error-boundary",
+    "exception",
+    "error-handling",
+    "utilities"
+  ],
   "author": "cheshireCode <1631630+cheshirecode@users.noreply.github.com>",
   "license": "MIT",
   "sideEffects": false,
@@ -19,7 +25,10 @@
   "engines": {
     "node": ">=24.11.0"
   },
-  "files": ["index.js", "index.d.ts"],
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
   "main": "index.js",
   "types": "index.d.ts",
   "exports": {
