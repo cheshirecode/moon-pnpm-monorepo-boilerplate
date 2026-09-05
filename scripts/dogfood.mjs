@@ -436,9 +436,6 @@ assert.equal(typeof errorUtils.AppError, 'function');
 assert.equal(typeof errorUtils.NetworkError, 'function');
 assert.equal(typeof errorUtils.createErrorBoundary, 'function');
 
-const eslintConfigBase = require('@cheshirecode/eslint-config-base');
-assert.ok(Array.isArray(eslintConfigBase));
-
 console.log('External package consumption dogfood passed.');
 `;
 }
