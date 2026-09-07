@@ -3,18 +3,6 @@ import { join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 
-/**
- * Framework exceptions — these packages intentionally use a different TS version
- * due to framework compatibility requirements (mirrors package-drift.mjs).
- */
-const TYPESCRIPT_EXCEPTIONS = new Map([
-  ['app-astro', '^6.0.3'],
-  ['app-svelte', '^6.0.3'],
-  ['app-vue', '^6.0.3'],
-  ['eslint-config-react', '^6.0.3']
-]);
-const BASELINE_VERSION = '^7.0.2';
-
 async function expandGlobPattern(pattern) {
   const idx = pattern.lastIndexOf('/');
   if (idx >= 0 && pattern.includes('*')) {
@@ -76,6 +64,17 @@ export async function checkTsVersionAlignment() {
       if (tsVersion) versions[pkg.name] = tsVersion;
     } catch { /* skip */ }
   }
+
+/**
+ * Framework exceptions — these packages intentionally use a different TS version
+ * due to framework compatibility requirements (mirrors package-drift.mjs).
+ */
+const TYPESCRIPT_EXCEPTIONS = new Map([
+  ['app-astro', '^6.0.3'],
+  ['app-svelte', '^6.0.3'],
+  ['app-vue', '^6.0.3']
+]);
+const BASELINE_VERSION = '^7.0.2';
 
   // Check each package against its expected version (exception or baseline)
   const mismatches = [];
