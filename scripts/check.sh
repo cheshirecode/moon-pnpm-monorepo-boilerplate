@@ -12,7 +12,8 @@ Commands:
   lint-fast             Run the fast Rust-based lint guard.
   package-drift         Check package metadata, dependency, coverage, and dogfood drift.
   boundaries [--metadata-only|--artifacts-only]
-                        Check workspace import boundaries (declared deps, layer rules, subpaths).
+                         Check workspace import boundaries (declared deps, layer rules, subpaths).
+  ts-version-aligner    Check that all packages use the same TypeScript version.
   readme-map            Check that README workspace map matches package inventory (use --write to fix).
   static-checks         Run lint-fast, package-drift, boundaries, and readme-map exactly once.
   generator-drift       Verify source API and built CLI produce identical repo output.
@@ -39,6 +40,7 @@ Commands:
   lint-audit            Run pnpm audit for known vulnerabilities (high severity and above).
   docker                Build the repo verification Docker image.
   sandbox               Run the optional sandbox/Docker verification wrapper.
+  doctor                Check toolchain health and print exact remediation for mismatches.
 
 The script is the repo-owned operations layer. Package scripts, agent skills,
 and instructions should call this instead of duplicating command graphs.
@@ -96,6 +98,9 @@ case "$command" in
     ;;
   boundaries)
     run node scripts/check-boundaries.mjs "$@"
+    ;;
+  ts-version-aligner)
+    run node scripts/ts-version-aligner.mjs
     ;;
   readme-map)
     run node scripts/readme-map.mjs "$@"
@@ -269,6 +274,119 @@ case "$command" in
     ;;
   sandbox)
     run scripts/sandbox-verify.sh
+    ;;
+  doctor)
+    errors=0
+    checks_passed=0
+    required_node="$(grep 'Node.js' "$repo_root/AGENTS.md" | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1)"
+    if [[ -z "$required_node" ]]; then
+      required_node="24.11.0"
+    fi
+    echo "=== Bootstrap Doctor ==="
+    echo ""
+
+    echo "--- Node.js ---"
+    current_node="$(node --version 2>/dev/null || echo "not installed")"
+    if [[ "$current_node" == "not installed" ]]; then
+      echo "FAIL: Node.js is not installed."
+      echo "REMEDIATION: Install Node.js >=${required_node} via fnm (recommended):"
+      echo "  curl -fsSL https://fnm.vercel.app/install | bash"
+      echo "  source ~/.bashrc (or ~/.zshrc)"
+      echo "  fnm install ${required_node%.*}"
+      echo ""
+      errors=$((errors + 1))
+    else
+      node_version_pass=false
+      if node -e 'const current = process.versions.node.split(".").map(Number); const req = ("'"$required_node"'").split(".").map(Number); for (let i = 0; i < 3; i++) { if (current[i] > req[i]) process.exit(0); if (current[i] < req[i]) process.exit(1); }' 2>/dev/null; then
+        node_version_pass=true
+      fi
+      if [[ "$node_version_pass" == true ]]; then
+        echo "PASS: Node.js $current_node >= $required_node"
+        checks_passed=$((checks_passed + 1))
+      else
+        echo "FAIL: Node.js $current_node detected; required >= $required_node."
+        echo "REMEDIATION: Install via your preferred version manager:"
+        if command -v fnm &>/dev/null; then
+          echo "  fnm install ${required_node%.*}"
+          echo "  fnm use ${required_node%.*}"
+        elif command -v nvm &>/dev/null; then
+          echo "  nvm install $required_node"
+        elif command -v volta &>/dev/null; then
+          echo "  volta install node@$required_node"
+        else
+          echo "  Install a version manager first (e.g., fnm, nvm), then install $required_node"
+        fi
+        errors=$((errors + 1))
+      fi
+    fi
+    echo ""
+
+    echo "--- Corepack / pnpm ---"
+    corepack_version="$(corepack --version 2>/dev/null || echo "not found")"
+    if [[ "$corepack_version" == "not found" ]]; then
+      echo "FAIL: Corepack is not available."
+      echo "REMEDIATION: Enable corepack (bundled with Node.js >=16.13):"
+      echo "  corepack enable"
+      errors=$((errors + 1))
+    else
+      echo "OK: Corepack $corepack_version"
+      checks_passed=$((checks_passed + 1))
+    fi
+
+    required_pnpm="$(grep 'pnpm@' "$repo_root/AGENTS.md" | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1)"
+    if [[ -z "$required_pnpm" ]]; then
+      required_pnpm="11.10.0"
+    fi
+
+    pnpm_version="$(run corepack pnpm --version 2>/dev/null || echo "failed")"
+    if [[ "$pnpm_version" == "failed" ]] || [[ "$pnpm_version" != "$required_pnpm" ]]; then
+      echo "FAIL: pnpm $pnpm_version detected; required $required_pnpm."
+      echo "REMEDIATION: Ensure corepack manages pnpm:"
+      echo "  corepack enable"
+      echo "  corepack prepare pnpm@$required_pnpm --activate"
+      errors=$((errors + 1))
+    else
+      echo "PASS: pnpm $pnpm_version"
+      checks_passed=$((checks_passed + 1))
+    fi
+    echo ""
+
+    echo "--- Git Identity ---"
+    git_user="$(git config user.name 2>/dev/null || echo "")"
+    git_email="$(git config user.email 2>/dev/null || echo "")"
+    if [[ -z "$git_user" ]] || [[ -z "$git_email" ]]; then
+      echo "FAIL: Git identity not configured."
+      echo "REMEDIATION: Set your git identity for proper commit attribution:"
+      printf "  git config --global user.name \"Your Name\"\n"
+      printf "  git config --global user.email \"your.email@example.com\"\n"
+      errors=$((errors + 1))
+    else
+      echo "PASS: Git identity ($git_user <$git_email>)"
+      checks_passed=$((checks_passed + 1))
+    fi
+    echo ""
+
+    echo "--- Moon CLI ---"
+    moon_version="$(run pnpm exec moon --version 2>/dev/null || echo "failed")"
+    if [[ "$moon_version" == "failed" ]]; then
+      echo "FAIL: @moonrepo/cli is not available or failed to execute."
+      echo "REMEDIATION: Ensure dependencies are installed and moon is in workspace:"
+      echo "  scripts/check.sh setup"
+      echo "  pnpm exec moon --version"
+      errors=$((errors + 1))
+    else
+      echo "PASS: Moon CLI $moon_version"
+      checks_passed=$((checks_passed + 1))
+    fi
+    echo ""
+
+    echo "=== Summary: $checks_passed passed, $errors failures ==="
+    if [[ "$errors" -gt 0 ]]; then
+      exit 1
+    else
+      echo "All toolchain checks passed."
+      exit 0
+    fi
     ;;
   -h|--help|help|"")
     usage
