@@ -38,6 +38,9 @@ const expectedVersions = new Map([
   ['vitest', '^4.1.9']
 ]);
 const typescriptVersionExceptions = new Map([
+  ['app-astro', '^6.0.3'],
+  ['app-svelte', '^6.0.3'],
+  ['app-vue', '^6.0.3'],
   ['eslint-config-react', '^6.0.3']
 ]);
 
