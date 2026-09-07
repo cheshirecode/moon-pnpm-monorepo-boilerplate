@@ -37,7 +37,9 @@ const expectedVersions = new Map([
   ['vite', '^8.1.2'],
   ['vitest', '^4.1.9']
 ]);
-const typescriptVersionExceptions = new Map();
+const typescriptVersionExceptions = new Map([
+  ['eslint-config-react', '^6.0.3']
+]);
 
 const dogfoodScript = await readFile(join(root, 'scripts', 'dogfood.mjs'), 'utf8');
 const entries = (await readdir(packagesDir, { withFileTypes: true }))
