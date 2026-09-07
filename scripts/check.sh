@@ -12,7 +12,8 @@ Commands:
   lint-fast             Run the fast Rust-based lint guard.
   package-drift         Check package metadata, dependency, coverage, and dogfood drift.
   boundaries [--metadata-only|--artifacts-only]
-                        Check workspace import boundaries (declared deps, layer rules, subpaths).
+                         Check workspace import boundaries (declared deps, layer rules, subpaths).
+  ts-version-aligner    Check that all packages use the same TypeScript version.
   readme-map            Check that README workspace map matches package inventory (use --write to fix).
   static-checks         Run lint-fast, package-drift, boundaries, and readme-map exactly once.
   generator-drift       Verify source API and built CLI produce identical repo output.
@@ -96,6 +97,9 @@ case "$command" in
     ;;
   boundaries)
     run node scripts/check-boundaries.mjs "$@"
+    ;;
+  ts-version-aligner)
+    run node scripts/ts-version-aligner.mjs
     ;;
   readme-map)
     run node scripts/readme-map.mjs "$@"
