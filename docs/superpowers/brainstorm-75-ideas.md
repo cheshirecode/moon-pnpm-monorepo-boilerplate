@@ -1,6 +1,6 @@
 # Monorepo Product Brainstorm — 75 Ideas Synthesis
 
-> Generated: 2026-09-07 | Session: loop-engineering brainstorm round
+> Generated: 2026-09-07 | Session: loop-engineering brainstorm round + targeted expansion (K/M/N categories)
 > Source repo: cheshirecode/moon-pnpm-monorepo-boilerplate
 > Worklog project: [monorepo-tooling-improvements](https://github.com/cheshirecode/_worklog/blob/main/people/oss/active/monorepo-tooling-improvements.md)
 > Child tasks: [ts-version-aligner](https://github.com/cheshirecode/_worklog/blob/main/people/oss/active/ts-version-aligner.md), [circular-dep-detector](https://github.com/cheshirecode/_worklog/blob/main/people/oss/active/circular-dep-detector.md), [readme-consistency-checker](https://github.com/cheshirecode/_worklog/blob/main/people/oss/active/readme-consistency-checker.md)
@@ -17,7 +17,7 @@ direnv exec . "$WORKLOG_BIN/project.sh" claim <task-slug>
 
 ## Summary
 
-75 distinct product/tooling ideas were brainstormed across 13 categories. Top 10 selected by priority score (1-10) with effort bias toward small/medium over large. Three recommended for immediate worklog project tracking.
+93 distinct product/tooling ideas were brainstormed across 16 categories (A-N + extended K/M/N). Top 10 selected by priority score (1-10) with effort bias toward small/medium over large. Three recommended for immediate worklog project tracking.
 
 ## Methodology
 
@@ -213,3 +213,65 @@ B25. Developer onboarding simulator (P8, M)
 | #13 | Smart Workspace Protocol Resolver (#B9, P7) | Narrow use case; lower adoption signal |
 | #14 | Package Impact Heatmap (#A7, P7) | Visual overlay on #6's attack surface data — defer until after #6 |
 | #15 | Package Tombstone (#B19, P6) | Implementation is just `lifecycle: deprecated` field + CI warning |
+
+---
+
+## ADDITIONAL BRAINSTORM ROUND — Security, Onboarding & Edge Cases
+
+> Generated: 2026-09-07 | Session: targeted expansion into underexplored categories
+
+### K. Security & Attack Surface
+
+K1. `.npmrc` Secret Scanner (P9, S) — Pre-commit hook that scans staged files for accidentally committed tokens, API keys, or credentials matching common patterns before they enter git history. Prevents credential leaks at commit time. Improvement area: Security.
+
+K2. License Compliance Gate (P8, M) — `scripts/check.sh license-audit` that cross-references transitive dependency licenses against an allowlist/denylist, blocking CI on GPL/SSPL violations. Targets project maintainers releasing to npm. Improvement area: Security/Governance.
+
+K3. Transitive DevDep Attack Surface Auditor (P7, M) — Report devDependencies that leak into production bundles via unresolved exports or misconfigured `sideEffects`, and flag production deps with known CVEs in their own transitive trees. Targets maintainers shipping public packages. Improvement area: Security.
+
+K4. GitHub Token Permission Linter (P8, S) — Static analysis of `.github/workflows/*.yml` that verifies every workflow's `permissions:` block follows least-privilege doctrine, flags missing `secrets: inherit` overrides, and warns when `NPM_TOKEN` scope exceeds read-only. Targets CI/CD maintainer. Improvement area: Security.
+
+K5. `pnpm override` Justification Tracker (P7, S) — Require a `pnpm-workspace.yaml`-embedded justification comment for each override; CI blocks PRs that add overrides without annotated reason (overrides bypass registry security model). Targets release manager. Improvement area: Security/Governance.
+
+K6. Subpath Export Hijack Detector (P6, M) — Verify that no two packages export the same subpath pattern with conflicting entry points — catches accidental namespace collisions that could confuse consumers bundling multiple `@cheshirecode/*` packages. Targets package maintainers adding new subpath exports. Improvement area: Security.
+
+### M. Onboarding & Contributor Experience
+
+M1. First-Time Contributor Interactive Walkthrough (P8, S) — A `/first-contribution` GitHub guide (auto-commented on first PR) that links to a curated "good first issue" list filtered by tag from `moon.yml`, plus a step-by-step local setup checklist with copy-paste commands. Targets external OSS contributors. Improvement area: DX/Onboarding.
+
+M2. Local Setup Time Tracker (P7, S) — `scripts/check.sh setup-timing` that measures elapsed time for each step of `scripts/check.sh setup` (fetch, install, build, test), reports baseline, alerts if local install degrades >30% vs last run. Targets new contributors assessing project viability. Improvement area: Onboarding/DX.
+
+M3. Contributor README Badge Ecosystem (P5, M) — Auto-generated per-package contributor badges showing active maintainers, last 30-day commit frequency, and test coverage trend — rendered in per-package READMEs. Targets potential contributors evaluating which package to work on. Improvement area: Community/Docs.
+
+M4. Issue Template → Code Skeleton Mapper (P6, M) — When a contributor opens a PR template-linked issue (e.g., "fix lints"), auto-suggest the exact file paths and functions they need to touch based on import graph proximity to changed areas. Targets first-time contributors fixing bugs. Improvement area: Onboarding/DX.
+
+M5. Deprecation Notice Banner CLI (P7, S) — When a deprecated package is imported locally, `pnpm moon run lint-fast` prints a terminal banner explaining the sunset schedule, migration path, and replacement package — visible during active development. Targets contributors maintaining consuming packages. Improvement area: Docs/Governance.
+
+M6. "Try This Package" Sandbox CLI (P6, M) — `npx @cheshirecode/sandbox --help` spins up a minimal Vite/Node project pre-wired with one `@cheshirecode/*` package, running its tests against a live example — lowers barrier to evaluation. Targets external developers evaluating the library suite. Improvement area: Community/Onboarding.
+
+M7. Local Git Hook Installer (P8, S) — One-time `pnpm moon run hooks:install` that configures `.husky/pre-commit` to run affected-only checks (`boundaries`, `lint-fast`, `readme-map`) on staged files — ships with the generator, not required. Targets new contributors who want fast feedback but skip husky setup. Improvement area: DX/Onboarding.
+
+### N. Edge Cases / Niche
+
+N1. Workspace Protocol Resolver Stress Tester (P5, M) — Synthetic benchmark that creates a chain of 10+ internal workspace dependencies and measures resolution/build time degradation — establishes baseline for when pnpm workspace protocol hits scaling limits. Targets repo architect planning growth past 50 packages. Improvement area: Performance.
+
+N2. Circular Peer Dependency Silent Failure Detector (P8, M) — Pnpm silently installs circular peer dep conflicts in some cases; detect by simulating `npm pack` + `npm install` of each published package in an isolated tmpdir and verifying runtime module resolution succeeds. Targets release manager before publishing. Improvement area: Reliability.
+
+N3. Dual License Toggle Test (P3, S) — If a package ever goes dual-license (MIT/Apache-2), verify that export maps, type declarations, and subpath patterns remain identical under both license headers — automated check on license change. Targets legal-compliance aware maintainer. Improvement area: Governance.
+
+N4. TypeScript Compiler API Version Drift (P7, S) — Monitor that `typescript/unstable/ast` scanner usage stays compatible with declared TS version — TS minor bumps can change AST shape silently; regression test runs scanner on fixture files. Targets maintainer of boundary checker scripts. Improvement area: Reliability/Testing.
+
+N5. Vitest Config Shallow-Clone Detection (P6, S) — Detect packages that copied vitest config inline instead of importing from `@cheshirecode/vitest-config` — unify them to reduce maintenance burden and ensure consistent threshold updates. Targets maintainer enforcing config standards. Improvement area: Toolchain/Governance.
+
+N6. Node.js Runtime Compatibility Checker (P5, M) — Parse each package's `package.json#engines.node` range and cross-check against the oldest actively-supported LTS release (via api.github.com/repos/nodejs/node/releases); warn if package claims broader support than actually tested. Targets package maintainer setting engine constraints. Improvement area: Documentation/Reliability.
+
+N7. Monorepo Fork-Join Build Deadlock Simulator (P4, M) — Stress test moon's parallel build executor by injecting artificial delays into independent packages and measuring whether completion tracking has race conditions — detects silent task skips. Targets CI reliability engineer. Improvement area: Reliability/CI.
+
+N8. `pnpm dedupe` Safety Audit (P7, S) — Run `pnpm dedupe --dry-run` in CI and compare resolved tree before/after — alerts if deduplication would merge semver-incompatible versions that happen to coexist due to loose peer dep ranges. Targets maintainer optimizing lockfile. Improvement area: Governance/Performance.
+
+N9. Generator Output Reproducibility Hash (P6, S) — Deterministic hash of generator output (create-moon-pnpm-monorepo) — same inputs always produce byte-identical output; CI diff fails on non-deterministic generators. Targets generator maintainer. Improvement area: Toolchain/Reliability.
+
+N10. Package Name Collision Watcher (P5, S) — Pre-publish check that searches npm registry for upcoming name collisions — warns if a new `@cheshirecode/*` package name is too similar to existing published names (typosquatting risk, e.g., `async-util` vs `async-utils`). Targets package author adding new packages. Improvement area: Security/Community.
+
+N11. Moon Task Option Desync Detector (P5, S) — Cross-check that every `options.runInCI`, `options.cacheable`, and `options.runImmediate` in per-package `moon.yml` matches the shared defaults in `.moon/tasks/node.yml` — flags drifted configs. Targets repository maintainer. Improvement area: Governance.
+
+N12. Storybook MDX Content Validator (P4, S) — For renderer demo apps with Storybook, validate that MDX stories reference components that actually exist in the current package scope — catch broken story links. Targets demo app maintainer. Improvement area: Testing/Docs.
