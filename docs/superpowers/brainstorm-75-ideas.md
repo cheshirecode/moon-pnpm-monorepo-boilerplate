@@ -2,6 +2,18 @@
 
 > Generated: 2026-09-07 | Session: loop-engineering brainstorm round
 > Source repo: cheshirecode/moon-pnpm-monorepo-boilerplate
+> Worklog project: [monorepo-tooling-improvements](https://github.com/cheshirecode/_worklog/blob/main/people/oss/active/monorepo-tooling-improvements.md)
+> Child tasks: [ts-version-aligner](https://github.com/cheshirecode/_worklog/blob/main/people/oss/active/ts-version-aligner.md), [circular-dep-detector](https://github.com/cheshirecode/_worklog/blob/main/people/oss/active/circular-dep-detector.md), [readme-consistency-checker](https://github.com/cheshirecode/_worklog/blob/main/people/oss/active/readme-consistency-checker.md)
+
+## Tracking
+
+TOP 1-2-10 items are tracked in the `_worklog` data repo (`cheshirecode/_worklog`) under the `monorepo-tooling-improvements` project. Each task has full acceptance criteria, implementation notes, and evidence expectations defined in its task file.
+
+Phase 1 quick wins (items #1, #2, #10) are ready for claim via:
+```bash
+cd ~/Documents/oss/_worklog && WORKLOG_BIN="$HOME/.agents/skills/worklog/bin"
+direnv exec . "$WORKLOG_BIN/project.sh" claim <task-slug>
+```
 
 ## Summary
 
