@@ -3,18 +3,6 @@ import { join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 
-/**
- * Framework exceptions — these packages intentionally use a different TS version
- * due to framework compatibility requirements (mirrors package-drift.mjs).
- */
-const TYPESCRIPT_EXCEPTIONS = new Map([
-  ['app-astro', '^6.0.3'],
-  ['app-svelte', '^6.0.3'],
-  ['app-vue', '^6.0.3'],
-  ['eslint-config-react', '^6.0.3']
-]);
-const BASELINE_VERSION = '^7.0.2';
-
 async function expandGlobPattern(pattern) {
   const idx = pattern.lastIndexOf('/');
   if (idx >= 0 && pattern.includes('*')) {
@@ -77,41 +65,22 @@ export async function checkTsVersionAlignment() {
     } catch { /* skip */ }
   }
 
-  // Check each package against its expected version (exception or baseline)
-  const mismatches = [];
-  for (const [name, actual] of Object.entries(versions)) {
-    const dirName = name.split('/').pop() || name;
-    const expected = TYPESCRIPT_EXCEPTIONS.get(dirName) ?? BASELINE_VERSION;
-    if (actual !== expected) {
-      mismatches.push({ name, dirName, expected, actual });
-    }
-  }
-
-  if (mismatches.length === 0) {
+  const uniqueVersions = [...new Set(Object.values(versions))];
+  if (uniqueVersions.length <= 1) {
     return {
       ok: true,
-      message: `TypeScript version alignment check passed for ${dirs.length} package(s).`,
+      message: uniqueVersions.length === 1
+        ? `All ${Object.keys(versions).length} packages use TypeScript ${uniqueVersions[0]} — aligned.`
+        : `No TypeScript dependencies found across ${dirs.length} packages.`,
       versions
     };
   }
-
-  let detail = '';
-  const byExpected = new Map();
-  for (const m of mismatches) {
-    if (!byExpected.has(m.expected)) byExpected.set(m.expected, []);
-    byExpected.get(m.expected).push(m);
-  }
-  for (const [exp, pkgs] of byExpected) {
-    detail += `\nExpected TypeScript@${exp}:`;
-    for (const p of pkgs) {
-      detail += `\n  - ${p.dirName} (@${p.actual})`;
-    }
-    detail += '\n';
-  }
-
+  const mismatched = Object.entries(versions)
+    .map(([name, ver]) => `  ${name}: ${ver}`)
+    .join('\n');
   return {
     ok: false,
-    message: `${mismatches.length} package(s) with TypeScript version mismatch:${detail}`,
+    message: `TypeScript versions are NOT aligned across ${dirs.length} packages.\nMismatched:\n${mismatched}`,
     versions
   };
 }

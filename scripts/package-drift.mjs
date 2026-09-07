@@ -37,12 +37,7 @@ const expectedVersions = new Map([
   ['vite', '^8.1.2'],
   ['vitest', '^4.1.9']
 ]);
-const typescriptVersionExceptions = new Map([
-  ['app-astro', '^6.0.3'],
-  ['app-svelte', '^6.0.3'],
-  ['app-vue', '^6.0.3'],
-  ['eslint-config-react', '^6.0.3']
-]);
+const typescriptVersionExceptions = new Map();
 
 const dogfoodScript = await readFile(join(root, 'scripts', 'dogfood.mjs'), 'utf8');
 const entries = (await readdir(packagesDir, { withFileTypes: true }))
