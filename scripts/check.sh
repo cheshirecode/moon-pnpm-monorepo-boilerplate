@@ -13,9 +13,9 @@ Commands:
   package-drift         Check package metadata, dependency, coverage, and dogfood drift.
   boundaries [--metadata-only|--artifacts-only]
                          Check workspace import boundaries (declared deps, layer rules, subpaths).
-  ts-version-aligner    Check that all packages use the same TypeScript version.
+  ts-version-aligner    Verify all packages use the same TypeScript version in devDependencies.
   readme-map            Check that README workspace map matches package inventory (use --write to fix).
-  static-checks         Run lint-fast, package-drift, boundaries, and readme-map exactly once.
+  static-checks         Run lint-fast, package-drift, boundaries, readme-map, and ts-version-aligner.
   generator-drift       Verify source API and built CLI produce identical repo output.
   lint                  Run package lint targets through moon.
   typecheck             Run package type checks through moon.
@@ -100,7 +100,7 @@ case "$command" in
     run node scripts/check-boundaries.mjs "$@"
     ;;
   ts-version-aligner)
-    run node scripts/ts-version-aligner.mjs
+    run node scripts/check-ts-version.mjs
     ;;
   readme-map)
     run node scripts/readme-map.mjs "$@"
@@ -110,6 +110,7 @@ case "$command" in
     "$repo_root/scripts/check.sh" package-drift
     "$repo_root/scripts/check.sh" boundaries --metadata-only
     "$repo_root/scripts/check.sh" readme-map
+    "$repo_root/scripts/check.sh" ts-version-aligner
     "$repo_root/scripts/check.sh" generator-drift
     ;;
   generator-drift)
